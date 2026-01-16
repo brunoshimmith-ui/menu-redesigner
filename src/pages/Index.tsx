@@ -1,103 +1,53 @@
-import { useState } from "react";
-import {
-  Users,
-  Globe,
-  PlayCircle,
-  LayoutDashboard,
-  Settings,
-  UserCog,
-  ArrowUpDown,
-  School,
-  UserCircle,
-} from "lucide-react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { MenuCard } from "@/components/MenuCard";
-import { DropdownSelector } from "@/components/DropdownSelector";
-import { UserProfile } from "@/components/UserProfile";
-
-const menuItems = [
-  { icon: Users, label: "Todas as Turmas", variant: "blue" as const },
-  { icon: Globe, label: "Página Pública", variant: "orange" as const },
-  { icon: PlayCircle, label: "Stepmeet", variant: "coral" as const },
-  { icon: LayoutDashboard, label: "Dashboard", variant: "purple" as const },
-  { icon: Settings, label: "Configurações", variant: "gray" as const },
-  { icon: UserCog, label: "Usuários", variant: "blue" as const },
-  { icon: ArrowUpDown, label: "Transferências", variant: "gray" as const },
-];
-
-const schoolOptions = ["SM-A(1)", "SM-B(2)", "SM-C(3)"];
-const profileOptions = ["Suporte", "Administrador", "Gestor"];
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { HelpCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
-  const [selectedSchool, setSelectedSchool] = useState("SM-A(1)");
-  const [selectedProfile, setSelectedProfile] = useState("Suporte");
-
   return (
-    <div className="min-h-screen flex flex-col bg-background bg-pattern">
-      <Header />
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar />
+        
+        <div className="flex-1 flex flex-col">
+          {/* Top Header */}
+          <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
+            <SidebarTrigger />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+            </div>
+          </header>
 
-      <main className="flex-1 px-6 py-12">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start">
-            {/* Left side - Profile and Menu */}
-            <div className="flex-1 space-y-8">
-              {/* User Profile */}
-              <div className="animate-fade-in" style={{ animationDelay: "0ms" }}>
-                <UserProfile
-                  name="Gestor Maravilha Alagoas"
-                  code="#SEME00001"
-                />
-              </div>
-
-              {/* Menu Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {menuItems.map((item, index) => (
-                  <div
-                    key={item.label}
-                    className="animate-fade-in"
-                    style={{ animationDelay: `${(index + 1) * 100}ms` }}
-                  >
-                    <MenuCard
-                      icon={item.icon}
-                      label={item.label}
-                      variant={item.variant}
-                      onClick={() => console.log(`Clicked: ${item.label}`)}
-                    />
-                  </div>
-                ))}
+          {/* Main Content */}
+          <main className="flex-1 p-6 bg-pattern">
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-card rounded-xl border border-border p-8 shadow-sm">
+                <h1 className="text-2xl font-bold text-foreground mb-2">
+                  Bem-vindo ao Sistema Educacional
+                </h1>
+                <p className="text-muted-foreground">
+                  Selecione uma opção no menu lateral para começar.
+                </p>
               </div>
             </div>
+          </main>
 
-            {/* Right side - Selectors */}
-            <div className="w-full lg:w-72 space-y-4">
-              <div className="animate-fade-in" style={{ animationDelay: "200ms" }}>
-                <DropdownSelector
-                  icon={School}
-                  label="Escola"
-                  value={selectedSchool}
-                  options={schoolOptions}
-                  variant="green"
-                  onSelect={setSelectedSchool}
-                />
-              </div>
-              <div className="animate-fade-in" style={{ animationDelay: "300ms" }}>
-                <DropdownSelector
-                  icon={UserCircle}
-                  label="Perfil"
-                  value={selectedProfile}
-                  options={profileOptions}
-                  variant="coral"
-                  onSelect={setSelectedProfile}
-                />
-              </div>
+          {/* Footer */}
+          <footer className="border-t border-border bg-card py-4">
+            <div className="flex flex-col items-center gap-2">
+              <Button variant="outline" size="sm" className="gap-2">
+                <HelpCircle className="w-4 h-4" />
+                FAQ
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                © 2026 Sistema Educacional. Todos os direitos reservados.
+              </p>
             </div>
-          </div>
+          </footer>
         </div>
-      </main>
-
-      <Footer />
-    </div>
+      </div>
+    </SidebarProvider>
   );
 };
 
