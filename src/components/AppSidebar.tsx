@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Users,
   Globe,
@@ -12,6 +13,7 @@ import {
   GraduationCap,
   LogOut,
   ChevronDown,
+  Bell,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,16 +35,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
-  { icon: Users, label: "Todas as Turmas", variant: "blue" as const },
-  { icon: Globe, label: "Página Pública", variant: "orange" as const },
-  { icon: PlayCircle, label: "Stepmeet", variant: "coral" as const },
-  { icon: LayoutDashboard, label: "Dashboard", variant: "purple" as const },
-  { icon: Settings, label: "Configurações", variant: "gray" as const },
-  { icon: UserCog, label: "Usuários", variant: "blue" as const },
-  { icon: ArrowUpDown, label: "Transferências", variant: "gray" as const },
+  { icon: Users, label: "Todas as Turmas", variant: "blue" as const, path: "/turmas" },
+  { icon: Globe, label: "Página Pública", variant: "orange" as const, path: "/pagina-publica" },
+  { icon: PlayCircle, label: "Stepmeet", variant: "coral" as const, path: "/stepmeet" },
+  { icon: LayoutDashboard, label: "Dashboard", variant: "purple" as const, path: "/dashboard" },
+  { icon: Settings, label: "Configurações", variant: "gray" as const, path: "/configuracoes" },
+  { icon: UserCog, label: "Usuários", variant: "blue" as const, path: "/usuarios" },
+  { icon: ArrowUpDown, label: "Transferências", variant: "gray" as const, path: "/transferencias" },
 ];
 
 const variantStyles = {
@@ -62,6 +66,18 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
   const [selectedSchool, setSelectedSchool] = useState("SM-A(1)");
   const [selectedProfile, setSelectedProfile] = useState("Suporte");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { logout, user } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  const handleMenuClick = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -90,7 +106,7 @@ export function AppSidebar() {
               </div>
               <div className="overflow-hidden">
                 <h2 className="text-sm font-bold text-sidebar-foreground truncate">
-                  Gestor Maravilha
+                  {user?.name || "Gestor Maravilha"}
                 </h2>
                 <p className="text-xs text-primary font-medium">#SEME00001</p>
               </div>
@@ -171,6 +187,29 @@ export function AppSidebar() {
           </DropdownMenu>
         </div>
 
+        {/* Notifications */}
+        <div className="p-3 border-b border-sidebar-border">
+          <button className={cn(
+            "w-full flex items-center gap-3 p-2 rounded-lg hover:bg-sidebar-accent transition-colors",
+            isCollapsed && "justify-center"
+          )}>
+            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-edu-purple-light flex-shrink-0">
+              <Bell className="w-4 h-4 text-edu-purple" />
+              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-edu-coral text-white">
+                3
+              </Badge>
+            </div>
+            {!isCollapsed && (
+              <div className="flex-1 text-left overflow-hidden">
+                <span className="text-xs font-medium text-sidebar-foreground truncate block">
+                  Notificações
+                </span>
+                <span className="text-[10px] text-muted-foreground block">3 novas</span>
+              </div>
+            )}
+          </button>
+        </div>
+
         {/* Menu Items */}
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
@@ -180,8 +219,11 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton
                     tooltip={item.label}
-                    className="gap-3"
-                    onClick={() => console.log(`Clicked: ${item.label}`)}
+                    className={cn(
+                      "gap-3",
+                      location.pathname === item.path && "bg-sidebar-accent"
+                    )}
+                    onClick={() => handleMenuClick(item.path)}
                   >
                     <div className={cn(
                       "flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0",
@@ -200,7 +242,12 @@ export function AppSidebar() {
 
       {/* Footer */}
       <SidebarFooter className="border-t border-sidebar-border p-3">
-        <Button variant="destructive" size="sm" className={cn("w-full gap-2", isCollapsed && "px-0")}>
+        <Button 
+          variant="destructive" 
+          size="sm" 
+          className={cn("w-full gap-2", isCollapsed && "px-0")}
+          onClick={handleLogout}
+        >
           <LogOut className="w-4 h-4" />
           {!isCollapsed && "Sair"}
         </Button>
