@@ -4,14 +4,13 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const Index = () => {
+const Menu = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
-        
+
         <div className="flex-1 flex flex-col">
-          {/* Top Header */}
           <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
             <SidebarTrigger />
             <div className="flex items-center gap-2">
@@ -19,7 +18,6 @@ const Index = () => {
             </div>
           </header>
 
-          {/* Main Content */}
           <main className="flex-1 p-6 bg-pattern">
             <div className="max-w-4xl mx-auto">
               <div className="bg-card rounded-xl border border-border p-8 shadow-sm">
@@ -33,7 +31,6 @@ const Index = () => {
             </div>
           </main>
 
-          {/* Footer */}
           <footer className="border-t border-border bg-card py-4">
             <div className="flex flex-col items-center gap-2">
               <Button variant="outline" size="sm" className="gap-2">
@@ -51,4 +48,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Menu;
