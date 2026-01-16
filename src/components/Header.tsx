@@ -1,5 +1,6 @@
 import { LogOut, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Header() {
   return (
@@ -15,10 +16,13 @@ export function Header() {
           </div>
         </div>
 
-        <Button variant="destructive" size="sm" className="gap-2">
-          <LogOut className="w-4 h-4" />
-          Sair
-        </Button>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Button variant="destructive" size="sm" className="gap-2">
+            <LogOut className="w-4 h-4" />
+            Sair
+          </Button>
+        </div>
       </div>
     </header>
   );
