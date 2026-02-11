@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Users, Edit, Eye } from "lucide-react";
+import { Search, Users, Edit, Eye, BookOpen } from "lucide-react";
 
 interface Turma {
   id: string;
@@ -139,12 +139,24 @@ const Turmas = () => {
                               <Button
                                 variant="ghost"
                                 size="icon"
+                                title="Ver alunos"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleSelectTurma(turma.id);
                                 }}
                               >
                                 <Eye className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Disciplinas"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/turmas/${turma.id}/disciplinas`);
+                                }}
+                              >
+                                <BookOpen className="w-4 h-4" />
                               </Button>
                               <Button
                                 variant="ghost"
