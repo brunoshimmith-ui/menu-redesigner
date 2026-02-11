@@ -51,7 +51,7 @@ const Turmas = () => {
   );
 
   const handleSelectTurma = (turmaId: string) => {
-    navigate(`/turmas/${turmaId}/alunos`);
+    navigate(`/turmas/${turmaId}/disciplinas`);
   };
 
   return (
