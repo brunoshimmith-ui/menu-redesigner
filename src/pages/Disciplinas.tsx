@@ -130,11 +130,43 @@ const Disciplinas = () => {
   const [viewMode, setViewMode] = useState<"Semana" | "Mês">("Semana");
   const [aulas, setAulas] = useState<AulaSalva[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
 
   // Form state for adding disciplines
   const [formItems, setFormItems] = useState<DisciplinaItem[]>([
     { id: crypto.randomUUID(), disciplina: "", horaInicio: "07:00", horaTermino: "08:00", professor: "", diaSemana: 1 },
   ]);
+
+  const toggleSlot = (dayIdx: number, hora: string) => {
+    const key = `${dayIdx}-${hora}`;
+    setSelectedSlots((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  };
+
+  const openDialogFromSelection = () => {
+    if (selectedSlots.size === 0) return;
+    const items: DisciplinaItem[] = Array.from(selectedSlots).sort().map((key) => {
+      const [day, hora] = key.split("-");
+      const startH = parseInt(hora.split(":")[0]);
+      return {
+        id: crypto.randomUUID(),
+        disciplina: "",
+        horaInicio: hora,
+        horaTermino: `${String(startH + 1).padStart(2, "0")}:00`,
+        professor: "",
+        diaSemana: parseInt(day),
+      };
+    });
+    setFormItems(items);
+    setDialogOpen(true);
+  };
 
   const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
 
@@ -187,6 +219,7 @@ const Disciplinas = () => {
     setAulas((prev) => [...prev, ...novas]);
     setFormItems([{ id: crypto.randomUUID(), disciplina: "", horaInicio: "07:00", horaTermino: "08:00", professor: "", diaSemana: 1 }]);
     setDialogOpen(false);
+    setSelectedSlots(new Set());
     toast({ title: "Aulas adicionadas!", description: `${novas.length} aula(s) adicionada(s) ao diário.` });
   };
 
@@ -253,12 +286,20 @@ const Disciplinas = () => {
               <TabsContent value="diario" className="space-y-4">
                 {/* Action buttons row */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <Dialog open={dialogOpen} onOpenChange={(open) => {
+                    setDialogOpen(open);
+                    if (!open) setSelectedSlots(new Set());
+                  }}>
                     <DialogTrigger asChild>
                       <Button size="icon" className="rounded-full bg-accent hover:bg-accent/90 text-accent-foreground">
                         <Plus className="w-5 h-5" />
                       </Button>
                     </DialogTrigger>
+                    {selectedSlots.size > 0 && (
+                      <Button size="sm" variant="outline" className="gap-1" onClick={openDialogFromSelection}>
+                        <Plus className="w-4 h-4" /> Adicionar nas {selectedSlots.size} selecionadas
+                      </Button>
+                    )}
                     <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>Adicionar Aulas ao Diário</DialogTitle>
@@ -398,11 +439,19 @@ const Disciplinas = () => {
                               }
                             }
 
+                            const isSelected = selectedSlots.has(coveredKey);
+                            const hasAula = startingAulas.length > 0;
+
                             return (
                               <td
                                 key={dayIdx}
                                 rowSpan={rowSpan > 1 ? rowSpan : undefined}
-                                className={`border-b border-r p-1 align-top ${isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""}`}
+                                onClick={() => !hasAula && toggleSlot(dayIdx, hora)}
+                                className={`border-b border-r p-1 align-top transition-colors ${
+                                  isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""
+                                } ${!hasAula ? "cursor-pointer hover:bg-accent/20" : ""} ${
+                                  isSelected ? "bg-accent/30 ring-2 ring-inset ring-accent" : ""
+                                }`}
                               >
                                 {startingAulas.map((aula) => (
                                   <div
