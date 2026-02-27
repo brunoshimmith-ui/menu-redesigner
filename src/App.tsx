@@ -10,6 +10,7 @@ import Menu from "./pages/Menu";
 import Turmas from "./pages/Turmas";
 import Alunos from "./pages/Alunos";
 import Disciplinas from "./pages/Disciplinas";
+import Usuarios from "./pages/Usuarios";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const AppRoutes = () => (
     <Route path="/turmas" element={<ProtectedRoute><Turmas /></ProtectedRoute>} />
     <Route path="/turmas/:turmaId/alunos" element={<ProtectedRoute><Alunos /></ProtectedRoute>} />
     <Route path="/turmas/:turmaId/disciplinas" element={<ProtectedRoute><Disciplinas /></ProtectedRoute>} />
+    <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
