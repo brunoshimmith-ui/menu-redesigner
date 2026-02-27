@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, UserCog, ArrowLeft, BookOpen, Clock, AlertTriangle, CheckCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -18,10 +19,17 @@ interface Aluno {
   turma: string;
   nivel: string;
   status: "Ativo" | "Inativo" | "Transferido";
+  cpf: string;
+  dataNascimento: string;
+  endereco: string;
+  nomeMae: string;
+  nomePai: string;
+  telefone: string;
+  email: string;
   notas: { disciplina: string; nota1: number; nota2: number; nota3: number; nota4: number; media: number }[];
   faltas: { disciplina: string; total: number; permitidas: number }[];
   frequencia: number;
-  documentos: { tipo: string; data: string; status: string }[];
+  documentos: { tipo: string; data: string; status: string; categoria: string }[];
 }
 
 const NOMES = [
@@ -41,6 +49,20 @@ const TURMAS = ["1º Ano A", "1º Ano B", "2º Ano A", "2º Ano B", "6º Ano A",
 function gerarNota() {
   return Math.round((Math.random() * 6 + 4) * 10) / 10;
 }
+
+const CPFS = NOMES.map((_, i) => `${String(100 + i)}.${String(200 + i)}.${String(300 + i)}-${String(10 + i)}`);
+const ENDERECOS = [
+  "Rua das Flores, 123 - Centro", "Av. Brasil, 456 - Boa Vista", "Rua Amazonas, 789 - Jardim América",
+  "Rua São Paulo, 321 - Vila Nova", "Av. Getúlio Vargas, 654 - Centro", "Rua Minas Gerais, 147 - Liberdade",
+  "Rua Bahia, 258 - Santa Cruz", "Av. Independência, 369 - Parque das Nações", "Rua Paraná, 741 - Jardim Europa",
+  "Rua Goiás, 852 - Centro", "Rua Ceará, 963 - Vila Rica", "Av. Atlântica, 159 - Praia Grande",
+  "Rua Pernambuco, 267 - Centro", "Rua Sergipe, 378 - Nova Esperança", "Av. Santos Dumont, 489 - Aeroporto",
+  "Rua Maranhão, 591 - Centro", "Rua Piauí, 602 - São Jorge", "Av. Rio Branco, 713 - Centro",
+  "Rua Tocantins, 824 - Jardim Primavera", "Rua Amapá, 935 - Centro", "Rua Roraima, 146 - Vila Verde",
+  "Av. Paulista, 257 - Centro", "Rua Acre, 368 - Boa Esperança", "Rua Rondônia, 479 - Centro",
+  "Rua Mato Grosso, 580 - Jardim Sol", "Av. Atlântica, 691 - Praia", "Rua Alagoas, 702 - Centro",
+  "Rua Paraíba, 813 - São Pedro", "Av. Beira Mar, 924 - Praia", "Rua Espírito Santo, 135 - Centro",
+];
 
 function gerarAlunos(): Aluno[] {
   return NOMES.map((nome, i) => {
@@ -63,15 +85,27 @@ function gerarAlunos(): Aluno[] {
       turma: TURMAS[i % TURMAS.length],
       nivel: i % 3 === 0 ? "Fundamental I" : i % 3 === 1 ? "Fundamental II" : "Infantil",
       status: i === 19 ? "Transferido" : i === 27 ? "Inativo" : "Ativo",
+      cpf: CPFS[i],
+      dataNascimento: `${String((i % 28) + 1).padStart(2, "0")}/${String((i % 12) + 1).padStart(2, "0")}/2014`,
+      endereco: ENDERECOS[i],
+      nomeMae: `Maria ${nome.split(" ").slice(-1)[0]}`,
+      nomePai: `José ${nome.split(" ").slice(-1)[0]}`,
+      telefone: `(92) 9${String(8000 + i * 37)}-${String(1000 + i * 23)}`,
+      email: `${nome.split(" ")[0].toLowerCase()}.${nome.split(" ").slice(-1)[0].toLowerCase()}@email.com`,
       notas,
       faltas,
       frequencia,
       documentos: [
-        { tipo: "Matrícula", data: "05/02/2024", status: "Entregue" },
-        { tipo: "Certidão de Nascimento", data: "05/02/2024", status: "Entregue" },
-        { tipo: "Comprovante de Residência", data: "10/02/2024", status: i % 5 === 0 ? "Pendente" : "Entregue" },
-        { tipo: "Cartão de Vacinação", data: "05/02/2024", status: i % 7 === 0 ? "Pendente" : "Entregue" },
-        { tipo: "Histórico Escolar", data: "15/02/2024", status: i % 4 === 0 ? "Pendente" : "Entregue" },
+        { tipo: "Histórico Escolar", data: "15/02/2024", status: i % 4 === 0 ? "Pendente" : "Disponível", categoria: "Histórico" },
+        { tipo: "Boletim Escolar - 1º Bim", data: "15/04/2024", status: "Disponível", categoria: "Boletim" },
+        { tipo: "Boletim Escolar - 2º Bim", data: "15/07/2024", status: i % 3 === 0 ? "Pendente" : "Disponível", categoria: "Boletim" },
+        { tipo: "Declaração de Matrícula", data: "05/02/2024", status: "Disponível", categoria: "Declaração" },
+        { tipo: "Declaração de Conclusão", data: "20/12/2024", status: i % 2 === 0 ? "Pendente" : "Disponível", categoria: "Declaração" },
+        { tipo: "Declaração de Frequência", data: "01/08/2024", status: "Disponível", categoria: "Declaração" },
+        { tipo: "Atividades Pendentes", data: "27/02/2026", status: `${Math.floor(Math.random() * 5)} pendentes`, categoria: "Atividades" },
+        { tipo: "Certidão de Nascimento", data: "05/02/2024", status: "Entregue", categoria: "Pessoal" },
+        { tipo: "Comprovante de Residência", data: "10/02/2024", status: i % 5 === 0 ? "Pendente" : "Entregue", categoria: "Pessoal" },
+        { tipo: "Cartão de Vacinação", data: "05/02/2024", status: i % 7 === 0 ? "Pendente" : "Entregue", categoria: "Pessoal" },
       ],
     };
   });
@@ -234,37 +268,91 @@ const Usuarios = () => {
                 </TabsContent>
 
                 <TabsContent value="documentos">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Documentação</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="rounded-lg border overflow-hidden">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="bg-muted/50">
-                              <TableHead>Documento</TableHead>
-                              <TableHead>Data</TableHead>
-                              <TableHead className="text-center">Status</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {selectedAluno.documentos.map((d) => (
-                              <TableRow key={d.tipo}>
-                                <TableCell className="font-medium">{d.tipo}</TableCell>
-                                <TableCell>{d.data}</TableCell>
-                                <TableCell className="text-center">
-                                  <Badge className={`border-0 ${d.status === "Entregue" ? "bg-edu-green-light text-edu-green" : "bg-edu-orange-light text-edu-orange"}`}>
-                                    {d.status}
-                                  </Badge>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="space-y-6">
+                    {/* Informações Básicas do Aluno */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Informações do Aluno</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {[
+                            { label: "Nome Completo", value: selectedAluno.nome },
+                            { label: "CPF", value: selectedAluno.cpf },
+                            { label: "Data de Nascimento", value: selectedAluno.dataNascimento },
+                            { label: "Matrícula", value: selectedAluno.matricula },
+                            { label: "Turma", value: selectedAluno.turma },
+                            { label: "Nível", value: selectedAluno.nivel },
+                            { label: "Endereço", value: selectedAluno.endereco },
+                            { label: "Nome da Mãe", value: selectedAluno.nomeMae },
+                            { label: "Nome do Pai", value: selectedAluno.nomePai },
+                            { label: "Telefone", value: selectedAluno.telefone },
+                            { label: "E-mail", value: selectedAluno.email },
+                            { label: "Status", value: selectedAluno.status },
+                          ].map((item) => (
+                            <div key={item.label} className="space-y-1">
+                              <span className="text-xs text-muted-foreground">{item.label}</span>
+                              <p className="text-sm font-medium text-foreground">{item.value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Documentação Escolar */}
+                    {["Histórico", "Boletim", "Declaração", "Atividades", "Pessoal"].map((cat) => {
+                      const docs = selectedAluno.documentos.filter((d) => d.categoria === cat);
+                      if (docs.length === 0) return null;
+                      return (
+                        <Card key={cat}>
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-base">{cat === "Pessoal" ? "Documentos Pessoais" : cat}</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="rounded-lg border overflow-hidden">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow className="bg-muted/50">
+                                    <TableHead>Documento</TableHead>
+                                    <TableHead>Data</TableHead>
+                                    <TableHead className="text-center">Status</TableHead>
+                                    <TableHead className="text-right">Ação</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {docs.map((d) => (
+                                    <TableRow key={d.tipo}>
+                                      <TableCell className="font-medium">{d.tipo}</TableCell>
+                                      <TableCell>{d.data}</TableCell>
+                                      <TableCell className="text-center">
+                                        <Badge className={cn(
+                                          "border-0",
+                                          d.status === "Disponível" || d.status === "Entregue"
+                                            ? "bg-edu-green-light text-edu-green"
+                                            : d.status === "Pendente"
+                                            ? "bg-edu-orange-light text-edu-orange"
+                                            : "bg-edu-blue-light text-edu-blue"
+                                        )}>
+                                          {d.status}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell className="text-right">
+                                        {(d.status === "Disponível" || d.status === "Entregue") && (
+                                          <Button variant="ghost" size="sm" className="text-xs">
+                                            Visualizar
+                                          </Button>
+                                        )}
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
                 </TabsContent>
               </Tabs>
             </main>

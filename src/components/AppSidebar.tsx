@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Users,
@@ -9,11 +8,8 @@ import {
   UserCog,
   ArrowUpDown,
   School,
-  UserCircle,
   GraduationCap,
   LogOut,
-  ChevronDown,
-  Bell,
 } from "lucide-react";
 import {
   Sidebar,
@@ -28,14 +24,7 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -58,14 +47,10 @@ const variantStyles = {
   gray: "text-edu-gray bg-edu-gray-light",
 };
 
-const schoolOptions = ["SM-A(1)", "SM-B(2)", "SM-C(3)"];
-const profileOptions = ["Suporte", "Administrador", "Gestor"];
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const [selectedSchool, setSelectedSchool] = useState("SM-A(1)");
-  const [selectedProfile, setSelectedProfile] = useState("Suporte");
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, user } = useAuth();
@@ -114,78 +99,6 @@ export function AppSidebar() {
           </div>
         )}
 
-        {/* Selectors */}
-        <div className="p-3 space-y-2 border-b border-sidebar-border">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className={cn(
-                "w-full flex items-center gap-3 p-2 rounded-lg hover:bg-sidebar-accent transition-colors",
-                isCollapsed && "justify-center"
-              )}>
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-edu-green-light flex-shrink-0">
-                  <School className="w-4 h-4 text-edu-green" />
-                </div>
-                {!isCollapsed && (
-                  <>
-                    <div className="flex-1 text-left overflow-hidden">
-                      <span className="text-[10px] text-muted-foreground block">Escola</span>
-                      <span className="text-xs font-medium text-edu-green truncate block">
-                        {selectedSchool}
-                      </span>
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  </>
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              {schoolOptions.map((option) => (
-                <DropdownMenuItem
-                  key={option}
-                  onClick={() => setSelectedSchool(option)}
-                  className={cn(option === selectedSchool && "bg-muted")}
-                >
-                  {option}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className={cn(
-                "w-full flex items-center gap-3 p-2 rounded-lg hover:bg-sidebar-accent transition-colors",
-                isCollapsed && "justify-center"
-              )}>
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-edu-coral-light flex-shrink-0">
-                  <UserCircle className="w-4 h-4 text-edu-coral" />
-                </div>
-                {!isCollapsed && (
-                  <>
-                    <div className="flex-1 text-left overflow-hidden">
-                      <span className="text-[10px] text-muted-foreground block">Perfil</span>
-                      <span className="text-xs font-medium text-edu-coral truncate block">
-                        {selectedProfile}
-                      </span>
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  </>
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              {profileOptions.map((option) => (
-                <DropdownMenuItem
-                  key={option}
-                  onClick={() => setSelectedProfile(option)}
-                  className={cn(option === selectedProfile && "bg-muted")}
-                >
-                  {option}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
 
 
         {/* Menu Items */}
