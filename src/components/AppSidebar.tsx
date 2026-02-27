@@ -187,28 +187,6 @@ export function AppSidebar() {
           </DropdownMenu>
         </div>
 
-        {/* Notifications */}
-        <div className="p-3 border-b border-sidebar-border">
-          <button className={cn(
-            "w-full flex items-center gap-3 p-2 rounded-lg hover:bg-sidebar-accent transition-colors",
-            isCollapsed && "justify-center"
-          )}>
-            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-edu-purple-light flex-shrink-0">
-              <Bell className="w-4 h-4 text-edu-purple" />
-              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-edu-coral text-white">
-                3
-              </Badge>
-            </div>
-            {!isCollapsed && (
-              <div className="flex-1 text-left overflow-hidden">
-                <span className="text-xs font-medium text-sidebar-foreground truncate block">
-                  Notificações
-                </span>
-                <span className="text-[10px] text-muted-foreground block">3 novas</span>
-              </div>
-            )}
-          </button>
-        </div>
 
         {/* Menu Items */}
         <SidebarGroup>
