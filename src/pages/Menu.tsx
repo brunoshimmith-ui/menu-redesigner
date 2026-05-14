@@ -144,7 +144,7 @@ const Menu = () => {
                     Olá, {user?.name?.split(" ")[0] || "Bruno"}! <span>👋</span>
                   </h1>
                   <p className="text-sm text-muted-foreground">
-                    Bem-vindo(a) de volta ao SEMED.
+                    Bem-vindo(a) de volta ao SEMEI Iranduba.
                   </p>
                 </div>
 

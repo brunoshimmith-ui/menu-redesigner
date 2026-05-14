@@ -38,13 +38,13 @@ const initialNotifications: Notification[] = [
   { id: "6", title: "Manutenção programada", description: "O sistema ficará indisponível no dia 01/03 das 22h às 23h para manutenção.", type: "atualizacao", route: "/menu", read: true, time: "2 dias atrás" },
 ];
 
-const schoolOptions = ["SM-A(1)", "SM-B(2)", "SM-C(3)"];
+const schoolOptions = ["SEMEI Iranduba - 01", "SEMEI Iranduba - 02", "SEMEI Iranduba - 03"];
 const profileOptions = ["Suporte", "Administrador", "Gestor"];
 
 export function HeaderWithNotifications() {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(initialNotifications);
-  const [selectedSchool, setSelectedSchool] = useState("SM-A(1)");
+  const [selectedSchool, setSelectedSchool] = useState("SEMEI Iranduba - 01");
   const [selectedProfile, setSelectedProfile] = useState("Suporte");
   const [open, setOpen] = useState(false);
 
@@ -70,15 +70,16 @@ export function HeaderWithNotifications() {
         {/* School selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors">
+            <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors">
               <div className="flex items-center justify-center w-7 h-7 rounded-md bg-edu-green-light">
                 <School className="w-3.5 h-3.5 text-edu-green" />
               </div>
-              <span className="text-xs font-medium text-foreground hidden sm:inline">{selectedSchool}</span>
+              <span className="text-xs text-muted-foreground hidden sm:inline">Escola:</span>
+              <span className="text-xs font-semibold text-foreground hidden sm:inline">{selectedSchool}</span>
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuContent align="end" className="w-56">
             {schoolOptions.map((opt) => (
               <DropdownMenuItem key={opt} onClick={() => setSelectedSchool(opt)} className={cn(opt === selectedSchool && "bg-muted")}>
                 {opt}
