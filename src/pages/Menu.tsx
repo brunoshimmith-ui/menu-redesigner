@@ -144,7 +144,7 @@ const Menu = () => {
                     Olá, {user?.name?.split(" ")[0] || "Bruno"}! <span>👋</span>
                   </h1>
                   <p className="text-sm text-muted-foreground">
-                    Bem-vindo(a) de volta ao SEMED.
+                    Bem-vindo(a) de volta ao SEMEI Iranduba.
                   </p>
                 </div>
 
@@ -203,19 +203,22 @@ const Menu = () => {
 
                     {/* Tip */}
                     {tip && (
-                      <div className="bg-edu-purple-light border border-edu-purple/20 rounded-xl p-4 flex items-start gap-3 relative">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-edu-purple text-white flex-shrink-0">
-                          <Lightbulb className="w-5 h-5" />
+                      <div className="bg-edu-purple-light border border-edu-purple/20 rounded-xl p-5 flex items-center gap-4 relative overflow-hidden">
+                        <div
+                          aria-hidden
+                          className="hidden sm:flex items-end justify-center w-24 h-24 rounded-xl bg-gradient-to-br from-edu-purple/20 to-edu-purple/5 text-4xl flex-shrink-0"
+                        >
+                          👩‍💻
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-semibold text-foreground">Dica do dia</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-base font-bold text-edu-purple">Dica do dia</p>
+                          <p className="text-sm text-foreground/70 mt-1">
                             Mantenha os dados da sua escola sempre atualizados para uma melhor gestão.
                           </p>
                         </div>
                         <button
                           onClick={() => setTip(false)}
-                          className="text-muted-foreground hover:text-foreground"
+                          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
                           aria-label="Fechar dica"
                         >
                           <X className="w-4 h-4" />
@@ -371,6 +374,12 @@ const Menu = () => {
                 </div>
               </div>
             </main>
+
+            <footer className="border-t border-border bg-card py-4 text-center">
+              <p className="text-xs text-muted-foreground">
+                © 2026 SEMEI - Sistema Municipal de Educação de Iranduba. Todos os direitos reservados.
+              </p>
+            </footer>
           </div>
         </div>
       </TooltipProvider>
