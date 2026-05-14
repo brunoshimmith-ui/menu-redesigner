@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Bell, School, UserCircle, ChevronDown, X, ArrowRight } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Bell, School, UserCircle, ChevronDown, X, ArrowRight, Home } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
