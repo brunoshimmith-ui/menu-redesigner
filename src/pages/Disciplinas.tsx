@@ -252,15 +252,7 @@ const Disciplinas = () => {
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger />
-              <Button variant="ghost" size="icon" onClick={() => navigate("/turmas")}>
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-            </div>
-            <ThemeToggle />
-          </header>
+          <HeaderWithNotifications />
 
           <main className="flex-1 p-6 space-y-4">
             {/* Turma Header */}
