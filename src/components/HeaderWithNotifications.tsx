@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Bell, School, UserCircle, ChevronDown, X, ArrowRight } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Bell, School, UserCircle, ChevronDown, X, ArrowRight, Home } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +43,7 @@ const profileOptions = ["Suporte", "Administrador", "Gestor"];
 
 export function HeaderWithNotifications() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [notifications, setNotifications] = useState(initialNotifications);
   const [selectedSchool, setSelectedSchool] = useState("SEMEI Iranduba - 01");
   const [selectedProfile, setSelectedProfile] = useState("Suporte");
@@ -64,7 +65,20 @@ export function HeaderWithNotifications() {
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
-      <SidebarTrigger />
+      <div className="flex items-center gap-2">
+        <SidebarTrigger />
+        {location.pathname !== "/menu" && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1.5 h-8 text-xs"
+            onClick={() => navigate("/menu")}
+          >
+            <Home className="w-3.5 h-3.5" />
+            Menu principal
+          </Button>
+        )}
+      </div>
 
       <div className="flex items-center gap-3">
         {/* School selector */}

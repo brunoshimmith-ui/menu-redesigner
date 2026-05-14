@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { HeaderWithNotifications } from "@/components/HeaderWithNotifications";
 import {
   Table,
   TableBody,
@@ -86,12 +87,7 @@ const Alunos = () => {
           <AppSidebar />
 
           <div className="flex-1 flex flex-col">
-            <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
-              <SidebarTrigger />
-              <div className="flex items-center gap-2">
-                <ThemeToggle />
-              </div>
-            </header>
+            <HeaderWithNotifications />
 
             <main className="flex-1 p-6">
               <div className="mb-6">
@@ -323,12 +319,7 @@ const Alunos = () => {
         <AppSidebar />
 
         <div className="flex-1 flex flex-col">
-          <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
-            <SidebarTrigger />
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-            </div>
-          </header>
+          <HeaderWithNotifications />
 
           <main className="flex-1 p-6">
             <div className="mb-6">
