@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { HeaderWithNotifications } from "@/components/HeaderWithNotifications";
 import {
   Table,
   TableBody,
