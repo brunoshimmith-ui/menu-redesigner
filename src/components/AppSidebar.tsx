@@ -29,13 +29,14 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
-  { icon: Users, label: "Todas as Turmas", variant: "blue" as const, path: "/turmas" },
-  { icon: Globe, label: "Página Pública", variant: "orange" as const, path: "/pagina-publica" },
-  { icon: PlayCircle, label: "Stepmeet", variant: "coral" as const, path: "/stepmeet" },
-  { icon: LayoutDashboard, label: "Dashboard", variant: "purple" as const, path: "/dashboard" },
-  { icon: Settings, label: "Configurações", variant: "gray" as const, path: "/configuracoes" },
-  { icon: UserCog, label: "Usuários", variant: "blue" as const, path: "/usuarios" },
-  { icon: ArrowUpDown, label: "Transferências", variant: "gray" as const, path: "/transferencias" },
+  { icon: LayoutDashboard, label: "Dashboard", variant: "purple" as const, path: "/menu", desc: "Visão geral e indicadores" },
+  { icon: Users, label: "Todas as Turmas", variant: "blue" as const, path: "/turmas", desc: "Gerencie turmas, edições e turnos" },
+  { icon: GraduationCap, label: "Educação Especial", variant: "coral" as const, path: "/usuarios", desc: "Acompanhe estudantes e recursos" },
+  { icon: UserCog, label: "Usuários", variant: "blue" as const, path: "/usuarios", desc: "Buscar alunos e ver trajetória" },
+  { icon: ArrowUpDown, label: "Transferências", variant: "gray" as const, path: "/transferencias", desc: "Solicitações e movimentações" },
+  { icon: Globe, label: "Página Pública", variant: "orange" as const, path: "/pagina-publica", desc: "Vitrine pública da escola" },
+  { icon: PlayCircle, label: "Stepmeet", variant: "coral" as const, path: "/stepmeet", desc: "Reuniões online" },
+  { icon: Settings, label: "Configurações", variant: "gray" as const, path: "/configuracoes", desc: "Preferências e ajustes" },
 ];
 
 const variantStyles = {
