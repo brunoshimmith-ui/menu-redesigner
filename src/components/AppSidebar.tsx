@@ -110,7 +110,8 @@ export function AppSidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton
-                    tooltip={item.label}
+                    tooltip={`${item.label} — ${item.desc}`}
+                    title={item.desc}
                     className={cn(
                       "gap-3",
                       location.pathname === item.path && "bg-sidebar-accent"
