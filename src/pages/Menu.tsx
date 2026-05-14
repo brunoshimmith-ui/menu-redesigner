@@ -374,6 +374,12 @@ const Menu = () => {
                 </div>
               </div>
             </main>
+
+            <footer className="border-t border-border bg-card py-4 text-center">
+              <p className="text-xs text-muted-foreground">
+                © 2026 SEMEI - Sistema Municipal de Educação de Iranduba. Todos os direitos reservados.
+              </p>
+            </footer>
           </div>
         </div>
       </TooltipProvider>
