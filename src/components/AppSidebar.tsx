@@ -11,9 +11,9 @@ import {
   FileText,
   Settings,
   Headphones,
-  GraduationCap,
   LogOut,
 } from "lucide-react";
+import semeiLogo from "@/assets/semei-logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -60,19 +60,16 @@ export function AppSidebar() {
       className="[&_[data-sidebar=sidebar]]:bg-[hsl(225_40%_12%)] [&_[data-sidebar=sidebar]]:text-slate-200"
     >
       {/* Header / Logo */}
-      <SidebarHeader className="border-b border-white/10 p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg flex-shrink-0">
-            <GraduationCap className="w-6 h-6 text-primary-foreground" />
-          </div>
-          {!isCollapsed && (
-            <div className="overflow-hidden">
-              <h1 className="text-lg font-bold text-white tracking-tight">SEMEI</h1>
-              <p className="text-[10px] text-slate-400 leading-tight">
-                SISTEMA MUNICIPAL DE EDUCAÇÃO
-              </p>
-            </div>
-          )}
+      <SidebarHeader className="border-b border-white/10 p-3 bg-white">
+        <div className={cn("flex items-center justify-center", isCollapsed ? "h-10" : "h-20")}>
+          <img
+            src={semeiLogo}
+            alt="SEMEI - Sistema Municipal de Educação Iranduba - AM"
+            className={cn("object-contain", isCollapsed ? "h-9 w-9" : "h-20")}
+            loading="lazy"
+            width={1024}
+            height={1024}
+          />
         </div>
       </SidebarHeader>
 
