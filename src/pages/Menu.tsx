@@ -386,6 +386,27 @@ const Menu = () => {
                                   rows={3}
                                 />
                               </div>
+                              <div>
+                                <label className="text-xs text-muted-foreground">
+                                  Convidar usuários ({selectedUsers.length} selecionado(s))
+                                </label>
+                                <ScrollArea className="h-36 mt-1 rounded-md border border-border p-2">
+                                  <div className="space-y-2">
+                                    {availableUsers.map((u) => (
+                                      <label
+                                        key={u}
+                                        className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 rounded px-1 py-0.5"
+                                      >
+                                        <Checkbox
+                                          checked={selectedUsers.includes(u)}
+                                          onCheckedChange={() => toggleUser(u)}
+                                        />
+                                        <span>{u}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                </ScrollArea>
+                              </div>
                             </div>
                             <DialogFooter>
                               <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
