@@ -223,10 +223,10 @@ const Menu = () => {
                   {/* Right: avisos slides + calendar */}
                   <div className="space-y-6">
                     {/* Avisos slides */}
-                    <div className="bg-card rounded-xl border border-border p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-sm font-semibold text-foreground">Avisos importantes</h3>
-                        <button className="text-xs text-primary hover:underline">Ver todos</button>
+                    <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">
+                      <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-xl font-bold text-[#1d2746]">Avisos importantes</h3>
+                        <button className="text-sm text-primary font-semibold hover:underline">Ver todos</button>
                       </div>
 
                       <div className="relative overflow-hidden rounded-lg">
