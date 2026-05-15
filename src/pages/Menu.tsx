@@ -152,21 +152,14 @@ const Menu = () => {
                   {/* Left: stats + quick + tip */}
                   <div className="lg:col-span-2 space-y-6">
                     {/* Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                       {stats.map((s) => (
                         <Tooltip key={s.label}>
                           <TooltipTrigger asChild>
-                            <div className="bg-card rounded-xl border border-border p-4 hover:shadow-md transition-all hover:-translate-y-0.5 cursor-help">
-                              <div className="flex items-start justify-between">
-                                <div>
-                                  <p className="text-xs text-muted-foreground">{s.label}</p>
-                                  <p className="text-2xl font-bold text-foreground mt-1">{s.value}</p>
-                                  <p className="text-[10px] text-edu-green mt-1">{s.delta}</p>
-                                </div>
-                                <div className={cn("flex items-center justify-center w-10 h-10 rounded-lg", variantStyles[s.variant])}>
-                                  <s.icon className="w-5 h-5" />
-                                </div>
-                              </div>
+                            <div className="bg-card rounded-3xl border border-border p-6 shadow-sm hover:shadow-md transition-all cursor-help">
+                              <p className="text-sm text-muted-foreground mb-3">{s.label}</p>
+                              <p className="text-4xl font-bold text-[#1d2746]">{s.value}</p>
+                              <p className="text-xs text-edu-green mt-2">{s.delta}</p>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>{s.tip}</TooltipContent>
@@ -175,24 +168,24 @@ const Menu = () => {
                     </div>
 
                     {/* Quick access */}
-                    <div>
-                      <h2 className="text-sm font-semibold text-foreground mb-3">Acesso rápido</h2>
+                    <div className="bg-card rounded-3xl border border-border p-6 md:p-8 shadow-sm">
+                      <h2 className="text-2xl font-bold text-[#1d2746] mb-6">Acesso rápido</h2>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {quickAccess.map((q) => (
                           <Tooltip key={q.label}>
                             <TooltipTrigger asChild>
                               <button
                                 onClick={() => navigate(q.path)}
-                                className="group text-left bg-card rounded-xl border border-border p-4 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/40 transition-all flex items-center gap-3"
+                                className="group text-left bg-card rounded-2xl border border-border p-5 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/40 transition-all flex items-start gap-3"
                               >
-                                <div className={cn("flex items-center justify-center w-10 h-10 rounded-lg flex-shrink-0", variantStyles[q.variant])}>
+                                <div className={cn("flex items-center justify-center w-11 h-11 rounded-xl flex-shrink-0", variantStyles[q.variant])}>
                                   <q.icon className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-semibold text-foreground truncate">{q.label}</p>
-                                  <p className="text-xs text-muted-foreground line-clamp-1">{q.desc}</p>
+                                  <p className="text-base font-bold text-[#1d2746]">{q.label}</p>
+                                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{q.desc}</p>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors mt-1" />
                               </button>
                             </TooltipTrigger>
                             <TooltipContent>{q.tip}</TooltipContent>
