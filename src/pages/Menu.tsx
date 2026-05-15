@@ -140,10 +140,10 @@ const Menu = () => {
               <div className="max-w-7xl mx-auto space-y-6">
                 {/* Greeting */}
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <h1 className="text-3xl md:text-4xl font-bold text-[#1d2746] flex items-center gap-2">
                     Olá, {user?.name?.split(" ")[0] || "Bruno"}! <span>👋</span>
                   </h1>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-base text-muted-foreground mt-2">
                     Bem-vindo(a) de volta ao SEMEI Iranduba.
                   </p>
                 </div>
