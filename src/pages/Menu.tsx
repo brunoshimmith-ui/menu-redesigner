@@ -235,13 +235,13 @@ const Menu = () => {
                           style={{ transform: `translateX(-${slide * 100}%)` }}
                         >
                           {initialAvisos.map((a, i) => (
-                            <div key={i} className="min-w-full p-4 bg-muted/40 rounded-lg">
+                            <div key={i} className={cn("min-w-full p-5 rounded-2xl", i % 2 === 0 ? "bg-[#f7f3ff]" : "bg-[#f5f8ff]")}>
                               <div className="flex items-start gap-2">
                                 <span className={cn("w-2 h-2 rounded-full mt-1.5 flex-shrink-0", a.color)} />
                                 <div>
-                                  <p className="text-sm font-semibold text-foreground">{a.title}</p>
-                                  <p className="text-xs text-muted-foreground mt-1">{a.description}</p>
-                                  <button className="text-xs text-primary hover:underline mt-2">{a.cta}</button>
+                                  <p className="text-sm font-bold text-[#1d2746]">{a.title}</p>
+                                  <p className="text-xs text-muted-foreground mt-1.5">{a.description}</p>
+                                  <button className="text-xs text-primary font-semibold hover:underline mt-2">{a.cta}</button>
                                 </div>
                               </div>
                             </div>
