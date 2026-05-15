@@ -154,19 +154,36 @@ const Menu = () => {
   ]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newMeeting, setNewMeeting] = useState({ title: "", hour: "", notes: "" });
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const dateKey = (d?: Date) => (d ? d.toISOString().slice(0, 10) : "");
   const meetingsForDay = meetings.filter((m) => m.date === dateKey(selectedDate));
   const meetingDates = meetings.map((m) => new Date(m.date + "T00:00"));
+  const holidayDates = holidays.map((h) => new Date(h.date + "T00:00"));
+  const optionalDates = optionalDays.map((o) => new Date(o.date + "T00:00"));
+
+  const holidayForDay = holidays.find((h) => h.date === dateKey(selectedDate));
+  const optionalForDay = optionalDays.find((o) => o.date === dateKey(selectedDate));
+
+  const toggleUser = (u: string) =>
+    setSelectedUsers((prev) => (prev.includes(u) ? prev.filter((x) => x !== u) : [...prev, u]));
 
   const handleCreateMeeting = () => {
     if (!selectedDate || !newMeeting.title || !newMeeting.hour) {
       toast.error("Preencha título, data e horário.");
       return;
     }
-    setMeetings((prev) => [...prev, { date: dateKey(selectedDate), ...newMeeting }]);
-    toast.success("Reunião marcada com sucesso!");
+    setMeetings((prev) => [
+      ...prev,
+      { date: dateKey(selectedDate), ...newMeeting, participants: selectedUsers },
+    ]);
+    toast.success(
+      selectedUsers.length > 0
+        ? `Reunião marcada e ${selectedUsers.length} usuário(s) convidado(s)!`
+        : "Reunião marcada com sucesso!"
+    );
     setNewMeeting({ title: "", hour: "", notes: "" });
+    setSelectedUsers([]);
     setDialogOpen(false);
   };
 
