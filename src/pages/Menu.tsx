@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -90,7 +92,48 @@ interface Meeting {
   title: string;
   hour: string;
   notes?: string;
+  participants?: string[];
 }
+
+// Feriados nacionais e municipais (Iranduba/AM) — 2026
+const holidays: { date: string; name: string }[] = [
+  { date: "2026-01-01", name: "Confraternização Universal" },
+  { date: "2026-02-16", name: "Carnaval" },
+  { date: "2026-02-17", name: "Carnaval" },
+  { date: "2026-04-03", name: "Sexta-feira Santa" },
+  { date: "2026-04-21", name: "Tiradentes" },
+  { date: "2026-05-01", name: "Dia do Trabalho" },
+  { date: "2026-06-04", name: "Corpus Christi" },
+  { date: "2026-09-05", name: "Elevação do Amazonas a Província" },
+  { date: "2026-09-07", name: "Independência do Brasil" },
+  { date: "2026-10-12", name: "Nossa Senhora Aparecida" },
+  { date: "2026-10-19", name: "Aniversário de Iranduba" },
+  { date: "2026-11-02", name: "Finados" },
+  { date: "2026-11-15", name: "Proclamação da República" },
+  { date: "2026-11-20", name: "Consciência Negra" },
+  { date: "2026-12-25", name: "Natal" },
+];
+
+// Pontos facultativos
+const optionalDays: { date: string; name: string }[] = [
+  { date: "2026-02-18", name: "Quarta-feira de Cinzas (até 12h)" },
+  { date: "2026-06-05", name: "Após Corpus Christi" },
+  { date: "2026-10-28", name: "Dia do Servidor Público" },
+  { date: "2026-12-24", name: "Véspera de Natal" },
+  { date: "2026-12-31", name: "Véspera de Ano Novo" },
+];
+
+// Usuários disponíveis para reuniões
+const availableUsers = [
+  "Bruno Silva (Suporte)",
+  "Ana Paula (Coordenadora)",
+  "Carlos Mendes (Diretor)",
+  "Juliana Costa (Pedagoga)",
+  "Marcos Rocha (Prof. Matemática)",
+  "Patrícia Lima (Prof. Português)",
+  "Rafael Souza (Prof. Ciências)",
+  "Fernanda Alves (Secretaria)",
+];
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -111,19 +154,36 @@ const Menu = () => {
   ]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newMeeting, setNewMeeting] = useState({ title: "", hour: "", notes: "" });
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const dateKey = (d?: Date) => (d ? d.toISOString().slice(0, 10) : "");
   const meetingsForDay = meetings.filter((m) => m.date === dateKey(selectedDate));
   const meetingDates = meetings.map((m) => new Date(m.date + "T00:00"));
+  const holidayDates = holidays.map((h) => new Date(h.date + "T00:00"));
+  const optionalDates = optionalDays.map((o) => new Date(o.date + "T00:00"));
+
+  const holidayForDay = holidays.find((h) => h.date === dateKey(selectedDate));
+  const optionalForDay = optionalDays.find((o) => o.date === dateKey(selectedDate));
+
+  const toggleUser = (u: string) =>
+    setSelectedUsers((prev) => (prev.includes(u) ? prev.filter((x) => x !== u) : [...prev, u]));
 
   const handleCreateMeeting = () => {
     if (!selectedDate || !newMeeting.title || !newMeeting.hour) {
       toast.error("Preencha título, data e horário.");
       return;
     }
-    setMeetings((prev) => [...prev, { date: dateKey(selectedDate), ...newMeeting }]);
-    toast.success("Reunião marcada com sucesso!");
+    setMeetings((prev) => [
+      ...prev,
+      { date: dateKey(selectedDate), ...newMeeting, participants: selectedUsers },
+    ]);
+    toast.success(
+      selectedUsers.length > 0
+        ? `Reunião marcada e ${selectedUsers.length} usuário(s) convidado(s)!`
+        : "Reunião marcada com sucesso!"
+    );
     setNewMeeting({ title: "", hour: "", notes: "" });
+    setSelectedUsers([]);
     setDialogOpen(false);
   };
 
@@ -326,6 +386,27 @@ const Menu = () => {
                                   rows={3}
                                 />
                               </div>
+                              <div>
+                                <label className="text-xs text-muted-foreground">
+                                  Convidar usuários ({selectedUsers.length} selecionado(s))
+                                </label>
+                                <ScrollArea className="h-36 mt-1 rounded-md border border-border p-2">
+                                  <div className="space-y-2">
+                                    {availableUsers.map((u) => (
+                                      <label
+                                        key={u}
+                                        className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 rounded px-1 py-0.5"
+                                      >
+                                        <Checkbox
+                                          checked={selectedUsers.includes(u)}
+                                          onCheckedChange={() => toggleUser(u)}
+                                        />
+                                        <span>{u}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                </ScrollArea>
+                              </div>
                             </div>
                             <DialogFooter>
                               <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
@@ -339,13 +420,50 @@ const Menu = () => {
                         mode="single"
                         selected={selectedDate}
                         onSelect={setSelectedDate}
-                        modifiers={{ meeting: meetingDates }}
-                        modifiersClassNames={{ meeting: "bg-edu-purple-light text-edu-purple font-bold" }}
-                        className="rounded-md"
+                        modifiers={{
+                          meeting: meetingDates,
+                          holiday: holidayDates,
+                          optional: optionalDates,
+                        }}
+                        modifiersClassNames={{
+                          meeting: "bg-edu-purple-light text-edu-purple font-bold",
+                          holiday: "bg-edu-coral-light text-edu-coral font-bold",
+                          optional: "bg-edu-orange-light text-edu-orange font-semibold",
+                        }}
+                        className="rounded-md pointer-events-auto"
                       />
 
-                      <div className="mt-3 space-y-2">
-                        <p className="text-xs font-semibold text-foreground">
+                      {/* Legenda */}
+                      <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-edu-coral-light border border-edu-coral" />
+                          Feriado
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-edu-orange-light border border-edu-orange" />
+                          Ponto facultativo
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-edu-purple-light border border-edu-purple" />
+                          Reunião
+                        </span>
+                      </div>
+
+                      <div className="mt-4 space-y-2">
+                        {holidayForDay && (
+                          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-coral-light">
+                            <Badge className="bg-edu-coral text-white border-0 text-[10px]">Feriado</Badge>
+                            <p className="text-xs font-medium text-foreground flex-1">{holidayForDay.name}</p>
+                          </div>
+                        )}
+                        {optionalForDay && (
+                          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-orange-light">
+                            <Badge className="bg-edu-orange text-white border-0 text-[10px]">Facultativo</Badge>
+                            <p className="text-xs font-medium text-foreground flex-1">{optionalForDay.name}</p>
+                          </div>
+                        )}
+
+                        <p className="text-xs font-semibold text-foreground pt-1">
                           Reuniões em {selectedDate?.toLocaleDateString("pt-BR")}
                         </p>
                         {meetingsForDay.length === 0 ? (
@@ -357,6 +475,11 @@ const Menu = () => {
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs font-medium text-foreground">{m.title}</p>
                                 {m.notes && <p className="text-[10px] text-muted-foreground line-clamp-2">{m.notes}</p>}
+                                {m.participants && m.participants.length > 0 && (
+                                  <p className="text-[10px] text-edu-purple mt-1">
+                                    👥 {m.participants.length} participante(s)
+                                  </p>
+                                )}
                               </div>
                             </div>
                           ))

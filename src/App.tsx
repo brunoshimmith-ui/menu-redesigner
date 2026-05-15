@@ -11,6 +11,13 @@ import Turmas from "./pages/Turmas";
 import Alunos from "./pages/Alunos";
 import Disciplinas from "./pages/Disciplinas";
 import Usuarios from "./pages/Usuarios";
+import EducacaoEspecial from "./pages/EducacaoEspecial";
+import Transferencias from "./pages/Transferencias";
+import PaginaPublica from "./pages/PaginaPublica";
+import Stepmeet from "./pages/Stepmeet";
+import Relatorios from "./pages/Relatorios";
+import Documentos from "./pages/Documentos";
+import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +50,13 @@ const AppRoutes = () => (
     <Route path="/turmas/:turmaId/alunos" element={<ProtectedRoute><Alunos /></ProtectedRoute>} />
     <Route path="/turmas/:turmaId/disciplinas" element={<ProtectedRoute><Disciplinas /></ProtectedRoute>} />
     <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
+    <Route path="/educacao-especial" element={<ProtectedRoute><EducacaoEspecial /></ProtectedRoute>} />
+    <Route path="/transferencias" element={<ProtectedRoute><Transferencias /></ProtectedRoute>} />
+    <Route path="/pagina-publica" element={<ProtectedRoute><PaginaPublica /></ProtectedRoute>} />
+    <Route path="/stepmeet" element={<ProtectedRoute><Stepmeet /></ProtectedRoute>} />
+    <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+    <Route path="/documentos" element={<ProtectedRoute><Documentos /></ProtectedRoute>} />
+    <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
