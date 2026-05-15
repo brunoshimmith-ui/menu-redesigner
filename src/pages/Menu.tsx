@@ -281,9 +281,9 @@ const Menu = () => {
                     </div>
 
                     {/* Calendar */}
-                    <div className="bg-card rounded-xl border border-border p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-semibold text-foreground">Calendário escolar</h3>
+                    <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-xl font-bold text-[#1d2746]">Calendário escolar</h3>
                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                           <DialogTrigger asChild>
                             <Button size="sm" variant="outline" className="h-7 gap-1 text-xs">
