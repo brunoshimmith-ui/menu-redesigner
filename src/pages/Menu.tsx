@@ -420,13 +420,50 @@ const Menu = () => {
                         mode="single"
                         selected={selectedDate}
                         onSelect={setSelectedDate}
-                        modifiers={{ meeting: meetingDates }}
-                        modifiersClassNames={{ meeting: "bg-edu-purple-light text-edu-purple font-bold" }}
-                        className="rounded-md"
+                        modifiers={{
+                          meeting: meetingDates,
+                          holiday: holidayDates,
+                          optional: optionalDates,
+                        }}
+                        modifiersClassNames={{
+                          meeting: "bg-edu-purple-light text-edu-purple font-bold",
+                          holiday: "bg-edu-coral-light text-edu-coral font-bold",
+                          optional: "bg-edu-orange-light text-edu-orange font-semibold",
+                        }}
+                        className="rounded-md pointer-events-auto"
                       />
 
-                      <div className="mt-3 space-y-2">
-                        <p className="text-xs font-semibold text-foreground">
+                      {/* Legenda */}
+                      <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-edu-coral-light border border-edu-coral" />
+                          Feriado
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-edu-orange-light border border-edu-orange" />
+                          Ponto facultativo
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-edu-purple-light border border-edu-purple" />
+                          Reunião
+                        </span>
+                      </div>
+
+                      <div className="mt-4 space-y-2">
+                        {holidayForDay && (
+                          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-coral-light">
+                            <Badge className="bg-edu-coral text-white border-0 text-[10px]">Feriado</Badge>
+                            <p className="text-xs font-medium text-foreground flex-1">{holidayForDay.name}</p>
+                          </div>
+                        )}
+                        {optionalForDay && (
+                          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-orange-light">
+                            <Badge className="bg-edu-orange text-white border-0 text-[10px]">Facultativo</Badge>
+                            <p className="text-xs font-medium text-foreground flex-1">{optionalForDay.name}</p>
+                          </div>
+                        )}
+
+                        <p className="text-xs font-semibold text-foreground pt-1">
                           Reuniões em {selectedDate?.toLocaleDateString("pt-BR")}
                         </p>
                         {meetingsForDay.length === 0 ? (
@@ -438,6 +475,11 @@ const Menu = () => {
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs font-medium text-foreground">{m.title}</p>
                                 {m.notes && <p className="text-[10px] text-muted-foreground line-clamp-2">{m.notes}</p>}
+                                {m.participants && m.participants.length > 0 && (
+                                  <p className="text-[10px] text-edu-purple mt-1">
+                                    👥 {m.participants.length} participante(s)
+                                  </p>
+                                )}
                               </div>
                             </div>
                           ))
