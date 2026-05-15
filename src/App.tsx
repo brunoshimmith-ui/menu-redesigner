@@ -11,6 +11,13 @@ import Turmas from "./pages/Turmas";
 import Alunos from "./pages/Alunos";
 import Disciplinas from "./pages/Disciplinas";
 import Usuarios from "./pages/Usuarios";
+import EducacaoEspecial from "./pages/EducacaoEspecial";
+import Transferencias from "./pages/Transferencias";
+import PaginaPublica from "./pages/PaginaPublica";
+import Stepmeet from "./pages/Stepmeet";
+import Relatorios from "./pages/Relatorios";
+import Documentos from "./pages/Documentos";
+import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
