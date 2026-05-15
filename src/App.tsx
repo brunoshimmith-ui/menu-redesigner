@@ -50,6 +50,13 @@ const AppRoutes = () => (
     <Route path="/turmas/:turmaId/alunos" element={<ProtectedRoute><Alunos /></ProtectedRoute>} />
     <Route path="/turmas/:turmaId/disciplinas" element={<ProtectedRoute><Disciplinas /></ProtectedRoute>} />
     <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
+    <Route path="/educacao-especial" element={<ProtectedRoute><EducacaoEspecial /></ProtectedRoute>} />
+    <Route path="/transferencias" element={<ProtectedRoute><Transferencias /></ProtectedRoute>} />
+    <Route path="/pagina-publica" element={<ProtectedRoute><PaginaPublica /></ProtectedRoute>} />
+    <Route path="/stepmeet" element={<ProtectedRoute><Stepmeet /></ProtectedRoute>} />
+    <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+    <Route path="/documentos" element={<ProtectedRoute><Documentos /></ProtectedRoute>} />
+    <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
