@@ -92,7 +92,48 @@ interface Meeting {
   title: string;
   hour: string;
   notes?: string;
+  participants?: string[];
 }
+
+// Feriados nacionais e municipais (Iranduba/AM) — 2026
+const holidays: { date: string; name: string }[] = [
+  { date: "2026-01-01", name: "Confraternização Universal" },
+  { date: "2026-02-16", name: "Carnaval" },
+  { date: "2026-02-17", name: "Carnaval" },
+  { date: "2026-04-03", name: "Sexta-feira Santa" },
+  { date: "2026-04-21", name: "Tiradentes" },
+  { date: "2026-05-01", name: "Dia do Trabalho" },
+  { date: "2026-06-04", name: "Corpus Christi" },
+  { date: "2026-09-05", name: "Elevação do Amazonas a Província" },
+  { date: "2026-09-07", name: "Independência do Brasil" },
+  { date: "2026-10-12", name: "Nossa Senhora Aparecida" },
+  { date: "2026-10-19", name: "Aniversário de Iranduba" },
+  { date: "2026-11-02", name: "Finados" },
+  { date: "2026-11-15", name: "Proclamação da República" },
+  { date: "2026-11-20", name: "Consciência Negra" },
+  { date: "2026-12-25", name: "Natal" },
+];
+
+// Pontos facultativos
+const optionalDays: { date: string; name: string }[] = [
+  { date: "2026-02-18", name: "Quarta-feira de Cinzas (até 12h)" },
+  { date: "2026-06-05", name: "Após Corpus Christi" },
+  { date: "2026-10-28", name: "Dia do Servidor Público" },
+  { date: "2026-12-24", name: "Véspera de Natal" },
+  { date: "2026-12-31", name: "Véspera de Ano Novo" },
+];
+
+// Usuários disponíveis para reuniões
+const availableUsers = [
+  "Bruno Silva (Suporte)",
+  "Ana Paula (Coordenadora)",
+  "Carlos Mendes (Diretor)",
+  "Juliana Costa (Pedagoga)",
+  "Marcos Rocha (Prof. Matemática)",
+  "Patrícia Lima (Prof. Português)",
+  "Rafael Souza (Prof. Ciências)",
+  "Fernanda Alves (Secretaria)",
+];
 
 const Menu = () => {
   const navigate = useNavigate();
