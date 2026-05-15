@@ -1,19 +1,18 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Home,
+  GraduationCap,
+  Heart,
   Users,
-  HeartHandshake,
-  UserCog,
-  ArrowUpDown,
+  ArrowLeftRight,
   Globe,
-  PlayCircle,
+  Play,
   BarChart3,
   FileText,
   Settings,
   Headphones,
   LogOut,
 } from "lucide-react";
-import semeiLogo from "@/assets/semei-logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -31,12 +30,12 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/menu", desc: "Visão geral e indicadores" },
-  { icon: Users, label: "Turmas", path: "/turmas", desc: "Gerencie turmas, edições e turnos" },
-  { icon: HeartHandshake, label: "Educação Especial", path: "/usuarios", desc: "Acompanhe estudantes e recursos" },
-  { icon: UserCog, label: "Usuários", path: "/usuarios", desc: "Buscar alunos e ver trajetória" },
-  { icon: ArrowUpDown, label: "Transferências", path: "/transferencias", desc: "Solicitações e movimentações" },
+  { icon: GraduationCap, label: "Turmas", path: "/turmas", desc: "Gerencie turmas, edições e turnos" },
+  { icon: Heart, label: "Educação Especial", path: "/educacao-especial", desc: "Acompanhe estudantes e recursos" },
+  { icon: Users, label: "Usuários", path: "/usuarios", desc: "Buscar alunos e ver trajetória" },
+  { icon: ArrowLeftRight, label: "Transferências", path: "/transferencias", desc: "Solicitações e movimentações" },
   { icon: Globe, label: "Página Pública", path: "/pagina-publica", desc: "Vitrine pública da escola" },
-  { icon: PlayCircle, label: "Stepmeet", path: "/stepmeet", desc: "Reuniões online" },
+  { icon: Play, label: "Stepmeet", path: "/stepmeet", desc: "Reuniões online" },
   { icon: BarChart3, label: "Relatórios", path: "/relatorios", desc: "Gere e exporte relatórios" },
   { icon: FileText, label: "Documentos", path: "/documentos", desc: "Histórico, boletins e declarações" },
   { icon: Settings, label: "Configurações", path: "/configuracoes", desc: "Preferências e ajustes" },
@@ -57,26 +56,28 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="[&_[data-sidebar=sidebar]]:bg-[hsl(225_40%_12%)] [&_[data-sidebar=sidebar]]:text-slate-200"
+      className="[&_[data-sidebar=sidebar]]:bg-[#07152c] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
     >
       {/* Header / Logo */}
-      <SidebarHeader className="border-b border-white/10 p-3 bg-white">
-        <div className={cn("flex items-center justify-center", isCollapsed ? "h-10" : "h-20")}>
-          <img
-            src={semeiLogo}
-            alt="SEMEI - Sistema Municipal de Educação Iranduba - AM"
-            className={cn("object-contain", isCollapsed ? "h-9 w-9" : "h-20")}
-            loading="lazy"
-            width={1024}
-            height={1024}
-          />
-        </div>
+      <SidebarHeader className="border-b border-white/10 p-6">
+        {!isCollapsed ? (
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-white">SEMEI</h1>
+            <p className="text-[11px] opacity-70 mt-1 leading-tight">
+              Sistema Municipal de Educação
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center">
+            <span className="text-lg font-bold text-white">S</span>
+          </div>
+        )}
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="px-3 pt-4">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1.5">
               {menuItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 return (
@@ -86,11 +87,11 @@ export function AppSidebar() {
                       title={item.desc}
                       onClick={() => navigate(item.path)}
                       className={cn(
-                        "gap-3 text-slate-300 hover:bg-white/5 hover:text-white transition-colors",
-                        isActive && "bg-primary/15 text-white border-l-2 border-primary rounded-l-none"
+                        "h-11 gap-3 px-4 rounded-2xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors",
+                        isActive && "bg-[#5b6cff] text-white hover:bg-[#5b6cff] hover:text-white"
                       )}
                     >
-                      <item.icon className={cn("w-4 h-4", isActive && "text-primary")} />
+                      <item.icon className="w-4 h-4" />
                       <span className="truncate">{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -102,19 +103,15 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Suporte footer */}
-      <SidebarFooter className="border-t border-white/10 p-3">
+      <SidebarFooter className="p-4">
         {!isCollapsed ? (
-          <div className="rounded-lg p-3 bg-white/5">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/20">
-                <Headphones className="w-4 h-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">Suporte</p>
-                <p className="text-[10px] text-slate-400">Precisa de ajuda?</p>
-              </div>
+          <div className="rounded-2xl p-4 bg-white/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Headphones className="w-5 h-5 text-white" />
+              <h3 className="font-semibold text-white">Suporte</h3>
             </div>
-            <button className="text-xs text-primary hover:underline mt-1">
+            <p className="text-xs opacity-70 mb-3">Precisa de ajuda?</p>
+            <button className="text-sm text-[#6d7cff] font-semibold hover:underline">
               Abrir chamado →
             </button>
             <button
