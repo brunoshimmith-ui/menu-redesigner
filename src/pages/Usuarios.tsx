@@ -119,16 +119,94 @@ const statusColors: Record<string, string> = {
   Transferido: "bg-edu-orange-light text-edu-orange",
 };
 
+// ===== Usuários adicionais (não-alunos) =====
+type Role = "Aluno" | "Professor" | "Diretor" | "Coordenador" | "Gestor" | "Administrativo";
+
+interface OutroUsuario {
+  id: string;
+  nome: string;
+  role: Exclude<Role, "Aluno">;
+  escola: string;
+  email: string;
+  telefone: string;
+  novo?: boolean;
+}
+
+const ESCOLAS = [
+  "SEMEI Iranduba - 01",
+  "SEMEI Iranduba - 02",
+  "SEMEI Iranduba - 03",
+];
+
+const outrosUsuarios: OutroUsuario[] = [
+  { id: "p1", nome: "Marcos Rocha", role: "Professor", escola: ESCOLAS[0], email: "marcos.rocha@semei.edu", telefone: "(92) 99999-1111" },
+  { id: "p2", nome: "Patrícia Lima", role: "Professor", escola: ESCOLAS[0], email: "patricia.lima@semei.edu", telefone: "(92) 99999-1112", novo: true },
+  { id: "p3", nome: "Rafael Souza", role: "Professor", escola: ESCOLAS[1], email: "rafael.souza@semei.edu", telefone: "(92) 99999-1113" },
+  { id: "p4", nome: "Beatriz Lopes", role: "Professor", escola: ESCOLAS[2], email: "beatriz.lopes@semei.edu", telefone: "(92) 99999-1114" },
+  { id: "p5", nome: "Ricardo Mendes", role: "Professor", escola: ESCOLAS[1], email: "ricardo.mendes@semei.edu", telefone: "(92) 99999-1115", novo: true },
+  { id: "p6", nome: "Juliana Costa", role: "Professor", escola: ESCOLAS[0], email: "juliana.costa@semei.edu", telefone: "(92) 99999-1116" },
+  { id: "d1", nome: "Carlos Mendes", role: "Diretor", escola: ESCOLAS[0], email: "carlos.mendes@semei.edu", telefone: "(92) 99999-2001" },
+  { id: "d2", nome: "Helena Vasconcelos", role: "Diretor", escola: ESCOLAS[1], email: "helena.v@semei.edu", telefone: "(92) 99999-2002" },
+  { id: "d3", nome: "Marcelo Ferraz", role: "Diretor", escola: ESCOLAS[2], email: "marcelo.f@semei.edu", telefone: "(92) 99999-2003", novo: true },
+  { id: "c1", nome: "Ana Paula Ribeiro", role: "Coordenador", escola: ESCOLAS[0], email: "ana.ribeiro@semei.edu", telefone: "(92) 99999-3001" },
+  { id: "c2", nome: "Roberto Tavares", role: "Coordenador", escola: ESCOLAS[1], email: "roberto.t@semei.edu", telefone: "(92) 99999-3002" },
+  { id: "c3", nome: "Larissa Pinheiro", role: "Coordenador", escola: ESCOLAS[2], email: "larissa.p@semei.edu", telefone: "(92) 99999-3003", novo: true },
+  { id: "g1", nome: "Eduardo Albuquerque", role: "Gestor", escola: ESCOLAS[0], email: "eduardo.a@semei.edu", telefone: "(92) 99999-4001" },
+  { id: "g2", nome: "Cláudia Bezerra", role: "Gestor", escola: ESCOLAS[1], email: "claudia.b@semei.edu", telefone: "(92) 99999-4002" },
+  { id: "a1", nome: "Fernanda Alves", role: "Administrativo", escola: ESCOLAS[0], email: "fernanda.a@semei.edu", telefone: "(92) 99999-5001" },
+  { id: "a2", nome: "José Carlos Lima", role: "Administrativo", escola: ESCOLAS[0], email: "jose.lima@semei.edu", telefone: "(92) 99999-5002", novo: true },
+  { id: "a3", nome: "Mariana Brito", role: "Administrativo", escola: ESCOLAS[1], email: "mariana.b@semei.edu", telefone: "(92) 99999-5003" },
+  { id: "a4", nome: "Paulo Henrique", role: "Administrativo", escola: ESCOLAS[2], email: "paulo.h@semei.edu", telefone: "(92) 99999-5004" },
+];
+
+const roleColors: Record<Role, string> = {
+  Aluno: "bg-edu-blue-light text-edu-blue",
+  Professor: "bg-edu-purple-light text-edu-purple",
+  Diretor: "bg-edu-coral-light text-edu-coral",
+  Coordenador: "bg-edu-orange-light text-edu-orange",
+  Gestor: "bg-edu-green-light text-edu-green",
+  Administrativo: "bg-muted text-foreground",
+};
+
 const Usuarios = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedAluno, setSelectedAluno] = useState<Aluno | null>(null);
+  const [roleFilters, setRoleFilters] = useState<Role[]>([]);
+  const [escolaFilter, setEscolaFilter] = useState<string>("todas");
 
-  const filtered = alunosData.filter(
-    (a) =>
-      a.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      a.matricula.includes(searchTerm) ||
-      a.turma.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Lista unificada para a tabela
+  const alunosComoUsuario = alunosData.map((a) => ({
+    id: `aluno-${a.id}`,
+    nome: a.nome,
+    role: "Aluno" as Role,
+    escola: ESCOLAS[0],
+    email: a.email,
+    telefone: a.telefone,
+    novo: parseInt(a.matricula.slice(-2)) > 25,
+    _alunoRef: a,
+  }));
+  const outrosComoUsuario = outrosUsuarios.map((u) => ({ ...u, _alunoRef: null as Aluno | null }));
+  const todos = [...alunosComoUsuario, ...outrosComoUsuario];
+
+  const filtered = todos.filter((u) => {
+    const matchSearch =
+      u.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchRole = roleFilters.length === 0 || roleFilters.includes(u.role);
+    const matchEscola = escolaFilter === "todas" || u.escola === escolaFilter;
+    return matchSearch && matchRole && matchEscola;
+  });
+
+  // Estatísticas por papel
+  const stats: { role: Role; total: number; novos: number; color: string }[] = (
+    ["Aluno", "Professor", "Diretor", "Coordenador", "Gestor", "Administrativo"] as Role[]
+  ).map((role) => {
+    const list = todos.filter((u) => u.role === role && (escolaFilter === "todas" || u.escola === escolaFilter));
+    return { role, total: list.length, novos: list.filter((u) => u.novo).length, color: roleColors[role] };
+  });
+
+  const toggleRole = (r: Role) =>
+    setRoleFilters((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
 
   if (selectedAluno) {
     return (
@@ -368,26 +446,88 @@ const Usuarios = () => {
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           <HeaderWithNotifications />
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-6 space-y-6">
+            {/* Stats por papel */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {stats.map((s) => (
+                <Card key={s.role}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge className={`${s.color} border-0 text-[10px]`}>{s.role}</Badge>
+                      {s.novos > 0 && (
+                        <span className="text-[10px] font-semibold text-edu-green">+{s.novos} novos</span>
+                      )}
+                    </div>
+                    <p className="text-2xl font-bold text-[#1d2746]">{s.total}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Total cadastrados</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-10 h-10 bg-edu-blue-light rounded-lg">
-                    <UserCog className="w-5 h-5 text-edu-blue" />
+              <CardHeader className="space-y-4">
+                <div className="flex flex-row items-center justify-between gap-4 flex-wrap">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-edu-blue-light rounded-lg">
+                      <UserCog className="w-5 h-5 text-edu-blue" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">Usuários</CardTitle>
+                      <p className="text-sm text-muted-foreground">{filtered.length} usuário(s) encontrado(s)</p>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-xl">Usuários</CardTitle>
-                    <p className="text-sm text-muted-foreground">{filtered.length} alunos encontrados</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="relative w-64">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Buscar por nome ou e-mail..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                    <select
+                      value={escolaFilter}
+                      onChange={(e) => setEscolaFilter(e.target.value)}
+                      className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                    >
+                      <option value="todas">Todas as escolas</option>
+                      {ESCOLAS.map((e) => (
+                        <option key={e} value={e}>{e}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-                <div className="relative w-72">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar aluno por nome, matrícula ou turma..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9"
-                  />
+
+                {/* Filtros de papel */}
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs text-muted-foreground self-center mr-1">Filtrar por:</span>
+                  {(["Professor", "Diretor", "Coordenador", "Gestor", "Administrativo", "Aluno"] as Role[]).map((r) => {
+                    const active = roleFilters.includes(r);
+                    return (
+                      <button
+                        key={r}
+                        onClick={() => toggleRole(r)}
+                        className={cn(
+                          "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
+                          active
+                            ? `${roleColors[r]} border-transparent`
+                            : "bg-background border-border text-muted-foreground hover:bg-muted"
+                        )}
+                      >
+                        {r}
+                      </button>
+                    );
+                  })}
+                  {roleFilters.length > 0 && (
+                    <button
+                      onClick={() => setRoleFilters([])}
+                      className="text-xs text-primary hover:underline ml-2"
+                    >
+                      Limpar
+                    </button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -396,32 +536,43 @@ const Usuarios = () => {
                     <TableHeader>
                       <TableRow className="bg-muted/50">
                         <TableHead>Nome</TableHead>
-                        <TableHead>Matrícula</TableHead>
-                        <TableHead>Turma</TableHead>
-                        <TableHead>Nível</TableHead>
-                        <TableHead className="text-center">Frequência</TableHead>
+                        <TableHead>Função</TableHead>
+                        <TableHead>Escola</TableHead>
+                        <TableHead>E-mail</TableHead>
+                        <TableHead>Telefone</TableHead>
                         <TableHead className="text-center">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filtered.map((aluno) => (
+                      {filtered.map((u) => (
                         <TableRow
-                          key={aluno.id}
-                          className="cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() => setSelectedAluno(aluno)}
+                          key={u.id}
+                          className={cn("transition-colors", u._alunoRef && "cursor-pointer hover:bg-muted/50")}
+                          onClick={() => u._alunoRef && setSelectedAluno(u._alunoRef)}
                         >
-                          <TableCell className="font-medium">{aluno.nome}</TableCell>
-                          <TableCell className="text-muted-foreground">{aluno.matricula}</TableCell>
-                          <TableCell>{aluno.turma}</TableCell>
+                          <TableCell className="font-medium">{u.nome}</TableCell>
                           <TableCell>
-                            <Badge variant="outline">{aluno.nivel}</Badge>
+                            <Badge className={`${roleColors[u.role]} border-0`}>{u.role}</Badge>
                           </TableCell>
-                          <TableCell className="text-center">{aluno.frequencia}%</TableCell>
+                          <TableCell className="text-muted-foreground">{u.escola}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">{u.email}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">{u.telefone}</TableCell>
                           <TableCell className="text-center">
-                            <Badge className={`${statusColors[aluno.status]} border-0`}>{aluno.status}</Badge>
+                            {u.novo ? (
+                              <Badge className="bg-edu-green-light text-edu-green border-0">Novo</Badge>
+                            ) : (
+                              <Badge variant="outline">Ativo</Badge>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
+                      {filtered.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">
+                            Nenhum usuário encontrado com os filtros aplicados.
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </div>

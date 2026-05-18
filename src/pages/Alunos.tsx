@@ -27,7 +27,12 @@ import {
   BookOpen,
   MessageSquare,
   Calendar,
+  HeartHandshake,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 interface Aluno {
   id: string;
@@ -366,19 +371,19 @@ const Alunos = () => {
                         <TableHead>Data Nascimento</TableHead>
                         <TableHead>Responsável</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredAlunos.map((aluno) => (
                         <TableRow
                           key={aluno.id}
-                          className="cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() => handleSelectAluno(aluno)}
+                          className="hover:bg-muted/50 transition-colors"
                         >
-                          <TableCell className="font-medium">{aluno.nome}</TableCell>
-                          <TableCell>{aluno.matricula}</TableCell>
-                          <TableCell>{aluno.dataNascimento}</TableCell>
-                          <TableCell>{aluno.responsavel}</TableCell>
+                          <TableCell className="font-medium cursor-pointer" onClick={() => handleSelectAluno(aluno)}>{aluno.nome}</TableCell>
+                          <TableCell className="cursor-pointer" onClick={() => handleSelectAluno(aluno)}>{aluno.matricula}</TableCell>
+                          <TableCell className="cursor-pointer" onClick={() => handleSelectAluno(aluno)}>{aluno.dataNascimento}</TableCell>
+                          <TableCell className="cursor-pointer" onClick={() => handleSelectAluno(aluno)}>{aluno.responsavel}</TableCell>
                           <TableCell>
                             <Badge
                               className={
@@ -389,6 +394,9 @@ const Alunos = () => {
                             >
                               {aluno.status}
                             </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <EncaminharDialog alunoNome={aluno.nome} />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -403,5 +411,68 @@ const Alunos = () => {
     </SidebarProvider>
   );
 };
+
+function EncaminharDialog({ alunoNome }: { alunoNome: string }) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({
+    motivo: "",
+    dificuldade: "",
+    observacoes: "",
+    historico: "",
+    intervencoes: "",
+  });
+
+  const submit = () => {
+    if (!form.motivo || !form.dificuldade) {
+      toast.error("Preencha pelo menos o motivo e a dificuldade observada.");
+      return;
+    }
+    toast.success(`Estudo de caso de ${alunoNome} encaminhado à Educação Especial.`);
+    setOpen(false);
+    setForm({ motivo: "", dificuldade: "", observacoes: "", historico: "", intervencoes: "" });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline" className="h-8 gap-1 text-xs" onClick={(e) => e.stopPropagation()}>
+          <HeartHandshake className="w-3.5 h-3.5 text-edu-purple" />
+          Encaminhar
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Encaminhar {alunoNome} para Educação Especial</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+          <div>
+            <Label className="text-xs">Motivo do encaminhamento</Label>
+            <Input value={form.motivo} onChange={(e) => setForm({ ...form, motivo: e.target.value })} placeholder="Ex: Dificuldades persistentes em leitura" />
+          </div>
+          <div>
+            <Label className="text-xs">Dificuldade observada</Label>
+            <Input value={form.dificuldade} onChange={(e) => setForm({ ...form, dificuldade: e.target.value })} placeholder="Ex: Disgrafia, TDAH suspeito" />
+          </div>
+          <div>
+            <Label className="text-xs">Observações em sala</Label>
+            <Textarea rows={3} value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} placeholder="Comportamentos, interações, contexto..." />
+          </div>
+          <div>
+            <Label className="text-xs">Histórico escolar relevante</Label>
+            <Textarea rows={2} value={form.historico} onChange={(e) => setForm({ ...form, historico: e.target.value })} placeholder="Reprovações, transferências, laudos anteriores..." />
+          </div>
+          <div>
+            <Label className="text-xs">Intervenções já realizadas</Label>
+            <Textarea rows={2} value={form.intervencoes} onChange={(e) => setForm({ ...form, intervencoes: e.target.value })} placeholder="Reforço escolar, conversa com responsáveis, etc." />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button onClick={submit}>Enviar estudo de caso</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default Alunos;
