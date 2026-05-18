@@ -62,9 +62,9 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-white/10 p-6">
         {!isCollapsed ? (
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white">SEMEI</h1>
-            <p className="text-[11px] opacity-70 mt-1 leading-tight">
-              Sistema Municipal de Educação
+            <h1 className="text-4xl font-extrabold tracking-tight text-white">SEMEI</h1>
+            <p className="text-[10px] font-medium opacity-60 mt-2 leading-tight uppercase tracking-[0.2em]">
+              Sistema Municipal<br />de Educação
             </p>
           </div>
         ) : (
