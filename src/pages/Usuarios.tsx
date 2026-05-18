@@ -204,7 +204,7 @@ const Usuarios = () => {
 
   // Estatísticas por papel
   const stats: { role: Role; total: number; novos: number; color: string }[] = (
-    ["Aluno", "Professor", "Diretor", "Coordenador", "Gestor", "Administrativo"] as Role[]
+    ["Aluno", "Professor", "Diretor", "Coordenador", "Gestor", "Administrativo", "Suporte"] as Role[]
   ).map((role) => {
     const list = todos.filter((u) => u.role === role && (escolaFilter === "todas" || u.escola === escolaFilter));
     return { role, total: list.length, novos: list.filter((u) => u.novo).length, color: roleColors[role] };
