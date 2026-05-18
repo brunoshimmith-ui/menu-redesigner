@@ -120,7 +120,7 @@ const statusColors: Record<string, string> = {
 };
 
 // ===== Usuários adicionais (não-alunos) =====
-type Role = "Aluno" | "Professor" | "Diretor" | "Coordenador" | "Gestor" | "Administrativo";
+type Role = "Aluno" | "Professor" | "Diretor" | "Coordenador" | "Gestor" | "Administrativo" | "Suporte";
 
 interface OutroUsuario {
   id: string;
@@ -138,7 +138,7 @@ const ESCOLAS = [
   "SEMEI Iranduba - 03",
 ];
 
-const outrosUsuarios: OutroUsuario[] = [
+const outrosUsuariosInicial: OutroUsuario[] = [
   { id: "p1", nome: "Marcos Rocha", role: "Professor", escola: ESCOLAS[0], email: "marcos.rocha@semei.edu", telefone: "(92) 99999-1111" },
   { id: "p2", nome: "Patrícia Lima", role: "Professor", escola: ESCOLAS[0], email: "patricia.lima@semei.edu", telefone: "(92) 99999-1112", novo: true },
   { id: "p3", nome: "Rafael Souza", role: "Professor", escola: ESCOLAS[1], email: "rafael.souza@semei.edu", telefone: "(92) 99999-1113" },
@@ -157,6 +157,8 @@ const outrosUsuarios: OutroUsuario[] = [
   { id: "a2", nome: "José Carlos Lima", role: "Administrativo", escola: ESCOLAS[0], email: "jose.lima@semei.edu", telefone: "(92) 99999-5002", novo: true },
   { id: "a3", nome: "Mariana Brito", role: "Administrativo", escola: ESCOLAS[1], email: "mariana.b@semei.edu", telefone: "(92) 99999-5003" },
   { id: "a4", nome: "Paulo Henrique", role: "Administrativo", escola: ESCOLAS[2], email: "paulo.h@semei.edu", telefone: "(92) 99999-5004" },
+  { id: "s1", nome: "Lucas Suporte", role: "Suporte", escola: ESCOLAS[0], email: "lucas.s@semei.edu", telefone: "(92) 99999-6001" },
+  { id: "s2", nome: "Renata Atendimento", role: "Suporte", escola: ESCOLAS[1], email: "renata.a@semei.edu", telefone: "(92) 99999-6002", novo: true },
 ];
 
 const roleColors: Record<Role, string> = {
@@ -166,6 +168,7 @@ const roleColors: Record<Role, string> = {
   Coordenador: "bg-edu-orange-light text-edu-orange",
   Gestor: "bg-edu-green-light text-edu-green",
   Administrativo: "bg-muted text-foreground",
+  Suporte: "bg-edu-orange-light text-edu-orange",
 };
 
 const Usuarios = () => {
