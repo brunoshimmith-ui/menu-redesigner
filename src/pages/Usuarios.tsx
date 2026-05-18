@@ -502,6 +502,23 @@ const Usuarios = () => {
                         <option key={e} value={e}>{e}</option>
                       ))}
                     </select>
+                    <NewUserDialog
+                      onCreate={(d) => {
+                        if (d.role === "Aluno") return;
+                        setOutrosUsuarios((prev) => [
+                          {
+                            id: `new-${Date.now()}`,
+                            nome: d.nome,
+                            role: d.role as Exclude<Role, "Aluno">,
+                            escola: escolaFilter === "todas" ? ESCOLAS[0] : escolaFilter,
+                            email: d.email || "",
+                            telefone: d.telefone || "",
+                            novo: true,
+                          },
+                          ...prev,
+                        ]);
+                      }}
+                    />
                   </div>
                 </div>
 
