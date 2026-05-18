@@ -176,6 +176,7 @@ const Usuarios = () => {
   const [selectedAluno, setSelectedAluno] = useState<Aluno | null>(null);
   const [roleFilters, setRoleFilters] = useState<Role[]>([]);
   const [escolaFilter, setEscolaFilter] = useState<string>("todas");
+  const [outrosUsuarios, setOutrosUsuarios] = useState<OutroUsuario[]>(outrosUsuariosInicial);
 
   // Lista unificada para a tabela
   const alunosComoUsuario = alunosData.map((a) => ({
