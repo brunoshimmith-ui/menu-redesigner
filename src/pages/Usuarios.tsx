@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { NewUserDialog, NewUserRole } from "@/components/NewUserDialog";
 
 interface Aluno {
   id: string;
