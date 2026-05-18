@@ -83,11 +83,9 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.label}>
                     <SidebarMenuButton
-                      tooltip={`${item.label} — ${item.desc}`}
-                      title={item.desc}
                       onClick={() => navigate(item.path)}
                       className={cn(
-                        "h-11 gap-3 px-4 rounded-2xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors",
+                        "h-11 gap-3 px-4 rounded-2xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none",
                         isActive && "bg-[#5b6cff] text-white hover:bg-[#5b6cff] hover:text-white"
                       )}
                     >
