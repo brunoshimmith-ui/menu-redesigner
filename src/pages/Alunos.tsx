@@ -371,19 +371,19 @@ const Alunos = () => {
                         <TableHead>Data Nascimento</TableHead>
                         <TableHead>Responsável</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredAlunos.map((aluno) => (
                         <TableRow
                           key={aluno.id}
-                          className="cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() => handleSelectAluno(aluno)}
+                          className="hover:bg-muted/50 transition-colors"
                         >
-                          <TableCell className="font-medium">{aluno.nome}</TableCell>
-                          <TableCell>{aluno.matricula}</TableCell>
-                          <TableCell>{aluno.dataNascimento}</TableCell>
-                          <TableCell>{aluno.responsavel}</TableCell>
+                          <TableCell className="font-medium cursor-pointer" onClick={() => handleSelectAluno(aluno)}>{aluno.nome}</TableCell>
+                          <TableCell className="cursor-pointer" onClick={() => handleSelectAluno(aluno)}>{aluno.matricula}</TableCell>
+                          <TableCell className="cursor-pointer" onClick={() => handleSelectAluno(aluno)}>{aluno.dataNascimento}</TableCell>
+                          <TableCell className="cursor-pointer" onClick={() => handleSelectAluno(aluno)}>{aluno.responsavel}</TableCell>
                           <TableCell>
                             <Badge
                               className={
@@ -394,6 +394,9 @@ const Alunos = () => {
                             >
                               {aluno.status}
                             </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <EncaminharDialog alunoNome={aluno.nome} />
                           </TableCell>
                         </TableRow>
                       ))}
