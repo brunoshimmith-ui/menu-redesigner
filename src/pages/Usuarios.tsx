@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { NewUserDialog } from "@/components/NewUserDialog";
 
 interface Aluno {
   id: string;
@@ -120,7 +121,7 @@ const statusColors: Record<string, string> = {
 };
 
 // ===== Usuários adicionais (não-alunos) =====
-type Role = "Aluno" | "Professor" | "Diretor" | "Coordenador" | "Gestor" | "Administrativo";
+type Role = "Aluno" | "Professor" | "Diretor" | "Coordenador" | "Gestor" | "Administrativo" | "Suporte";
 
 interface OutroUsuario {
   id: string;
@@ -138,7 +139,7 @@ const ESCOLAS = [
   "SEMEI Iranduba - 03",
 ];
 
-const outrosUsuarios: OutroUsuario[] = [
+const outrosUsuariosInicial: OutroUsuario[] = [
   { id: "p1", nome: "Marcos Rocha", role: "Professor", escola: ESCOLAS[0], email: "marcos.rocha@semei.edu", telefone: "(92) 99999-1111" },
   { id: "p2", nome: "Patrícia Lima", role: "Professor", escola: ESCOLAS[0], email: "patricia.lima@semei.edu", telefone: "(92) 99999-1112", novo: true },
   { id: "p3", nome: "Rafael Souza", role: "Professor", escola: ESCOLAS[1], email: "rafael.souza@semei.edu", telefone: "(92) 99999-1113" },
@@ -157,6 +158,8 @@ const outrosUsuarios: OutroUsuario[] = [
   { id: "a2", nome: "José Carlos Lima", role: "Administrativo", escola: ESCOLAS[0], email: "jose.lima@semei.edu", telefone: "(92) 99999-5002", novo: true },
   { id: "a3", nome: "Mariana Brito", role: "Administrativo", escola: ESCOLAS[1], email: "mariana.b@semei.edu", telefone: "(92) 99999-5003" },
   { id: "a4", nome: "Paulo Henrique", role: "Administrativo", escola: ESCOLAS[2], email: "paulo.h@semei.edu", telefone: "(92) 99999-5004" },
+  { id: "s1", nome: "Lucas Suporte", role: "Suporte", escola: ESCOLAS[0], email: "lucas.s@semei.edu", telefone: "(92) 99999-6001" },
+  { id: "s2", nome: "Renata Atendimento", role: "Suporte", escola: ESCOLAS[1], email: "renata.a@semei.edu", telefone: "(92) 99999-6002", novo: true },
 ];
 
 const roleColors: Record<Role, string> = {
@@ -166,6 +169,7 @@ const roleColors: Record<Role, string> = {
   Coordenador: "bg-edu-orange-light text-edu-orange",
   Gestor: "bg-edu-green-light text-edu-green",
   Administrativo: "bg-muted text-foreground",
+  Suporte: "bg-edu-orange-light text-edu-orange",
 };
 
 const Usuarios = () => {
@@ -173,6 +177,7 @@ const Usuarios = () => {
   const [selectedAluno, setSelectedAluno] = useState<Aluno | null>(null);
   const [roleFilters, setRoleFilters] = useState<Role[]>([]);
   const [escolaFilter, setEscolaFilter] = useState<string>("todas");
+  const [outrosUsuarios, setOutrosUsuarios] = useState<OutroUsuario[]>(outrosUsuariosInicial);
 
   // Lista unificada para a tabela
   const alunosComoUsuario = alunosData.map((a) => ({
@@ -199,7 +204,7 @@ const Usuarios = () => {
 
   // Estatísticas por papel
   const stats: { role: Role; total: number; novos: number; color: string }[] = (
-    ["Aluno", "Professor", "Diretor", "Coordenador", "Gestor", "Administrativo"] as Role[]
+    ["Aluno", "Professor", "Diretor", "Coordenador", "Gestor", "Administrativo", "Suporte"] as Role[]
   ).map((role) => {
     const list = todos.filter((u) => u.role === role && (escolaFilter === "todas" || u.escola === escolaFilter));
     return { role, total: list.length, novos: list.filter((u) => u.novo).length, color: roleColors[role] };
@@ -448,7 +453,7 @@ const Usuarios = () => {
           <HeaderWithNotifications />
           <main className="flex-1 p-6 space-y-6">
             {/* Stats por papel */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {stats.map((s) => (
                 <Card key={s.role}>
                   <CardContent className="pt-6">
@@ -497,13 +502,30 @@ const Usuarios = () => {
                         <option key={e} value={e}>{e}</option>
                       ))}
                     </select>
+                    <NewUserDialog
+                      onCreate={(d) => {
+                        if (d.role === "Aluno") return;
+                        setOutrosUsuarios((prev) => [
+                          {
+                            id: `new-${Date.now()}`,
+                            nome: d.nome,
+                            role: d.role as Exclude<Role, "Aluno">,
+                            escola: escolaFilter === "todas" ? ESCOLAS[0] : escolaFilter,
+                            email: d.email || "",
+                            telefone: d.telefone || "",
+                            novo: true,
+                          },
+                          ...prev,
+                        ]);
+                      }}
+                    />
                   </div>
                 </div>
 
                 {/* Filtros de papel */}
                 <div className="flex flex-wrap gap-2">
                   <span className="text-xs text-muted-foreground self-center mr-1">Filtrar por:</span>
-                  {(["Professor", "Diretor", "Coordenador", "Gestor", "Administrativo", "Aluno"] as Role[]).map((r) => {
+                  {(["Professor", "Diretor", "Coordenador", "Gestor", "Administrativo", "Suporte", "Aluno"] as Role[]).map((r) => {
                     const active = roleFilters.includes(r);
                     return (
                       <button
