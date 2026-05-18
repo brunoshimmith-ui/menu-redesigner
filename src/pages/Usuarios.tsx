@@ -119,16 +119,94 @@ const statusColors: Record<string, string> = {
   Transferido: "bg-edu-orange-light text-edu-orange",
 };
 
+// ===== Usuários adicionais (não-alunos) =====
+type Role = "Aluno" | "Professor" | "Diretor" | "Coordenador" | "Gestor" | "Administrativo";
+
+interface OutroUsuario {
+  id: string;
+  nome: string;
+  role: Exclude<Role, "Aluno">;
+  escola: string;
+  email: string;
+  telefone: string;
+  novo?: boolean;
+}
+
+const ESCOLAS = [
+  "SEMEI Iranduba - 01",
+  "SEMEI Iranduba - 02",
+  "SEMEI Iranduba - 03",
+];
+
+const outrosUsuarios: OutroUsuario[] = [
+  { id: "p1", nome: "Marcos Rocha", role: "Professor", escola: ESCOLAS[0], email: "marcos.rocha@semei.edu", telefone: "(92) 99999-1111" },
+  { id: "p2", nome: "Patrícia Lima", role: "Professor", escola: ESCOLAS[0], email: "patricia.lima@semei.edu", telefone: "(92) 99999-1112", novo: true },
+  { id: "p3", nome: "Rafael Souza", role: "Professor", escola: ESCOLAS[1], email: "rafael.souza@semei.edu", telefone: "(92) 99999-1113" },
+  { id: "p4", nome: "Beatriz Lopes", role: "Professor", escola: ESCOLAS[2], email: "beatriz.lopes@semei.edu", telefone: "(92) 99999-1114" },
+  { id: "p5", nome: "Ricardo Mendes", role: "Professor", escola: ESCOLAS[1], email: "ricardo.mendes@semei.edu", telefone: "(92) 99999-1115", novo: true },
+  { id: "p6", nome: "Juliana Costa", role: "Professor", escola: ESCOLAS[0], email: "juliana.costa@semei.edu", telefone: "(92) 99999-1116" },
+  { id: "d1", nome: "Carlos Mendes", role: "Diretor", escola: ESCOLAS[0], email: "carlos.mendes@semei.edu", telefone: "(92) 99999-2001" },
+  { id: "d2", nome: "Helena Vasconcelos", role: "Diretor", escola: ESCOLAS[1], email: "helena.v@semei.edu", telefone: "(92) 99999-2002" },
+  { id: "d3", nome: "Marcelo Ferraz", role: "Diretor", escola: ESCOLAS[2], email: "marcelo.f@semei.edu", telefone: "(92) 99999-2003", novo: true },
+  { id: "c1", nome: "Ana Paula Ribeiro", role: "Coordenador", escola: ESCOLAS[0], email: "ana.ribeiro@semei.edu", telefone: "(92) 99999-3001" },
+  { id: "c2", nome: "Roberto Tavares", role: "Coordenador", escola: ESCOLAS[1], email: "roberto.t@semei.edu", telefone: "(92) 99999-3002" },
+  { id: "c3", nome: "Larissa Pinheiro", role: "Coordenador", escola: ESCOLAS[2], email: "larissa.p@semei.edu", telefone: "(92) 99999-3003", novo: true },
+  { id: "g1", nome: "Eduardo Albuquerque", role: "Gestor", escola: ESCOLAS[0], email: "eduardo.a@semei.edu", telefone: "(92) 99999-4001" },
+  { id: "g2", nome: "Cláudia Bezerra", role: "Gestor", escola: ESCOLAS[1], email: "claudia.b@semei.edu", telefone: "(92) 99999-4002" },
+  { id: "a1", nome: "Fernanda Alves", role: "Administrativo", escola: ESCOLAS[0], email: "fernanda.a@semei.edu", telefone: "(92) 99999-5001" },
+  { id: "a2", nome: "José Carlos Lima", role: "Administrativo", escola: ESCOLAS[0], email: "jose.lima@semei.edu", telefone: "(92) 99999-5002", novo: true },
+  { id: "a3", nome: "Mariana Brito", role: "Administrativo", escola: ESCOLAS[1], email: "mariana.b@semei.edu", telefone: "(92) 99999-5003" },
+  { id: "a4", nome: "Paulo Henrique", role: "Administrativo", escola: ESCOLAS[2], email: "paulo.h@semei.edu", telefone: "(92) 99999-5004" },
+];
+
+const roleColors: Record<Role, string> = {
+  Aluno: "bg-edu-blue-light text-edu-blue",
+  Professor: "bg-edu-purple-light text-edu-purple",
+  Diretor: "bg-edu-coral-light text-edu-coral",
+  Coordenador: "bg-edu-orange-light text-edu-orange",
+  Gestor: "bg-edu-green-light text-edu-green",
+  Administrativo: "bg-muted text-foreground",
+};
+
 const Usuarios = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedAluno, setSelectedAluno] = useState<Aluno | null>(null);
+  const [roleFilters, setRoleFilters] = useState<Role[]>([]);
+  const [escolaFilter, setEscolaFilter] = useState<string>("todas");
 
-  const filtered = alunosData.filter(
-    (a) =>
-      a.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      a.matricula.includes(searchTerm) ||
-      a.turma.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Lista unificada para a tabela
+  const alunosComoUsuario = alunosData.map((a) => ({
+    id: `aluno-${a.id}`,
+    nome: a.nome,
+    role: "Aluno" as Role,
+    escola: ESCOLAS[0],
+    email: a.email,
+    telefone: a.telefone,
+    novo: parseInt(a.matricula.slice(-2)) > 25,
+    _alunoRef: a,
+  }));
+  const outrosComoUsuario = outrosUsuarios.map((u) => ({ ...u, _alunoRef: null as Aluno | null }));
+  const todos = [...alunosComoUsuario, ...outrosComoUsuario];
+
+  const filtered = todos.filter((u) => {
+    const matchSearch =
+      u.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchRole = roleFilters.length === 0 || roleFilters.includes(u.role);
+    const matchEscola = escolaFilter === "todas" || u.escola === escolaFilter;
+    return matchSearch && matchRole && matchEscola;
+  });
+
+  // Estatísticas por papel
+  const stats: { role: Role; total: number; novos: number; color: string }[] = (
+    ["Aluno", "Professor", "Diretor", "Coordenador", "Gestor", "Administrativo"] as Role[]
+  ).map((role) => {
+    const list = todos.filter((u) => u.role === role && (escolaFilter === "todas" || u.escola === escolaFilter));
+    return { role, total: list.length, novos: list.filter((u) => u.novo).length, color: roleColors[role] };
+  });
+
+  const toggleRole = (r: Role) =>
+    setRoleFilters((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
 
   if (selectedAluno) {
     return (
