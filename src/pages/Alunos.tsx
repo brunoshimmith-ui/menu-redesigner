@@ -27,7 +27,12 @@ import {
   BookOpen,
   MessageSquare,
   Calendar,
+  HeartHandshake,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 interface Aluno {
   id: string;
