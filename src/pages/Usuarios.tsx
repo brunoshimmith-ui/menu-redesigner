@@ -446,26 +446,88 @@ const Usuarios = () => {
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           <HeaderWithNotifications />
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-6 space-y-6">
+            {/* Stats por papel */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {stats.map((s) => (
+                <Card key={s.role}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge className={`${s.color} border-0 text-[10px]`}>{s.role}</Badge>
+                      {s.novos > 0 && (
+                        <span className="text-[10px] font-semibold text-edu-green">+{s.novos} novos</span>
+                      )}
+                    </div>
+                    <p className="text-2xl font-bold text-[#1d2746]">{s.total}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Total cadastrados</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-10 h-10 bg-edu-blue-light rounded-lg">
-                    <UserCog className="w-5 h-5 text-edu-blue" />
+              <CardHeader className="space-y-4">
+                <div className="flex flex-row items-center justify-between gap-4 flex-wrap">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-edu-blue-light rounded-lg">
+                      <UserCog className="w-5 h-5 text-edu-blue" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">Usuários</CardTitle>
+                      <p className="text-sm text-muted-foreground">{filtered.length} usuário(s) encontrado(s)</p>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-xl">Usuários</CardTitle>
-                    <p className="text-sm text-muted-foreground">{filtered.length} alunos encontrados</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="relative w-64">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Buscar por nome ou e-mail..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                    <select
+                      value={escolaFilter}
+                      onChange={(e) => setEscolaFilter(e.target.value)}
+                      className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                    >
+                      <option value="todas">Todas as escolas</option>
+                      {ESCOLAS.map((e) => (
+                        <option key={e} value={e}>{e}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-                <div className="relative w-72">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar aluno por nome, matrícula ou turma..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9"
-                  />
+
+                {/* Filtros de papel */}
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs text-muted-foreground self-center mr-1">Filtrar por:</span>
+                  {(["Professor", "Diretor", "Coordenador", "Gestor", "Administrativo", "Aluno"] as Role[]).map((r) => {
+                    const active = roleFilters.includes(r);
+                    return (
+                      <button
+                        key={r}
+                        onClick={() => toggleRole(r)}
+                        className={cn(
+                          "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
+                          active
+                            ? `${roleColors[r]} border-transparent`
+                            : "bg-background border-border text-muted-foreground hover:bg-muted"
+                        )}
+                      >
+                        {r}
+                      </button>
+                    );
+                  })}
+                  {roleFilters.length > 0 && (
+                    <button
+                      onClick={() => setRoleFilters([])}
+                      className="text-xs text-primary hover:underline ml-2"
+                    >
+                      Limpar
+                    </button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -474,32 +536,43 @@ const Usuarios = () => {
                     <TableHeader>
                       <TableRow className="bg-muted/50">
                         <TableHead>Nome</TableHead>
-                        <TableHead>Matrícula</TableHead>
-                        <TableHead>Turma</TableHead>
-                        <TableHead>Nível</TableHead>
-                        <TableHead className="text-center">Frequência</TableHead>
+                        <TableHead>Função</TableHead>
+                        <TableHead>Escola</TableHead>
+                        <TableHead>E-mail</TableHead>
+                        <TableHead>Telefone</TableHead>
                         <TableHead className="text-center">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filtered.map((aluno) => (
+                      {filtered.map((u) => (
                         <TableRow
-                          key={aluno.id}
-                          className="cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() => setSelectedAluno(aluno)}
+                          key={u.id}
+                          className={cn("transition-colors", u._alunoRef && "cursor-pointer hover:bg-muted/50")}
+                          onClick={() => u._alunoRef && setSelectedAluno(u._alunoRef)}
                         >
-                          <TableCell className="font-medium">{aluno.nome}</TableCell>
-                          <TableCell className="text-muted-foreground">{aluno.matricula}</TableCell>
-                          <TableCell>{aluno.turma}</TableCell>
+                          <TableCell className="font-medium">{u.nome}</TableCell>
                           <TableCell>
-                            <Badge variant="outline">{aluno.nivel}</Badge>
+                            <Badge className={`${roleColors[u.role]} border-0`}>{u.role}</Badge>
                           </TableCell>
-                          <TableCell className="text-center">{aluno.frequencia}%</TableCell>
+                          <TableCell className="text-muted-foreground">{u.escola}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">{u.email}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">{u.telefone}</TableCell>
                           <TableCell className="text-center">
-                            <Badge className={`${statusColors[aluno.status]} border-0`}>{aluno.status}</Badge>
+                            {u.novo ? (
+                              <Badge className="bg-edu-green-light text-edu-green border-0">Novo</Badge>
+                            ) : (
+                              <Badge variant="outline">Ativo</Badge>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
+                      {filtered.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">
+                            Nenhum usuário encontrado com os filtros aplicados.
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </div>
