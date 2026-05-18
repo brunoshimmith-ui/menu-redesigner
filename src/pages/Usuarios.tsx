@@ -453,7 +453,7 @@ const Usuarios = () => {
           <HeaderWithNotifications />
           <main className="flex-1 p-6 space-y-6">
             {/* Stats por papel */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {stats.map((s) => (
                 <Card key={s.role}>
                   <CardContent className="pt-6">
