@@ -525,7 +525,7 @@ const Usuarios = () => {
                 {/* Filtros de papel */}
                 <div className="flex flex-wrap gap-2">
                   <span className="text-xs text-muted-foreground self-center mr-1">Filtrar por:</span>
-                  {(["Professor", "Diretor", "Coordenador", "Gestor", "Administrativo", "Aluno"] as Role[]).map((r) => {
+                  {(["Professor", "Diretor", "Coordenador", "Gestor", "Administrativo", "Suporte", "Aluno"] as Role[]).map((r) => {
                     const active = roleFilters.includes(r);
                     return (
                       <button
