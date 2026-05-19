@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Plus, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
 import { Role, useAuth } from "@/contexts/AuthContext";
-import { avisosFor, saveAviso, Aviso } from "@/lib/store";
+import { avisosFor, saveAviso, Aviso, avaliacoesByProf, avaliacoesByTurma } from "@/lib/store";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -34,8 +34,34 @@ export function AvisosImportantes() {
   const [audAll, setAudAll] = useState(true);
   const [aud, setAud] = useState<Role[]>([]);
 
-  const reload = () => setItems(avisosFor(role));
-  useEffect(reload, [role]);
+  const reload = () => {
+    const base = avisosFor(role);
+    // Avaliações viram avisos automáticos
+    const extra: Aviso[] = [];
+    if (role === "aluno" && user?.turma) {
+      avaliacoesByTurma(user.turma).forEach((a) => extra.push({
+        id: `av-${a.id}`,
+        title: `📝 Avaliação: ${a.title}`,
+        message: `${a.disciplina} • Turma ${a.turma}. Prepare-se!`,
+        date: a.date,
+        audience: ["aluno"],
+        createdBy: a.createdBy,
+      }));
+    }
+    if (role === "professor" && user?.name) {
+      avaliacoesByProf(user.name).forEach((a) => extra.push({
+        id: `av-${a.id}`,
+        title: `📝 ${a.title}`,
+        message: `Avaliação agendada para ${a.turma} (${a.disciplina}).`,
+        date: a.date,
+        audience: ["professor"],
+        createdBy: a.createdBy,
+      }));
+    }
+    const merged = [...extra, ...base].sort((a, b) => b.date.localeCompare(a.date));
+    setItems(merged);
+  };
+  useEffect(reload, [role, user?.turma, user?.name]);
 
   useEffect(() => {
     if (items.length === 0) return;
