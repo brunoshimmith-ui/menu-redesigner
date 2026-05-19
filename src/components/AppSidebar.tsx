@@ -56,7 +56,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="offcanvas"
-      className="[&_[data-sidebar=sidebar]]:bg-[#07152c] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
+      className="[&_[data-sidebar=sidebar]]:bg-[#1a2547] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
     >
       {/* Header / Logo */}
       <SidebarHeader className="border-b border-white/10 p-6">
@@ -86,7 +86,7 @@ export function AppSidebar() {
                       onClick={() => navigate(item.path)}
                       className={cn(
                         "h-11 gap-3 px-4 rounded-2xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none",
-                        isActive && "bg-[#5b6cff] text-white hover:bg-[#5b6cff] hover:text-white"
+                        isActive && "bg-[#3dc7e0] text-[#1a2547] font-semibold hover:bg-[#3dc7e0] hover:text-[#1a2547]"
                       )}
                     >
                       <item.icon className="w-4 h-4" />
@@ -109,7 +109,7 @@ export function AppSidebar() {
               <h3 className="font-semibold text-white">Suporte</h3>
             </div>
             <p className="text-xs opacity-70 mb-3">Precisa de ajuda?</p>
-            <button className="text-sm text-[#6d7cff] font-semibold hover:underline">
+            <button className="text-sm text-[#3dc7e0] font-semibold hover:underline">
               Abrir chamado →
             </button>
             <button
