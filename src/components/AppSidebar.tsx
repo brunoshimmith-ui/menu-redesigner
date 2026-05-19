@@ -56,7 +56,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="offcanvas"
-      className="[&_[data-sidebar=sidebar]]:bg-[#1a2547] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
+      className="[&_[data-sidebar=sidebar]]:bg-gradient-to-b [&_[data-sidebar=sidebar]]:from-[#0b1a3a] [&_[data-sidebar=sidebar]]:via-[#0a1730] [&_[data-sidebar=sidebar]]:to-[#070f22] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
     >
       {/* Header / Logo */}
       <SidebarHeader className="border-b border-white/10 p-6">
@@ -86,7 +86,7 @@ export function AppSidebar() {
                       onClick={() => navigate(item.path)}
                       className={cn(
                         "h-11 gap-3 px-4 rounded-2xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none",
-                        isActive && "bg-[#3dc7e0] text-[#1a2547] font-semibold hover:bg-[#3dc7e0] hover:text-[#1a2547]"
+                        isActive && "bg-[#7c83ff] text-white font-semibold hover:bg-[#7c83ff] hover:text-white"
                       )}
                     >
                       <item.icon className="w-4 h-4" />
