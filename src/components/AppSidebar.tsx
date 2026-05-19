@@ -33,7 +33,7 @@ import type { Role } from "@/contexts/AuthContext";
 type Item = { icon: typeof Home; label: string; path: string };
 
 const allItems: (Item & { roles: Role[] })[] = [
-  { icon: Home, label: "Dashboard", path: "/menu", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao", "aluno"] },
+  { icon: Home, label: "Início", path: "/menu", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao", "aluno"] },
   { icon: GraduationCap, label: "Turmas", path: "/turmas", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao"] },
   { icon: Heart, label: "Educação Especial", path: "/educacao-especial", roles: ["suporte", "coordenacao", "direcao", "administracao"] },
   { icon: Users, label: "Usuários", path: "/usuarios", roles: ["suporte", "coordenacao", "direcao", "administracao"] },
