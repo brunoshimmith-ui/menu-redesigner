@@ -37,20 +37,6 @@ const variantStyles: Record<string, string> = {
   gray: "text-edu-gray bg-edu-gray-light",
 };
 
-// Chamados mockados — visíveis somente ao suporte
-const chamados = [
-  { id: 1, from: "Prof. Marcos Rocha", role: "Professor", title: "Não consigo lançar notas", urgency: "alta", time: "há 5 min" },
-  { id: 2, from: "Ana Paula", role: "Coordenação", title: "Dúvida sobre fechamento de bimestre", urgency: "media", time: "há 1 h" },
-  { id: 3, from: "Carlos Mendes", role: "Direção", title: "Solicitar novo perfil de usuário", urgency: "baixa", time: "há 3 h" },
-  { id: 4, from: "Fernanda Alves", role: "Administração", title: "Erro ao gerar declaração", urgency: "alta", time: "há 4 h" },
-];
-
-const urgencyColor: Record<string, string> = {
-  alta: "bg-edu-coral text-white",
-  media: "bg-edu-orange text-white",
-  baixa: "bg-edu-blue text-white",
-};
-
 export function SuporteDashboard({ name }: { name: string }) {
   const navigate = useNavigate();
   return (
@@ -60,7 +46,7 @@ export function SuporteDashboard({ name }: { name: string }) {
           Olá, {name.split(" ")[0]}! <Headphones className="w-7 h-7 text-edu-purple" />
         </h1>
         <p className="text-base text-muted-foreground mt-2">
-          Painel de Suporte — acompanhe escolas, turmas e chamados em tempo real.
+          Painel de Suporte — acompanhe escolas, turmas e indicadores em tempo real.
         </p>
       </div>
 
@@ -75,27 +61,6 @@ export function SuporteDashboard({ name }: { name: string }) {
             ))}
           </div>
 
-          {/* Chamados / notificações de suporte */}
-          <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                <MessageSquare className="w-6 h-6 text-edu-purple" /> Chamados de suporte
-              </h2>
-              <Badge variant="secondary">{chamados.length} em aberto</Badge>
-            </div>
-            <div className="space-y-2">
-              {chamados.map((c) => (
-                <div key={c.id} className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted/40 transition-colors">
-                  <Badge className={cn("text-[10px] border-0", urgencyColor[c.urgency])}>{c.urgency.toUpperCase()}</Badge>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground">{c.title}</p>
-                    <p className="text-xs text-muted-foreground">{c.from} • {c.role} • {c.time}</p>
-                  </div>
-                  <Button size="sm" variant="outline">Responder</Button>
-                </div>
-              ))}
-            </div>
-          </div>
 
           {/* Quick access */}
           <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">
