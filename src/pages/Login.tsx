@@ -100,9 +100,38 @@ const Login = () => {
               Entrar
             </Button>
           </form>
-          <div className="text-[10px] text-muted-foreground mt-5 p-3 rounded-md bg-muted/40 border border-border">
-            <p className="font-semibold mb-1">Contas de demonstração (senha: 12345678):</p>
-            <p>stepforma (Suporte) • professor • coord • direcao • admin • aluno</p>
+          <div className="mt-5 p-3 rounded-md bg-muted/40 border border-border">
+            <p className="text-[11px] font-semibold text-muted-foreground mb-2 text-center">
+              Acesso rápido (demo)
+            </p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {[
+                { u: "stepforma", l: "Suporte" },
+                { u: "professor", l: "Professor" },
+                { u: "aluno", l: "Aluno" },
+                { u: "coord", l: "Coordenação" },
+                { u: "direcao", l: "Direção" },
+                { u: "admin", l: "Admin" },
+              ].map((p) => (
+                <button
+                  key={p.u}
+                  type="button"
+                  onClick={() => {
+                    const ok = login(p.u, "12345678");
+                    if (ok) {
+                      toast({ title: "Bem-vindo!", description: `Entrando como ${p.l}.` });
+                      navigate("/menu");
+                    }
+                  }}
+                  className="text-[11px] py-1.5 px-2 rounded-md border border-border bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors font-medium"
+                >
+                  {p.l}
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2 text-center">
+              Senha padrão: <span className="font-mono">12345678</span>
+            </p>
           </div>
           <p className="text-xs text-muted-foreground text-center mt-4">
             © 2026 Sistema Educacional. Todos os direitos reservados.
