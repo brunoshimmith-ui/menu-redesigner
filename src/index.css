@@ -41,16 +41,16 @@ All colors MUST be HSL.
     --radius: 0.75rem;
 
     /* Custom educational colors */
-    --edu-green: 160 60% 40%;
-    --edu-green-light: 160 50% 95%;
-    --edu-coral: 15 85% 60%;
-    --edu-coral-light: 15 80% 95%;
-    --edu-purple: 265 60% 55%;
-    --edu-purple-light: 265 50% 95%;
-    --edu-blue: 210 80% 55%;
-    --edu-blue-light: 210 70% 95%;
-    --edu-orange: 35 90% 55%;
-    --edu-orange-light: 35 80% 95%;
+    --edu-green: 188 73% 56%;
+    --edu-green-light: 188 80% 95%;
+    --edu-coral: 17 82% 67%;
+    --edu-coral-light: 17 80% 95%;
+    --edu-purple: 224 47% 19%;
+    --edu-purple-light: 224 40% 95%;
+    --edu-blue: 188 73% 56%;
+    --edu-blue-light: 188 80% 95%;
+    --edu-orange: 17 82% 67%;
+    --edu-orange-light: 17 80% 95%;
     --edu-gray: 220 15% 60%;
     --edu-gray-light: 220 15% 96%;
 
