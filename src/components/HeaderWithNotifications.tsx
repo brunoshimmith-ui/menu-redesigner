@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, School, UserCircle, ChevronDown, X, ArrowRight, Home } from "lucide-react";
+import { Bell, School, UserCircle, ChevronDown, ArrowRight, Home, Headphones } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
@@ -18,15 +18,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuth } from "@/contexts/AuthContext";
+import { chamadosSuporte } from "@/lib/chamados";
 
 interface Notification {
   id: string;
   title: string;
   description: string;
-  type: "pendencia" | "atualizacao";
+  type: "pendencia" | "atualizacao" | "chamado";
+  urgency?: "alta" | "media" | "baixa";
   read: boolean;
   route: string;
   time: string;
+  from?: string;
 }
 
 const initialNotifications: Notification[] = [
@@ -41,15 +45,40 @@ const initialNotifications: Notification[] = [
 const schoolOptions = ["SEMEI Iranduba - 01", "SEMEI Iranduba - 02", "SEMEI Iranduba - 03"];
 const profileOptions = ["Suporte", "Administrador", "Gestor"];
 
+const urgencyBadge: Record<string, string> = {
+  alta: "bg-edu-coral text-white",
+  media: "bg-edu-orange text-white",
+  baixa: "bg-edu-blue text-white",
+};
+
 export function HeaderWithNotifications() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState(initialNotifications);
   const [selectedSchool, setSelectedSchool] = useState("SEMEI Iranduba - 01");
   const [selectedProfile, setSelectedProfile] = useState("Suporte");
   const [open, setOpen] = useState(false);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const allNotifications = useMemo<Notification[]>(() => {
+    if (user?.role === "suporte") {
+      const chamadosAsNotif: Notification[] = chamadosSuporte.map((c) => ({
+        id: `chamado-${c.id}`,
+        title: `📞 ${c.title}`,
+        description: `${c.from} (${c.role}): ${c.description}`,
+        type: "chamado",
+        urgency: c.urgency,
+        read: c.read,
+        route: "/menu",
+        time: c.time,
+        from: c.from,
+      }));
+      return [...chamadosAsNotif, ...notifications];
+    }
+    return notifications;
+  }, [user?.role, notifications]);
+
+  const unreadCount = allNotifications.filter((n) => !n.read).length;
 
   const handleNotificationClick = (notif: Notification) => {
     setNotifications((prev) =>
