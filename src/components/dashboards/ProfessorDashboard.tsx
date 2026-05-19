@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   GraduationCap, BarChart3, FileText, Globe, PlayCircle, ChevronRight, CalendarPlus,
+  Users, ClipboardCheck, BookOpen, AlertTriangle, TrendingUp, Clock, CheckCircle2, PenLine,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
