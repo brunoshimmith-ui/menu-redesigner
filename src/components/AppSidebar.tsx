@@ -86,7 +86,7 @@ export function AppSidebar() {
                       onClick={() => navigate(item.path)}
                       className={cn(
                         "h-11 gap-3 px-4 rounded-2xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none",
-                        isActive && "bg-[#5b6cff] text-white hover:bg-[#5b6cff] hover:text-white"
+                        isActive && "bg-[#3dc7e0] text-[#1a2547] font-semibold hover:bg-[#3dc7e0] hover:text-[#1a2547]"
                       )}
                     >
                       <item.icon className="w-4 h-4" />
