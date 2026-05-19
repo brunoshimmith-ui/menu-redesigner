@@ -59,7 +59,7 @@ export function AppSidebar() {
       className="[&_[data-sidebar=sidebar]]:bg-gradient-to-b [&_[data-sidebar=sidebar]]:from-[#0b1a3a] [&_[data-sidebar=sidebar]]:via-[#0a1730] [&_[data-sidebar=sidebar]]:to-[#070f22] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
     >
       {/* Header / Logo */}
-      <SidebarHeader className="border-b border-white/10 p-6">
+      <SidebarHeader className="bg-transparent p-6">
         {!isCollapsed ? (
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight text-white">SEMEI</h1>
@@ -101,9 +101,9 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Suporte footer */}
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4 bg-transparent">
         {!isCollapsed ? (
-          <div className="rounded-2xl p-4 bg-white/5">
+          <div className="rounded-2xl p-4 bg-white/[0.03] border border-white/5">
             <div className="flex items-center gap-3 mb-2">
               <Headphones className="w-5 h-5 text-white" />
               <h3 className="font-semibold text-white">Suporte</h3>
