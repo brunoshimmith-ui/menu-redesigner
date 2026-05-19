@@ -56,10 +56,10 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="offcanvas"
-      className="[&_[data-sidebar=sidebar]]:bg-gradient-to-b [&_[data-sidebar=sidebar]]:from-[#0b1a3a] [&_[data-sidebar=sidebar]]:via-[#0a1730] [&_[data-sidebar=sidebar]]:to-[#070f22] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
+      className="[&_[data-sidebar=sidebar]]:bg-[#07152c] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
     >
       {/* Header / Logo */}
-      <SidebarHeader className="bg-transparent p-6">
+      <SidebarHeader className="border-b border-white/10 p-6">
         {!isCollapsed ? (
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight text-white">SEMEI</h1>
@@ -86,7 +86,7 @@ export function AppSidebar() {
                       onClick={() => navigate(item.path)}
                       className={cn(
                         "h-11 gap-3 px-4 rounded-2xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none",
-                        isActive && "bg-[#7c83ff] text-white font-semibold hover:bg-[#7c83ff] hover:text-white"
+                        isActive && "bg-[#5b6cff] text-white hover:bg-[#5b6cff] hover:text-white"
                       )}
                     >
                       <item.icon className="w-4 h-4" />
@@ -101,15 +101,15 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Suporte footer */}
-      <SidebarFooter className="p-4 bg-transparent">
+      <SidebarFooter className="p-4">
         {!isCollapsed ? (
-          <div className="rounded-2xl p-4 bg-white/[0.03] border border-white/5">
+          <div className="rounded-2xl p-4 bg-white/5">
             <div className="flex items-center gap-3 mb-2">
               <Headphones className="w-5 h-5 text-white" />
               <h3 className="font-semibold text-white">Suporte</h3>
             </div>
             <p className="text-xs opacity-70 mb-3">Precisa de ajuda?</p>
-            <button className="text-sm text-[#3dc7e0] font-semibold hover:underline">
+            <button className="text-sm text-[#6d7cff] font-semibold hover:underline">
               Abrir chamado →
             </button>
             <button
