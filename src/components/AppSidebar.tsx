@@ -28,17 +28,21 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
-const menuItems = [
-  { icon: Home, label: "Dashboard", path: "/menu", desc: "Visão geral e indicadores" },
-  { icon: GraduationCap, label: "Turmas", path: "/turmas", desc: "Gerencie turmas, edições e turnos" },
-  { icon: Heart, label: "Educação Especial", path: "/educacao-especial", desc: "Acompanhe estudantes e recursos" },
-  { icon: Users, label: "Usuários", path: "/usuarios", desc: "Buscar alunos e ver trajetória" },
-  { icon: ArrowLeftRight, label: "Transferências", path: "/transferencias", desc: "Solicitações e movimentações" },
-  { icon: Globe, label: "Página Pública", path: "/pagina-publica", desc: "Vitrine pública da escola" },
-  { icon: Play, label: "Stepmeet", path: "/stepmeet", desc: "Reuniões online" },
-  { icon: BarChart3, label: "Relatórios", path: "/relatorios", desc: "Gere e exporte relatórios" },
-  { icon: FileText, label: "Documentos", path: "/documentos", desc: "Histórico, boletins e declarações" },
-  { icon: Settings, label: "Configurações", path: "/configuracoes", desc: "Preferências e ajustes" },
+import type { Role } from "@/contexts/AuthContext";
+
+type Item = { icon: typeof Home; label: string; path: string };
+
+const allItems: (Item & { roles: Role[] })[] = [
+  { icon: Home, label: "Dashboard", path: "/menu", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao", "aluno"] },
+  { icon: GraduationCap, label: "Turmas", path: "/turmas", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao"] },
+  { icon: Heart, label: "Educação Especial", path: "/educacao-especial", roles: ["suporte", "coordenacao", "direcao", "administracao"] },
+  { icon: Users, label: "Usuários", path: "/usuarios", roles: ["suporte", "coordenacao", "direcao", "administracao"] },
+  { icon: ArrowLeftRight, label: "Transferências", path: "/transferencias", roles: ["suporte", "coordenacao", "direcao", "administracao"] },
+  { icon: Globe, label: "Página Pública", path: "/pagina-publica", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao", "aluno"] },
+  { icon: Play, label: "Stepmeet", path: "/stepmeet", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao"] },
+  { icon: BarChart3, label: "Relatórios", path: "/relatorios", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao"] },
+  { icon: FileText, label: "Documentos", path: "/documentos", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao", "aluno"] },
+  { icon: Settings, label: "Configurações", path: "/configuracoes", roles: ["suporte", "professor", "coordenacao", "direcao", "administracao", "aluno"] },
 ];
 
 export function AppSidebar() {
@@ -46,7 +50,9 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const role = user?.role || "suporte";
+  const menuItems = allItems.filter((i) => i.roles.includes(role));
 
   const handleLogout = () => {
     logout();

@@ -1,9 +1,12 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+
+export type Role = "suporte" | "professor" | "coordenacao" | "direcao" | "administracao" | "aluno";
 
 interface User {
   username: string;
   name: string;
+  role: Role;
+  turma?: string;
 }
 
 interface AuthContextType {
@@ -12,6 +15,15 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
 }
+
+const accounts: Record<string, User> = {
+  stepforma: { username: "stepforma", name: "Bruno Maravilha", role: "suporte" },
+  professor: { username: "professor", name: "Ana Silva", role: "professor" },
+  coord: { username: "coord", name: "Ana Paula Coordenadora", role: "coordenacao" },
+  direcao: { username: "direcao", name: "Carlos Mendes", role: "direcao" },
+  admin: { username: "admin", name: "Fernanda Alves", role: "administracao" },
+  aluno: { username: "aluno", name: "João Pedro", role: "aluno", turma: "7º A" },
+};
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -22,10 +34,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const login = (username: string, password: string): boolean => {
-    if (username === "stepforma" && password === "12345678") {
-      const userData = { username, name: "Gestor Maravilha" };
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
+    const acc = accounts[username.toLowerCase()];
+    if (acc && password === "12345678") {
+      setUser(acc);
+      localStorage.setItem("user", JSON.stringify(acc));
       return true;
     }
     return false;
@@ -45,8 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 }

@@ -100,7 +100,11 @@ const Login = () => {
               Entrar
             </Button>
           </form>
-          <p className="text-xs text-muted-foreground text-center mt-6">
+          <div className="text-[10px] text-muted-foreground mt-5 p-3 rounded-md bg-muted/40 border border-border">
+            <p className="font-semibold mb-1">Contas de demonstração (senha: 12345678):</p>
+            <p>stepforma (Suporte) • professor • coord • direcao • admin • aluno</p>
+          </div>
+          <p className="text-xs text-muted-foreground text-center mt-4">
             © 2026 Sistema Educacional. Todos os direitos reservados.
           </p>
         </CardContent>
