@@ -101,9 +101,9 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Suporte footer */}
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4 bg-transparent">
         {!isCollapsed ? (
-          <div className="rounded-2xl p-4 bg-white/5">
+          <div className="rounded-2xl p-4 bg-white/[0.03] border border-white/5">
             <div className="flex items-center gap-3 mb-2">
               <Headphones className="w-5 h-5 text-white" />
               <h3 className="font-semibold text-white">Suporte</h3>
