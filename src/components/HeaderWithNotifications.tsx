@@ -81,15 +81,22 @@ export function HeaderWithNotifications() {
   const unreadCount = allNotifications.filter((n) => !n.read).length;
 
   const handleNotificationClick = (notif: Notification) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
-    );
+    if (notif.id.startsWith("chamado-")) {
+      // marca chamado como lido localmente
+      const idx = chamadosSuporte.findIndex((c) => `chamado-${c.id}` === notif.id);
+      if (idx >= 0) chamadosSuporte[idx].read = true;
+    } else {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
+      );
+    }
     setOpen(false);
     navigate(notif.route);
   };
 
   const markAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    chamadosSuporte.forEach((c) => (c.read = true));
   };
 
   return (
@@ -175,11 +182,11 @@ export function HeaderWithNotifications() {
                 </button>
               )}
             </div>
-            <ScrollArea className="max-h-80">
-              {notifications.length === 0 ? (
+            <ScrollArea className="max-h-96">
+              {allNotifications.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">Nenhuma notificação</p>
               ) : (
-                notifications.map((notif) => (
+                allNotifications.map((notif) => (
                   <button
                     key={notif.id}
                     onClick={() => handleNotificationClick(notif)}
@@ -193,11 +200,24 @@ export function HeaderWithNotifications() {
                       !notif.read ? "bg-primary" : "bg-transparent"
                     )} />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-semibold text-foreground">{notif.title}</span>
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                          {notif.type === "pendencia" ? "Pendência" : "Atualização"}
-                        </Badge>
+                        {notif.type === "chamado" ? (
+                          <>
+                            <Badge className="text-[10px] px-1.5 py-0 border-0 bg-edu-purple text-white gap-1">
+                              <Headphones className="w-2.5 h-2.5" /> Chamado
+                            </Badge>
+                            {notif.urgency && (
+                              <Badge className={cn("text-[10px] px-1.5 py-0 border-0", urgencyBadge[notif.urgency])}>
+                                {notif.urgency.toUpperCase()}
+                              </Badge>
+                            )}
+                          </>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                            {notif.type === "pendencia" ? "Pendência" : "Atualização"}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{notif.description}</p>
                       <span className="text-[10px] text-muted-foreground mt-1 block">{notif.time}</span>
