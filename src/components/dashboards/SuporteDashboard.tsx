@@ -1,10 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Users, GraduationCap, UserCog, School, Globe, PlayCircle, ArrowUpDown,
-  LayoutDashboard, BarChart3, Settings, ChevronRight, Lightbulb, Headphones, MessageSquare,
+  LayoutDashboard, BarChart3, Settings, ChevronRight, Lightbulb, Headphones,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
