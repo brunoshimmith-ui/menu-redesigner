@@ -59,7 +59,7 @@ export function AppSidebar() {
       className="[&_[data-sidebar=sidebar]]:bg-gradient-to-b [&_[data-sidebar=sidebar]]:from-[#0b1a3a] [&_[data-sidebar=sidebar]]:via-[#0a1730] [&_[data-sidebar=sidebar]]:to-[#070f22] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
     >
       {/* Header / Logo */}
-      <SidebarHeader className="border-b border-white/10 p-6">
+      <SidebarHeader className="bg-transparent p-6">
         {!isCollapsed ? (
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight text-white">SEMEI</h1>
