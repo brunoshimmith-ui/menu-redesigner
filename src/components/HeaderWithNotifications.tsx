@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, School, UserCircle, ChevronDown, X, ArrowRight, Home } from "lucide-react";
+import { Bell, School, UserCircle, ChevronDown, ArrowRight, Home, Headphones } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
@@ -18,15 +18,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuth } from "@/contexts/AuthContext";
+import { chamadosSuporte } from "@/lib/chamados";
 
 interface Notification {
   id: string;
   title: string;
   description: string;
-  type: "pendencia" | "atualizacao";
+  type: "pendencia" | "atualizacao" | "chamado";
+  urgency?: "alta" | "media" | "baixa";
   read: boolean;
   route: string;
   time: string;
+  from?: string;
 }
 
 const initialNotifications: Notification[] = [
@@ -41,26 +45,58 @@ const initialNotifications: Notification[] = [
 const schoolOptions = ["SEMEI Iranduba - 01", "SEMEI Iranduba - 02", "SEMEI Iranduba - 03"];
 const profileOptions = ["Suporte", "Administrador", "Gestor"];
 
+const urgencyBadge: Record<string, string> = {
+  alta: "bg-edu-coral text-white",
+  media: "bg-edu-orange text-white",
+  baixa: "bg-edu-blue text-white",
+};
+
 export function HeaderWithNotifications() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState(initialNotifications);
   const [selectedSchool, setSelectedSchool] = useState("SEMEI Iranduba - 01");
   const [selectedProfile, setSelectedProfile] = useState("Suporte");
   const [open, setOpen] = useState(false);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const allNotifications = useMemo<Notification[]>(() => {
+    if (user?.role === "suporte") {
+      const chamadosAsNotif: Notification[] = chamadosSuporte.map((c) => ({
+        id: `chamado-${c.id}`,
+        title: `📞 ${c.title}`,
+        description: `${c.from} (${c.role}): ${c.description}`,
+        type: "chamado",
+        urgency: c.urgency,
+        read: c.read,
+        route: "/menu",
+        time: c.time,
+        from: c.from,
+      }));
+      return [...chamadosAsNotif, ...notifications];
+    }
+    return notifications;
+  }, [user?.role, notifications]);
+
+  const unreadCount = allNotifications.filter((n) => !n.read).length;
 
   const handleNotificationClick = (notif: Notification) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
-    );
+    if (notif.id.startsWith("chamado-")) {
+      // marca chamado como lido localmente
+      const idx = chamadosSuporte.findIndex((c) => `chamado-${c.id}` === notif.id);
+      if (idx >= 0) chamadosSuporte[idx].read = true;
+    } else {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
+      );
+    }
     setOpen(false);
     navigate(notif.route);
   };
 
   const markAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    chamadosSuporte.forEach((c) => (c.read = true));
   };
 
   return (
@@ -146,11 +182,11 @@ export function HeaderWithNotifications() {
                 </button>
               )}
             </div>
-            <ScrollArea className="max-h-80">
-              {notifications.length === 0 ? (
+            <ScrollArea className="max-h-96">
+              {allNotifications.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">Nenhuma notificação</p>
               ) : (
-                notifications.map((notif) => (
+                allNotifications.map((notif) => (
                   <button
                     key={notif.id}
                     onClick={() => handleNotificationClick(notif)}
@@ -164,11 +200,24 @@ export function HeaderWithNotifications() {
                       !notif.read ? "bg-primary" : "bg-transparent"
                     )} />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-semibold text-foreground">{notif.title}</span>
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                          {notif.type === "pendencia" ? "Pendência" : "Atualização"}
-                        </Badge>
+                        {notif.type === "chamado" ? (
+                          <>
+                            <Badge className="text-[10px] px-1.5 py-0 border-0 bg-edu-purple text-white gap-1">
+                              <Headphones className="w-2.5 h-2.5" /> Chamado
+                            </Badge>
+                            {notif.urgency && (
+                              <Badge className={cn("text-[10px] px-1.5 py-0 border-0", urgencyBadge[notif.urgency])}>
+                                {notif.urgency.toUpperCase()}
+                              </Badge>
+                            )}
+                          </>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                            {notif.type === "pendencia" ? "Pendência" : "Atualização"}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{notif.description}</p>
                       <span className="text-[10px] text-muted-foreground mt-1 block">{notif.time}</span>
