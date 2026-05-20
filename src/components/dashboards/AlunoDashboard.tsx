@@ -75,11 +75,6 @@ export function AlunoDashboard({ name, turma }: { name: string; turma: string })
             <div className="bg-card rounded-3xl border border-border p-5 shadow-sm">
               <p className="text-xs text-muted-foreground mb-2">Frequência</p>
               <p className="text-3xl font-bold text-edu-blue">{freqMedia}%</p>
-              <p className="text-3xl font-bold text-edu-green">{media}</p>
-            </div>
-            <div className="bg-card rounded-3xl border border-border p-5 shadow-sm">
-              <p className="text-xs text-muted-foreground mb-2">Frequência</p>
-              <p className="text-3xl font-bold text-edu-blue">{freqMedia}%</p>
             </div>
             <div className="bg-card rounded-3xl border border-border p-5 shadow-sm">
               <p className="text-xs text-muted-foreground mb-2">Disciplinas</p>
