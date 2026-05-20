@@ -45,6 +45,15 @@ const initialNotifications: Notification[] = [
 const schoolOptions = ["SEMEI Iranduba - 01", "SEMEI Iranduba - 02", "SEMEI Iranduba - 03"];
 const profileOptions = ["Suporte", "Administrador", "Gestor"];
 
+const quickAccessAccounts = [
+  { u: "stepforma", l: "Suporte" },
+  { u: "professor", l: "Professor" },
+  { u: "aluno", l: "Aluno" },
+  { u: "coord", l: "Coordenação" },
+  { u: "direcao", l: "Direção" },
+  { u: "admin", l: "Admin" },
+];
+
 const urgencyBadge: Record<string, string> = {
   alta: "bg-edu-coral text-white",
   media: "bg-edu-orange text-white",
