@@ -32,6 +32,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialog";
 
 const DISCIPLINAS_BASE = [
   "Língua Portuguesa",
@@ -81,14 +82,7 @@ const turmasInfo: Record<string, { nivel: string; turma: string; edicao: string;
   "9": { nivel: "Infantil", turma: "Pré II", edicao: "2026", escola: "Escola Modelo" },
 };
 
-interface AulaSalva {
-  id: string;
-  disciplina: string;
-  professor: string;
-  diaSemana: number; // 0=Dom, 1=Seg...6=Sab
-  horaInicio: string;
-  horaTermino: string;
-}
+// AulaSalva é importado de AulaActionsDialog
 
 interface DisciplinaItem {
   id: string;
@@ -132,6 +126,19 @@ const Disciplinas = () => {
   const [aulas, setAulas] = useState<AulaSalva[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
+  const [aulaActionsOpen, setAulaActionsOpen] = useState(false);
+  const [activeAula, setActiveAula] = useState<AulaSalva | null>(null);
+
+  const openAula = (a: AulaSalva) => {
+    setActiveAula(a);
+    setAulaActionsOpen(true);
+  };
+
+  const updateAula = (updated: AulaSalva) => {
+    setAulas((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
+    setActiveAula(updated);
+  };
+
 
   // Form state for adding disciplines
   const [formItems, setFormItems] = useState<DisciplinaItem[]>([
@@ -216,6 +223,7 @@ const Disciplinas = () => {
       diaSemana: d.diaSemana,
       horaInicio: d.horaInicio,
       horaTermino: d.horaTermino,
+      status: "criada",
     }));
     setAulas((prev) => [...prev, ...novas]);
     setFormItems([{ id: crypto.randomUUID(), disciplina: "", horaInicio: "07:00", horaTermino: "08:00", professor: "", diaSemana: 1 }]);
@@ -446,17 +454,26 @@ const Disciplinas = () => {
                                   isSelected ? "bg-accent/30 ring-2 ring-inset ring-accent" : ""
                                 }`}
                               >
-                                {startingAulas.map((aula) => (
-                                  <div
-                                    key={aula.id}
-                                    className={`rounded p-1.5 border text-xs h-full ${DISCIPLINA_COLORS[aula.disciplina] || "bg-muted border-border"}`}
-                                  >
-                                    <div className="font-semibold text-[10px]">
-                                      {aula.horaInicio} – {aula.horaTermino}
-                                    </div>
-                                    <div className="font-bold">{aula.disciplina}</div>
-                                  </div>
-                                ))}
+                                {startingAulas.map((aula) => {
+                                  const statusClass =
+                                    aula.status === "preenchida"
+                                      ? "bg-green-200 border-green-500 text-green-900"
+                                      : DISCIPLINA_COLORS[aula.disciplina] || "bg-muted border-border";
+                                  return (
+                                    <button
+                                      key={aula.id}
+                                      onClick={(e) => { e.stopPropagation(); openAula(aula); }}
+                                      className={`w-full rounded p-1.5 border text-xs h-full text-left hover:ring-2 hover:ring-primary/40 transition ${statusClass}`}
+                                    >
+                                      <div className="font-semibold text-[10px] flex items-center justify-between">
+                                        <span>{aula.horaInicio} – {aula.horaTermino}</span>
+                                        {aula.status === "preenchida" && <span className="text-[9px]">✓</span>}
+                                      </div>
+                                      <div className="font-bold truncate">{aula.disciplina}</div>
+                                      <div className="text-[9px] opacity-75 truncate">{aula.professor}</div>
+                                    </button>
+                                  );
+                                })}
                               </td>
                             );
                           })}
@@ -466,16 +483,11 @@ const Disciplinas = () => {
                   </table>
                 </div>
 
-                {/* Legend */}
+                {/* Legend — status das aulas */}
                 <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-2">
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-muted-foreground inline-block" /> Prevista</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-500 inline-block" /> Dada</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-500 inline-block" /> Falta</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-blue-300 inline-block" /> Compensação</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-amber-500 inline-block" /> Sumário e/ou Frequência por preencher</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-yellow-400 inline-block" /> Aula por validar</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-purple-500 inline-block" /> Reposição de aulas</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-amber-200 inline-block" /> Aula de avaliação</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-200 border border-blue-400 inline-block" /> Aula criada (a acontecer)</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-200 border border-amber-400 inline-block" /> Aula no horário (cor da disciplina)</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-200 border border-green-500 inline-block" /> Aula preenchida (conteúdo + frequência)</span>
                 </div>
               </TabsContent>
 
@@ -500,6 +512,15 @@ const Disciplinas = () => {
                 </div>
               </TabsContent>
             </Tabs>
+
+            <AulaActionsDialog
+              open={aulaActionsOpen}
+              onOpenChange={setAulaActionsOpen}
+              aula={activeAula}
+              aulas={aulas}
+              onSave={updateAula}
+              onNavigate={(a) => setActiveAula(a)}
+            />
           </main>
         </div>
       </div>

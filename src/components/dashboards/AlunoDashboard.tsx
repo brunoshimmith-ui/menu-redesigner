@@ -1,11 +1,23 @@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, Calendar as CalendarIcon, TrendingUp } from "lucide-react";
+import { BookOpen, Calendar as CalendarIcon, TrendingUp, IdCard, MapPin, Users as UsersIcon, Flag } from "lucide-react";
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
 import { AvisosImportantes } from "@/components/AvisosImportantes";
 import { DicaDoDia } from "@/components/DicaDoDia";
 import { avaliacoesByTurma } from "@/lib/store";
 import { useEffect, useState } from "react";
+
+const dadosAluno = {
+  nomeCompleto: "João Pedro da Silva Souza",
+  cpf: "123.456.789-00",
+  rg: "MG-12.345.678",
+  pai: "Carlos Eduardo Souza",
+  mae: "Maria da Silva Souza",
+  endereco: "Rua das Acácias, 250 — Bairro Centro",
+  nacionalidade: "Brasileira",
+  cidade: "Iranduba — AM",
+};
+
 
 const disciplinas = [
   { nome: "Matemática", b1: 8.5, b2: 7.8, b3: 9.0, b4: 0, freq: 95 },
@@ -36,6 +48,24 @@ export function AlunoDashboard({ name, turma }: { name: string; turma: string })
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          {/* Dados pessoais do aluno */}
+          <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">
+            <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <IdCard className="w-5 h-5 text-edu-purple" /> Meus dados
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+              <div><p className="text-[10px] uppercase text-muted-foreground">Nome completo</p><p className="font-semibold">{dadosAluno.nomeCompleto}</p></div>
+              <div><p className="text-[10px] uppercase text-muted-foreground">Turma</p><p className="font-semibold">{turma}</p></div>
+              <div><p className="text-[10px] uppercase text-muted-foreground">CPF</p><p className="font-semibold">{dadosAluno.cpf}</p></div>
+              <div><p className="text-[10px] uppercase text-muted-foreground">RG</p><p className="font-semibold">{dadosAluno.rg}</p></div>
+              <div className="flex items-start gap-2"><UsersIcon className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Nome do pai</p><p className="font-semibold">{dadosAluno.pai}</p></div></div>
+              <div className="flex items-start gap-2"><UsersIcon className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Nome da mãe</p><p className="font-semibold">{dadosAluno.mae}</p></div></div>
+              <div className="sm:col-span-2 flex items-start gap-2"><MapPin className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Endereço</p><p className="font-semibold">{dadosAluno.endereco}</p></div></div>
+              <div className="flex items-start gap-2"><Flag className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Nacionalidade</p><p className="font-semibold">{dadosAluno.nacionalidade}</p></div></div>
+              <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Cidade</p><p className="font-semibold">{dadosAluno.cidade}</p></div></div>
+            </div>
+          </div>
+
           {/* Stats pessoais */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-card rounded-3xl border border-border p-5 shadow-sm">
