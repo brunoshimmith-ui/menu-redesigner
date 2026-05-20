@@ -82,14 +82,7 @@ const turmasInfo: Record<string, { nivel: string; turma: string; edicao: string;
   "9": { nivel: "Infantil", turma: "Pré II", edicao: "2026", escola: "Escola Modelo" },
 };
 
-interface AulaSalva {
-  id: string;
-  disciplina: string;
-  professor: string;
-  diaSemana: number; // 0=Dom, 1=Seg...6=Sab
-  horaInicio: string;
-  horaTermino: string;
-}
+// AulaSalva é importado de AulaActionsDialog
 
 interface DisciplinaItem {
   id: string;
