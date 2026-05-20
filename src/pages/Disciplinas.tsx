@@ -483,16 +483,11 @@ const Disciplinas = () => {
                   </table>
                 </div>
 
-                {/* Legend */}
+                {/* Legend — status das aulas */}
                 <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-2">
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-muted-foreground inline-block" /> Prevista</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-500 inline-block" /> Dada</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-500 inline-block" /> Falta</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-blue-300 inline-block" /> Compensação</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-amber-500 inline-block" /> Sumário e/ou Frequência por preencher</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-yellow-400 inline-block" /> Aula por validar</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-purple-500 inline-block" /> Reposição de aulas</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-amber-200 inline-block" /> Aula de avaliação</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-200 border border-blue-400 inline-block" /> Aula criada (a acontecer)</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-200 border border-amber-400 inline-block" /> Aula no horário (cor da disciplina)</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-200 border border-green-500 inline-block" /> Aula preenchida (conteúdo + frequência)</span>
                 </div>
               </TabsContent>
 
