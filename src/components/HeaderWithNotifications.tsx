@@ -63,11 +63,12 @@ const urgencyBadge: Record<string, string> = {
 export function HeaderWithNotifications() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const [notifications, setNotifications] = useState(initialNotifications);
   const [selectedSchool, setSelectedSchool] = useState("SEMEI Iranduba - 01");
   const [selectedProfile, setSelectedProfile] = useState("Suporte");
   const [open, setOpen] = useState(false);
+  const [quickOpen, setQuickOpen] = useState(false);
 
   const allNotifications = useMemo<Notification[]>(() => {
     if (user?.role === "suporte") {
