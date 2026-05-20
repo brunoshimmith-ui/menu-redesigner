@@ -48,10 +48,33 @@ export function AlunoDashboard({ name, turma }: { name: string; turma: string })
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          {/* Dados pessoais do aluno */}
+          <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">
+            <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <IdCard className="w-5 h-5 text-edu-purple" /> Meus dados
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+              <div><p className="text-[10px] uppercase text-muted-foreground">Nome completo</p><p className="font-semibold">{dadosAluno.nomeCompleto}</p></div>
+              <div><p className="text-[10px] uppercase text-muted-foreground">Turma</p><p className="font-semibold">{turma}</p></div>
+              <div><p className="text-[10px] uppercase text-muted-foreground">CPF</p><p className="font-semibold">{dadosAluno.cpf}</p></div>
+              <div><p className="text-[10px] uppercase text-muted-foreground">RG</p><p className="font-semibold">{dadosAluno.rg}</p></div>
+              <div className="flex items-start gap-2"><UsersIcon className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Nome do pai</p><p className="font-semibold">{dadosAluno.pai}</p></div></div>
+              <div className="flex items-start gap-2"><UsersIcon className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Nome da mãe</p><p className="font-semibold">{dadosAluno.mae}</p></div></div>
+              <div className="sm:col-span-2 flex items-start gap-2"><MapPin className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Endereço</p><p className="font-semibold">{dadosAluno.endereco}</p></div></div>
+              <div className="flex items-start gap-2"><Flag className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Nacionalidade</p><p className="font-semibold">{dadosAluno.nacionalidade}</p></div></div>
+              <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-muted-foreground mt-0.5" /><div><p className="text-[10px] uppercase text-muted-foreground">Cidade</p><p className="font-semibold">{dadosAluno.cidade}</p></div></div>
+            </div>
+          </div>
+
           {/* Stats pessoais */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-card rounded-3xl border border-border p-5 shadow-sm">
               <p className="text-xs text-muted-foreground mb-2">Média geral</p>
+              <p className="text-3xl font-bold text-edu-green">{media}</p>
+            </div>
+            <div className="bg-card rounded-3xl border border-border p-5 shadow-sm">
+              <p className="text-xs text-muted-foreground mb-2">Frequência</p>
+              <p className="text-3xl font-bold text-edu-blue">{freqMedia}%</p>
               <p className="text-3xl font-bold text-edu-green">{media}</p>
             </div>
             <div className="bg-card rounded-3xl border border-border p-5 shadow-sm">
