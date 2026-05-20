@@ -512,6 +512,15 @@ const Disciplinas = () => {
                 </div>
               </TabsContent>
             </Tabs>
+
+            <AulaActionsDialog
+              open={aulaActionsOpen}
+              onOpenChange={setAulaActionsOpen}
+              aula={activeAula}
+              aulas={aulas}
+              onSave={updateAula}
+              onNavigate={(a) => setActiveAula(a)}
+            />
           </main>
         </div>
       </div>
