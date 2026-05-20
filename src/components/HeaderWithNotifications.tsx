@@ -43,15 +43,15 @@ const initialNotifications: Notification[] = [
 ];
 
 const schoolOptions = ["SEMEI Iranduba - 01", "SEMEI Iranduba - 02", "SEMEI Iranduba - 03"];
-const profileOptions = ["Suporte", "Administrador", "Gestor"];
-
-const quickAccessAccounts = [
+const baseProfileOptions = ["Suporte", "Administrador", "Gestor"];
+const switchableAccounts: { u: string; l: string }[] = [
   { u: "stepforma", l: "Suporte" },
+  { u: "admin", l: "Administrador" },
+  { u: "direcao", l: "Gestor" },
   { u: "professor", l: "Professor" },
   { u: "aluno", l: "Aluno" },
   { u: "coord", l: "Coordenação" },
   { u: "direcao", l: "Direção" },
-  { u: "admin", l: "Admin" },
 ];
 
 const urgencyBadge: Record<string, string> = {
@@ -66,9 +66,15 @@ export function HeaderWithNotifications() {
   const { user, login } = useAuth();
   const [notifications, setNotifications] = useState(initialNotifications);
   const [selectedSchool, setSelectedSchool] = useState("SEMEI Iranduba - 01");
-  const [selectedProfile, setSelectedProfile] = useState("Suporte");
   const [open, setOpen] = useState(false);
-  const [quickOpen, setQuickOpen] = useState(false);
+
+  const currentProfileLabel =
+    user?.role === "suporte" ? "Suporte" :
+    user?.role === "administracao" ? "Administrador" :
+    user?.role === "direcao" ? "Direção" :
+    user?.role === "coordenacao" ? "Coordenação" :
+    user?.role === "professor" ? "Professor" :
+    user?.role === "aluno" ? "Aluno" : "Convidado";
 
   const allNotifications = useMemo<Notification[]>(() => {
     if (user?.role === "suporte") {
