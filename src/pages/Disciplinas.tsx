@@ -453,17 +453,26 @@ const Disciplinas = () => {
                                   isSelected ? "bg-accent/30 ring-2 ring-inset ring-accent" : ""
                                 }`}
                               >
-                                {startingAulas.map((aula) => (
-                                  <div
-                                    key={aula.id}
-                                    className={`rounded p-1.5 border text-xs h-full ${DISCIPLINA_COLORS[aula.disciplina] || "bg-muted border-border"}`}
-                                  >
-                                    <div className="font-semibold text-[10px]">
-                                      {aula.horaInicio} – {aula.horaTermino}
-                                    </div>
-                                    <div className="font-bold">{aula.disciplina}</div>
-                                  </div>
-                                ))}
+                                {startingAulas.map((aula) => {
+                                  const statusClass =
+                                    aula.status === "preenchida"
+                                      ? "bg-green-200 border-green-500 text-green-900"
+                                      : DISCIPLINA_COLORS[aula.disciplina] || "bg-muted border-border";
+                                  return (
+                                    <button
+                                      key={aula.id}
+                                      onClick={(e) => { e.stopPropagation(); openAula(aula); }}
+                                      className={`w-full rounded p-1.5 border text-xs h-full text-left hover:ring-2 hover:ring-primary/40 transition ${statusClass}`}
+                                    >
+                                      <div className="font-semibold text-[10px] flex items-center justify-between">
+                                        <span>{aula.horaInicio} – {aula.horaTermino}</span>
+                                        {aula.status === "preenchida" && <span className="text-[9px]">✓</span>}
+                                      </div>
+                                      <div className="font-bold truncate">{aula.disciplina}</div>
+                                      <div className="text-[9px] opacity-75 truncate">{aula.professor}</div>
+                                    </button>
+                                  );
+                                })}
                               </td>
                             );
                           })}
