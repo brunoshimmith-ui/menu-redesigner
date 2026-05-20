@@ -1,11 +1,23 @@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, Calendar as CalendarIcon, TrendingUp } from "lucide-react";
+import { BookOpen, Calendar as CalendarIcon, TrendingUp, IdCard, MapPin, Users as UsersIcon, Flag } from "lucide-react";
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
 import { AvisosImportantes } from "@/components/AvisosImportantes";
 import { DicaDoDia } from "@/components/DicaDoDia";
 import { avaliacoesByTurma } from "@/lib/store";
 import { useEffect, useState } from "react";
+
+const dadosAluno = {
+  nomeCompleto: "João Pedro da Silva Souza",
+  cpf: "123.456.789-00",
+  rg: "MG-12.345.678",
+  pai: "Carlos Eduardo Souza",
+  mae: "Maria da Silva Souza",
+  endereco: "Rua das Acácias, 250 — Bairro Centro",
+  nacionalidade: "Brasileira",
+  cidade: "Iranduba — AM",
+};
+
 
 const disciplinas = [
   { nome: "Matemática", b1: 8.5, b2: 7.8, b3: 9.0, b4: 0, freq: 95 },
