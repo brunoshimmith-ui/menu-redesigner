@@ -154,7 +154,7 @@ export function HeaderWithNotifications() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Profile selector */}
+        {/* Profile selector — para suporte serve também para trocar de perfil */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-muted transition-colors">
@@ -162,57 +162,42 @@ export function HeaderWithNotifications() {
                 <UserCircle className="w-5 h-5 text-edu-purple" />
               </div>
               <div className="hidden sm:flex flex-col items-start leading-tight">
-                <span className="text-xs font-semibold text-foreground">Bruno</span>
-                <span className="text-[10px] text-muted-foreground">{selectedProfile}</span>
+                <span className="text-xs font-semibold text-foreground">{user?.name?.split(" ")[0] || "Usuário"}</span>
+                <span className="text-[10px] text-muted-foreground">{currentProfileLabel}</span>
               </div>
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
-            {profileOptions.map((opt) => (
-              <DropdownMenuItem key={opt} onClick={() => setSelectedProfile(opt)} className={cn(opt === selectedProfile && "bg-muted")}>
-                {opt}
-              </DropdownMenuItem>
-            ))}
+          <DropdownMenuContent align="end" className="w-56">
+            {user?.role === "suporte" ? (
+              <>
+                <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+                  Trocar perfil
+                </div>
+                {switchableAccounts.map((p) => (
+                  <DropdownMenuItem
+                    key={p.l}
+                    onClick={() => {
+                      const ok = login(p.u, "12345678");
+                      if (ok) navigate("/menu");
+                    }}
+                    className={cn("cursor-pointer gap-2", p.l === currentProfileLabel && "bg-muted")}
+                  >
+                    <UserCircle className="w-4 h-4 text-edu-purple" />
+                    <span className="text-xs">{p.l}</span>
+                  </DropdownMenuItem>
+                ))}
+              </>
+            ) : (
+              baseProfileOptions.map((opt) => (
+                <DropdownMenuItem key={opt} className={cn(opt === currentProfileLabel && "bg-muted")}>
+                  {opt}
+                </DropdownMenuItem>
+              ))
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Quick access (apenas para suporte): troca rápida de perfil */}
-        {user?.role === "suporte" && (
-          <DropdownMenu open={quickOpen} onOpenChange={setQuickOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs">
-                <Users className="w-3.5 h-3.5 text-edu-purple" />
-                <span className="hidden sm:inline">Acesso rápido</span>
-                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52">
-              <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
-                Entrar como
-              </div>
-              {quickAccessAccounts.map((p) => (
-                <DropdownMenuItem
-                  key={p.u}
-                  onClick={() => {
-                    const ok = login(p.u, "12345678");
-                    if (ok) {
-                      setQuickOpen(false);
-                      navigate("/menu");
-                    }
-                  }}
-                  className="cursor-pointer gap-2"
-                >
-                  <UserCircle className="w-4 h-4 text-edu-purple" />
-                  <span className="text-xs">{p.l}</span>
-                </DropdownMenuItem>
-              ))}
-              <div className="px-2 py-1.5 text-[10px] text-muted-foreground border-t border-border mt-1">
-                Senha padrão: <span className="font-mono">12345678</span>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
 
         {/* Notifications */}
         <Popover open={open} onOpenChange={setOpen}>
