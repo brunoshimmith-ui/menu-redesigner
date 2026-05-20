@@ -126,6 +126,19 @@ const Disciplinas = () => {
   const [aulas, setAulas] = useState<AulaSalva[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
+  const [aulaActionsOpen, setAulaActionsOpen] = useState(false);
+  const [activeAula, setActiveAula] = useState<AulaSalva | null>(null);
+
+  const openAula = (a: AulaSalva) => {
+    setActiveAula(a);
+    setAulaActionsOpen(true);
+  };
+
+  const updateAula = (updated: AulaSalva) => {
+    setAulas((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
+    setActiveAula(updated);
+  };
+
 
   // Form state for adding disciplines
   const [formItems, setFormItems] = useState<DisciplinaItem[]>([
