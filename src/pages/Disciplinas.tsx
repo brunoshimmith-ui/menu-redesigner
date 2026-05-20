@@ -32,6 +32,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialog";
 
 const DISCIPLINAS_BASE = [
   "Língua Portuguesa",
