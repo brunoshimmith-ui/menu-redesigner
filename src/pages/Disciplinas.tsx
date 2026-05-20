@@ -223,6 +223,7 @@ const Disciplinas = () => {
       diaSemana: d.diaSemana,
       horaInicio: d.horaInicio,
       horaTermino: d.horaTermino,
+      status: "criada",
     }));
     setAulas((prev) => [...prev, ...novas]);
     setFormItems([{ id: crypto.randomUUID(), disciplina: "", horaInicio: "07:00", horaTermino: "08:00", professor: "", diaSemana: 1 }]);
