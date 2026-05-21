@@ -1,79 +1,76 @@
-# Plano: Páginas principais por perfil
+# Plano: Gestão completa de Turmas
 
-Vou reestruturar o `Menu` (dashboard) para renderizar uma experiência diferente conforme o perfil logado, e adicionar os recursos novos pedidos.
+Vou reestruturar a página `/turmas` para permitir criar turmas com pré-preenchimento via Plano de Estudo e expor 5 ações por turma (Criar Disciplina, Editar Turma, Engrenagem com Coordenador/Matrículas, Habilidades BNCC, expandir).
 
-## 1. Modelo de perfis e contexto de auth
+## 1. Catálogos base (novo `src/lib/planosEstudo.ts`)
+Estrutura de dados em memória (sem backend) que alimenta os selects e pré-preenchimentos.
 
-- Estender `AuthContext` para incluir `role`: `"suporte" | "professor" | "coordenacao" | "direcao" | "administracao" | "aluno"` e `name`.
-- Login `stepforma/12345678` continua como **Suporte** (visão completa atual).
-- Adicionar credenciais de demonstração:
-  - `professor / 12345678` → Professor (Ana Silva)
-  - `coord / 12345678` → Coordenação
-  - `direcao / 12345678` → Direção
-  - `admin / 12345678` → Administração
-  - `aluno / 12345678` → Aluno (João Pedro, 7º A)
-- Sidebar (`AppSidebar`) passa a filtrar itens conforme `role`:
-  - Suporte/Admin/Coord/Direção: todos os itens atuais.
-  - Professor: Dashboard, Turmas, Relatórios, Documentos, Página Pública, Stepmeet, Configurações.
-  - Aluno: Dashboard, Página Pública, Documentos, Configurações.
+- **Planos de Estudo**: `EFI`, `EFII`, `EJA`, `Infantil`, `Médio`. Cada plano define:
+  - `anos` disponíveis (ex.: EFI → 1º ao 5º; EFII → 6º ao 9º; Infantil → Maternal, Pré I, Pré II)
+  - `nivel` (Fundamental I / II, Infantil, EJA, Médio)
+  - `turno` padrão
+  - `codigo` base (ex.: `EFI-2026`)
+  - `cargaHorariaTotal` (ex.: 800h)
+- **Disciplinas pré-definidas**: Língua Portuguesa, Matemática, Arte, Inglês, Ensino Religioso, Ciências, História, Geografia, Educação Física.
+- **Tipos de ensino**: Base Nacional, Parte Diversificada, Atividade Complementar, Flexibilização, Aprofundamento Curricular, Formação Geral.
+- **Professores** e **Coordenadores** mock (lista).
+- **Alunos** mock para matrícula.
 
-## 2. Página principal (`/menu`) por perfil
+## 2. Store local de turmas (`src/lib/turmasStore.ts`)
+Hook `useTurmas()` com `localStorage`. Modelo:
+```text
+Turma { id, planoId, ano, letra, nivel, turno, codigo,
+        cargaHoraria, calendarioId, coordenadores[], disciplinas[],
+        matriculas[] }
+Disciplina { id, nome, anos[], professores[], faltasMax=25,
+             tipoEnsino, habilidadesBncc[] }
+```
+Substitui o `turmasData` estático.
 
-`Menu.tsx` vira um roteador interno que escolhe o dashboard:
+## 3. Página `src/pages/Turmas.tsx`
+- Botão **“Criar nova turma”** no topo abre `NovaTurmaDialog`.
+- Tabela passa a renderizar turmas do store; se vazia, mostra empty state com CTA.
+- Coluna **Ações** com 5 ícones:
+  1. `ChevronDown` — expandir linha (mostra disciplinas criadas)
+  2. `BookOpen` — Criar Disciplina (`DisciplinaDialog`)
+  3. `Sparkles` — Habilidades BNCC (`HabilidadesDialog`)
+  4. `Edit` — Editar turma (reabre `NovaTurmaDialog` em modo edição)
+  5. `Settings` — Engrenagem (`ConfigTurmaDialog` com abas Coordenador / Matrículas)
 
-### Suporte (atual + melhorias)
-- Cards globais: escolas, turmas, total de alunos por escola/turma.
-- **Notificações de chamada/suporte**: lista de tickets enviados por professores/coordenação/direção/administração com status e botão "Responder". Mock de chamados.
+## 4. Novos componentes em `src/components/turmas/`
 
-### Professor
-- Header: "Bem-vindo, Prof. {nome}" + data atual por extenso.
-- Grid de ferramentas: Minhas Turmas, Relatórios, Documentos, Página Pública, Stepmeet.
-- **Calendário** (react-day-picker já presente) com marcadores:
-  - Feriados nacionais 2026 pré-cadastrados.
-  - Início/fim dos 4 bimestres (definidos pelo Suporte — mock).
-  - Avaliações criadas pelo professor (modal "Nova avaliação" com data, turma, disciplina).
-- **Bloco Anotações / Rotina diária**: textarea persistido em `localStorage` por usuário, lista de entradas por data.
-- **Avisos importantes**: reuniões agendadas (Stepmeet) + avaliações criadas pelo próprio professor.
-- **Dica do dia**: carrossel com mensagens sobre preencher conteúdos/frequência/notas.
+- **`NovaTurmaDialog.tsx`**
+  - Select Plano de Estudo → ao escolher, preenche Nível, Turno, Código, Carga Horária (editáveis).
+  - Select Ano (vindo do plano).
+  - Input “Letra da turma” (A, B, C…).
+  - Select Calendário (lista de calendários escolares de `calendario.ts`).
+  - Multi-select Coordenadores.
+  - Botões “Salvar” e “Voltar”.
 
-### Coordenação / Direção / Administração
-- Mesmas seções do Suporte para navegação (Usuários, Transferências, Relatórios, Dashboard, Turmas, Página Pública) com dados de contexto.
-- Avisos importantes, calendário e dica do dia conforme perfil.
-- Botão **"Criar aviso importante"** (somente Suporte/Admin/Coord/Direção) — abre dialog com:
-  - Título, mensagem, data.
-  - Filtro "Visível para": Todos | Seleção múltipla (Professor, Aluno, Coord, Direção, Admin, Suporte).
-  - Persistido em `localStorage` (`avisos_importantes`) e listado em todos os dashboards conforme filtro.
+- **`DisciplinaDialog.tsx`**
+  - Select disciplina (lista pré-definida).
+  - Multi-select anos (1º ao 9º filtrado pelo plano da turma, ano letivo 2026).
+  - Multi-select professores.
+  - Input “% máximo de faltas” pré-preenchido `25`.
+  - Select Tipo de Ensino (6 opções).
+  - Salvar adiciona à turma; aparece quando linha é expandida.
 
-### Aluno
-- Header: "Olá, {nome} — {turma}".
-- Mini-dashboard pessoal: disciplinas, notas por bimestre, frequência, progresso letivo.
-- **Avisos importantes**: avaliações criadas pelos professores das suas turmas (mesma store) + avisos direcionados a "aluno".
-- **Dica do dia**: importância dos estudos, referências de aprendizado.
-- Calendário read-only com feriados e datas de avaliação.
+- **`HabilidadesDialog.tsx`**
+  - Lista habilidades BNCC da disciplina selecionada, agrupadas por ano (usa `BNCC_HABILIDADES` existente + extensão por ano).
+  - Checkboxes para marcar habilidades trabalhadas.
 
-## 3. Componentes novos / reutilizáveis
+- **`ConfigTurmaDialog.tsx`** (Tabs)
+  - **Coordenador**: adicionar múltiplos coordenadores + switch “Alocar em todas as disciplinas”.
+  - **Matrículas**: input de busca de alunos, lista filtrada, ao clicar aluno é alocado em todas as disciplinas. Tabela com ordem de chamada e botões ↑/↓ para reordenar.
 
-- `src/components/dashboards/SuporteDashboard.tsx`
-- `src/components/dashboards/ProfessorDashboard.tsx`
-- `src/components/dashboards/GestaoDashboard.tsx` (coord/direção/admin)
-- `src/components/dashboards/AlunoDashboard.tsx`
-- `src/components/CalendarioEscolar.tsx` — calendário com modificadores para feriado, bimestre, avaliação; props opcionais para criar avaliação.
-- `src/components/AvisosImportantes.tsx` — lista + dialog de criação (gated por role).
-- `src/components/DicaDoDia.tsx` — carrossel (embla já disponível) com dicas por role.
-- `src/components/AnotacoesProfessor.tsx` — rotina diária em localStorage.
-- `src/lib/calendario.ts` — feriados 2026, bimestres mock.
-- `src/lib/store.ts` — helpers de localStorage para avisos, avaliações, anotações.
+## 5. Integração
+- `Disciplinas.tsx` continua funcionando lendo do store quando a turma existir.
+- Cores e tokens semânticos do design system existentes (sem cores diretas).
 
-## 4. Detalhes técnicos
-
-- Tudo client-side (sem backend), usando `localStorage` para avisos/avaliações/anotações.
-- Sem mudanças de schema — apenas frontend.
-- Reutilizar tokens do design system (sem cores hardcoded).
-- Alunos recebem avaliações filtrando por `turmaId` do aluno mock.
-
-## 5. Fora de escopo (não vou mexer)
-
-- Páginas existentes (`Turmas`, `Usuarios`, `Transferencias` etc.) permanecem como estão — apenas o `/menu` muda e o sidebar filtra.
-- Sem alterações no fluxo de criação de usuário já existente.
+## Detalhes técnicos
+- Persistência: `localStorage` via hook simples (`useSyncExternalStore` ou `useState` + efeito).
+- Validação leve com mensagens em `toast`.
+- Reaproveita `Dialog`, `Tabs`, `Select`, `Checkbox`, `Switch`, `Command` (busca) do shadcn.
+- Sem alterações de backend.
 
 Confirma para eu implementar?
