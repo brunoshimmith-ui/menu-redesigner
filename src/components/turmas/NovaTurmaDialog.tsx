@@ -11,8 +11,9 @@ import {
   PLANOS_ESTUDO,
   CALENDARIOS_DISPONIVEIS,
   COORDENADORES_DISPONIVEIS,
+  DISCIPLINAS_PADRAO,
 } from "@/lib/planosEstudo";
-import { Turma, turmasStore, newId } from "@/lib/turmasStore";
+import { Turma, turmasStore, newId, DisciplinaTurma } from "@/lib/turmasStore";
 
 interface Props {
   open: boolean;
