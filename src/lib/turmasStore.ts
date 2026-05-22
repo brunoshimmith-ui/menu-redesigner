@@ -111,6 +111,10 @@ export const turmasStore = {
     state = state.map((t) => (t.id === turmaId ? { ...t, matriculas: ms } : t));
     persist();
   },
+  setAtiva: (turmaId: string, ativa: boolean) => {
+    state = state.map((t) => (t.id === turmaId ? { ...t, ativa } : t));
+    persist();
+  },
 };
 
 export const useTurmas = () =>
