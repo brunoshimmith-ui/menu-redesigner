@@ -57,7 +57,8 @@ const load = (): Turma[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return seed;
-    return JSON.parse(raw);
+    const parsed: Turma[] = JSON.parse(raw);
+    return parsed.map((t) => ({ ...t, ativa: t.ativa ?? true }));
   } catch {
     return seed;
   }
