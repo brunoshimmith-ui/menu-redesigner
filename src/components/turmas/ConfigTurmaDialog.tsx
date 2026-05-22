@@ -74,9 +74,10 @@ export function ConfigTurmaDialog({ open, onOpenChange, turma }: Props) {
         </DialogHeader>
 
         <Tabs defaultValue="coord">
-          <TabsList className="grid grid-cols-2">
+          <TabsList className="grid grid-cols-3">
             <TabsTrigger value="coord">Coordenador</TabsTrigger>
             <TabsTrigger value="mat">Matrículas</TabsTrigger>
+            <TabsTrigger value="status">Status</TabsTrigger>
           </TabsList>
 
           <TabsContent value="coord" className="space-y-4">
