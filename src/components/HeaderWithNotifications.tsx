@@ -120,15 +120,26 @@ export function HeaderWithNotifications() {
       <div className="flex items-center gap-2">
         <SidebarTrigger />
         {location.pathname !== "/menu" && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1.5 h-8 text-xs"
-            onClick={() => navigate("/menu")}
-          >
-            <Home className="w-3.5 h-3.5" />
-            Menu principal
-          </Button>
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 h-8 text-xs"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Voltar
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 h-8 text-xs"
+              onClick={() => navigate("/menu")}
+            >
+              <Home className="w-3.5 h-3.5" />
+              Menu principal
+            </Button>
+          </>
         )}
       </div>
 
