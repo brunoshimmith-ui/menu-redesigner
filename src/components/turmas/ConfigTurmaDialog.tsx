@@ -157,6 +157,26 @@ export function ConfigTurmaDialog({ open, onOpenChange, turma }: Props) {
               <Button onClick={salvarMatriculas}>Salvar Matrículas</Button>
             </div>
           </TabsContent>
+
+          <TabsContent value="status" className="space-y-4">
+            <div className="flex items-center justify-between p-4 border rounded-md">
+              <div>
+                <Label>Turma {turma.ativa ? "ativa" : "inativa"}</Label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {turma.ativa
+                    ? "Desative para ocultar a turma das listagens padrão."
+                    : "Ative para a turma voltar a aparecer nas listagens padrão."}
+                </p>
+              </div>
+              <Switch
+                checked={turma.ativa}
+                onCheckedChange={(v) => {
+                  turmasStore.setAtiva(turma.id, v);
+                  toast({ title: v ? "Turma ativada" : "Turma inativada" });
+                }}
+              />
+            </div>
+          </TabsContent>
         </Tabs>
 
         <DialogFooter>
