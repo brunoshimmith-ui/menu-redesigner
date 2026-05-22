@@ -29,6 +29,7 @@ export interface Turma {
   disciplinas: DisciplinaTurma[];
   matriculas: MatriculaAluno[];
   edicao: string;
+  ativa: boolean;
 }
 
 const STORAGE_KEY = "stepforma:turmas";
