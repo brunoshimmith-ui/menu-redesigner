@@ -49,6 +49,7 @@ const seed: Turma[] = [
     disciplinas: [],
     matriculas: [],
     edicao: "2026",
+    ativa: true,
   },
 ];
 
