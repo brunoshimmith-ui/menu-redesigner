@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, School, UserCircle, ChevronDown, ArrowRight, Home, Headphones } from "lucide-react";
+import { Bell, School, UserCircle, ChevronDown, ArrowRight, Home, Headphones, ArrowLeft } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
@@ -120,15 +120,26 @@ export function HeaderWithNotifications() {
       <div className="flex items-center gap-2">
         <SidebarTrigger />
         {location.pathname !== "/menu" && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1.5 h-8 text-xs"
-            onClick={() => navigate("/menu")}
-          >
-            <Home className="w-3.5 h-3.5" />
-            Menu principal
-          </Button>
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 h-8 text-xs"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Voltar
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 h-8 text-xs"
+              onClick={() => navigate("/menu")}
+            >
+              <Home className="w-3.5 h-3.5" />
+              Menu principal
+            </Button>
+          </>
         )}
       </div>
 

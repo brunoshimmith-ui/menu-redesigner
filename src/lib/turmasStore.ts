@@ -29,6 +29,7 @@ export interface Turma {
   disciplinas: DisciplinaTurma[];
   matriculas: MatriculaAluno[];
   edicao: string;
+  ativa: boolean;
 }
 
 const STORAGE_KEY = "stepforma:turmas";
@@ -48,6 +49,7 @@ const seed: Turma[] = [
     disciplinas: [],
     matriculas: [],
     edicao: "2026",
+    ativa: true,
   },
 ];
 
@@ -55,7 +57,8 @@ const load = (): Turma[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return seed;
-    return JSON.parse(raw);
+    const parsed: Turma[] = JSON.parse(raw);
+    return parsed.map((t) => ({ ...t, ativa: t.ativa ?? true }));
   } catch {
     return seed;
   }
@@ -106,6 +109,10 @@ export const turmasStore = {
   },
   setMatriculas: (turmaId: string, ms: MatriculaAluno[]) => {
     state = state.map((t) => (t.id === turmaId ? { ...t, matriculas: ms } : t));
+    persist();
+  },
+  setAtiva: (turmaId: string, ativa: boolean) => {
+    state = state.map((t) => (t.id === turmaId ? { ...t, ativa } : t));
     persist();
   },
 };

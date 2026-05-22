@@ -11,8 +11,9 @@ import {
   PLANOS_ESTUDO,
   CALENDARIOS_DISPONIVEIS,
   COORDENADORES_DISPONIVEIS,
+  DISCIPLINAS_PADRAO,
 } from "@/lib/planosEstudo";
-import { Turma, turmasStore, newId } from "@/lib/turmasStore";
+import { Turma, turmasStore, newId, DisciplinaTurma } from "@/lib/turmasStore";
 
 interface Props {
   open: boolean;
@@ -72,16 +73,32 @@ export function NovaTurmaDialog({ open, onOpenChange, turma }: Props) {
       toast({ title: "Preencha todos os campos obrigatórios", variant: "destructive" });
       return;
     }
+    const isNew = !turma;
+    const disciplinasIniciais: DisciplinaTurma[] = isNew
+      ? DISCIPLINAS_PADRAO.map((nome) => ({
+          id: newId(),
+          nome,
+          anos: [ano],
+          professores: [],
+          faltasMax: 25,
+          tipoEnsino: "Base Nacional",
+          habilidades: [],
+        }))
+      : turma!.disciplinas;
     const novo: Turma = {
       id: turma?.id ?? newId(),
       planoId, ano, letra: letra.toUpperCase(), nivel, turno, codigo, cargaHoraria,
       calendarioId, coordenadores,
-      disciplinas: turma?.disciplinas ?? [],
+      disciplinas: disciplinasIniciais,
       matriculas: turma?.matriculas ?? [],
       edicao: turma?.edicao ?? "2026",
+      ativa: turma?.ativa ?? true,
     };
     turmasStore.upsert(novo);
-    toast({ title: turma ? "Turma atualizada" : "Turma criada com sucesso" });
+    toast({
+      title: turma ? "Turma atualizada" : "Turma criada com sucesso",
+      description: isNew ? `${disciplinasIniciais.length} disciplinas geradas automaticamente.` : undefined,
+    });
     onOpenChange(false);
   };
 
