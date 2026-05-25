@@ -269,15 +269,13 @@ const Turmas = () => {
                                         {turma.disciplinas.map((d) => {
                                           const carga = cargaHorariaDisciplina(d.nome);
                                           return (
-                                            <TableRow key={d.id} className="bg-background">
-                                              <TableCell className="pl-12">
-                                                <button
-                                                  className="text-left text-sm font-medium text-primary hover:underline"
-                                                  onClick={() => navigate(`/turmas/${turma.id}/disciplinas`)}
-                                                  title="Abrir diário da disciplina"
-                                                >
-                                                  {turma.ano} - {d.nome}
-                                                </button>
+                                            <TableRow
+                                              key={d.id}
+                                              className="bg-background cursor-pointer"
+                                              onClick={() => navigate(`/turmas/${turma.id}/disciplinas`)}
+                                            >
+                                              <TableCell className="pl-12 text-sm font-medium text-edu-orange">
+                                                {d.nome}
                                               </TableCell>
                                               <TableCell className="text-center text-sm">{carga}h</TableCell>
                                               <TableCell className="text-center text-sm">0</TableCell>
@@ -286,7 +284,7 @@ const Turmas = () => {
                                               <TableCell className="text-sm text-muted-foreground">
                                                 {d.professores.length ? d.professores.join(", ") : "—"}
                                               </TableCell>
-                                              <TableCell className="text-right pr-6">
+                                              <TableCell className="text-right pr-6" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex items-center justify-end gap-1.5">
                                                   <Button
                                                     size="icon"
