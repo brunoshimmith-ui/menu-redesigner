@@ -15,13 +15,27 @@ import {
 } from "@/components/ui/select";
 import {
   Search, Users, Edit, BookOpen, Plus, ChevronDown, ChevronRight,
-  Settings, Trash2, ArrowLeft, CheckCircle2, XCircle,
+  Settings, Trash2, ArrowLeft, CheckCircle2, XCircle, X, Copy,
 } from "lucide-react";
-import { useTurmas, Turma, turmasStore } from "@/lib/turmasStore";
+import { useTurmas, Turma, turmasStore, newId, DisciplinaTurma } from "@/lib/turmasStore";
 import { NovaTurmaDialog } from "@/components/turmas/NovaTurmaDialog";
 import { DisciplinaDialog } from "@/components/turmas/DisciplinaDialog";
 import { ConfigTurmaDialog } from "@/components/turmas/ConfigTurmaDialog";
 import { toast } from "@/hooks/use-toast";
+
+const CARGA_POR_DISCIPLINA: Record<string, number> = {
+  "Língua Portuguesa": 240,
+  "Matemática": 200,
+  "Ciências": 80,
+  "História": 80,
+  "Geografia": 80,
+  "Arte": 40,
+  "Artes": 40,
+  "Inglês": 80,
+  "Ensino Religioso": 40,
+  "Educação Física": 40,
+};
+const cargaHorariaDisciplina = (nome: string) => CARGA_POR_DISCIPLINA[nome] ?? 80;
 
 const Turmas = () => {
   const turmas = useTurmas();
