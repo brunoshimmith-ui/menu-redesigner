@@ -5,6 +5,8 @@ export interface DisciplinaTurma {
   nome: string;
   anos: string[];
   professores: string[];
+  professorSubstituto?: string;
+  estruturaAvaliacao?: string;
   faltasMax: number;
   tipoEnsino: string;
   habilidades: string[]; // códigos BNCC marcados
