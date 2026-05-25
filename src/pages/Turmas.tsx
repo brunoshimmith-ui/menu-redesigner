@@ -50,6 +50,7 @@ const Turmas = () => {
   const [openNova, setOpenNova] = useState(false);
   const [editing, setEditing] = useState<Turma | null>(null);
   const [discDialog, setDiscDialog] = useState<Turma | null>(null);
+  const [editDisc, setEditDisc] = useState<{ turma: Turma; disciplina: DisciplinaTurma } | null>(null);
   const [cfgDialog, setCfgDialog] = useState<Turma | null>(null);
 
   const anosDisponiveis = useMemo(
