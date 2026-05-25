@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,20 +13,32 @@ import {
   PROFESSORES_DISPONIVEIS,
   PLANOS_ESTUDO,
 } from "@/lib/planosEstudo";
-import { Turma, turmasStore, newId } from "@/lib/turmasStore";
+import { Turma, turmasStore, newId, DisciplinaTurma } from "@/lib/turmasStore";
 
 interface Props {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   turma: Turma;
+  disciplina?: DisciplinaTurma | null;
 }
 
-export function DisciplinaDialog({ open, onOpenChange, turma }: Props) {
+export function DisciplinaDialog({ open, onOpenChange, turma, disciplina }: Props) {
+  const isEdit = !!disciplina;
   const [nome, setNome] = useState("");
   const [anos, setAnos] = useState<string[]>([]);
   const [professores, setProfessores] = useState<string[]>([]);
   const [faltasMax, setFaltasMax] = useState(25);
   const [tipoEnsino, setTipoEnsino] = useState("Base Nacional");
+
+  useEffect(() => {
+    if (open) {
+      setNome(disciplina?.nome ?? "");
+      setAnos(disciplina?.anos ?? []);
+      setProfessores(disciplina?.professores ?? []);
+      setFaltasMax(disciplina?.faltasMax ?? 25);
+      setTipoEnsino(disciplina?.tipoEnsino ?? "Base Nacional");
+    }
+  }, [open, disciplina]);
 
   const plano = PLANOS_ESTUDO.find((p) => p.id === turma.planoId);
   const anosDisponiveis = plano?.anos ?? [];
@@ -39,21 +51,29 @@ export function DisciplinaDialog({ open, onOpenChange, turma }: Props) {
       toast({ title: "Selecione a disciplina", variant: "destructive" });
       return;
     }
-    turmasStore.addDisciplina(turma.id, {
-      id: newId(),
-      nome, anos, professores, faltasMax, tipoEnsino,
-      habilidades: [],
-    });
-    toast({ title: "Disciplina criada" });
+    if (isEdit && disciplina) {
+      turmasStore.updateDisciplina(turma.id, {
+        ...disciplina, nome, anos, professores, faltasMax, tipoEnsino,
+      });
+      toast({ title: "Disciplina atualizada" });
+    } else {
+      turmasStore.addDisciplina(turma.id, {
+        id: newId(),
+        nome, anos, professores, faltasMax, tipoEnsino,
+        habilidades: [],
+      });
+      toast({ title: "Disciplina criada" });
+    }
     onOpenChange(false);
-    setNome(""); setAnos([]); setProfessores([]); setFaltasMax(25); setTipoEnsino("Base Nacional");
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Criar Disciplina — {turma.ano} {turma.letra}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Editar" : "Criar"} Disciplina — {turma.ano} {turma.letra}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
@@ -112,7 +132,7 @@ export function DisciplinaDialog({ open, onOpenChange, turma }: Props) {
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={handleSave}>Salvar Disciplina</Button>
+          <Button onClick={handleSave}>{isEdit ? "Salvar alterações" : "Salvar Disciplina"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
