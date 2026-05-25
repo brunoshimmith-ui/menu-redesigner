@@ -79,6 +79,14 @@ export const TIPOS_ENSINO = [
   "Formação Geral",
 ];
 
+export const ESTRUTURAS_AVALIACAO = [
+  "Bimestral (4 fases)",
+  "Trimestral (3 fases)",
+  "Semestral (2 fases)",
+  "Anual (1 fase)",
+  "Por ciclo",
+];
+
 export const PROFESSORES_DISPONIVEIS = [
   "Prof. Carlos Andrade",
   "Profa. Mariana Lopes",

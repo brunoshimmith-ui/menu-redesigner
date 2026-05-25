@@ -13,9 +13,11 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Search, Users, Edit, BookOpen, Plus, ChevronDown, ChevronRight,
-  Settings, Trash2, ArrowLeft, CheckCircle2, XCircle, X, Copy,
+  Settings, Trash2, ArrowLeft, X, Copy,
 } from "lucide-react";
 import { useTurmas, Turma, turmasStore, newId, DisciplinaTurma } from "@/lib/turmasStore";
 import { NovaTurmaDialog } from "@/components/turmas/NovaTurmaDialog";
@@ -145,22 +147,16 @@ const Turmas = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button
-                    variant={mostrarInativas ? "outline" : "default"}
-                    size="sm"
-                    onClick={() => setMostrarInativas(false)}
-                    className="gap-1"
-                  >
-                    <CheckCircle2 className="w-4 h-4" /> Ativas ({totalAtivas})
-                  </Button>
-                  <Button
-                    variant={mostrarInativas ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setMostrarInativas(true)}
-                    className="gap-1"
-                  >
-                    <XCircle className="w-4 h-4" /> Inativas ({totalInativas})
-                  </Button>
+                  <div className="flex items-center gap-2 px-3 h-9 border rounded-md">
+                    <Label htmlFor="toggle-inativas" className="text-sm cursor-pointer">
+                      {mostrarInativas ? `Inativas (${totalInativas})` : `Ativas (${totalAtivas})`}
+                    </Label>
+                    <Switch
+                      id="toggle-inativas"
+                      checked={mostrarInativas}
+                      onCheckedChange={setMostrarInativas}
+                    />
+                  </div>
                   <Button onClick={() => { setEditing(null); setOpenNova(true); }}>
                     <Plus className="w-4 h-4" /> Nova Turma
                   </Button>
@@ -196,8 +192,11 @@ const Turmas = () => {
                       <TableBody>
                         {filtered.map((turma) => (
                           <Fragment key={turma.id}>
-                            <TableRow className="hover:bg-muted/50">
-                              <TableCell>
+                            <TableRow
+                              className="hover:bg-muted/50 cursor-pointer"
+                              onClick={() => navigate(`/turmas/${turma.id}/disciplinas`)}
+                            >
+                              <TableCell onClick={(e) => e.stopPropagation()}>
                                 <Button size="icon" variant="ghost" onClick={() => toggleExpand(turma.id)} title="Expandir">
                                   {expanded.has(turma.id) ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                                 </Button>
@@ -210,14 +209,8 @@ const Turmas = () => {
                                   : "bg-edu-blue-light text-edu-blue border-0"
                                 }>{turma.nivel}</Badge>
                               </TableCell>
-                              <TableCell>
-                                <button
-                                  className="font-medium text-left hover:underline text-primary"
-                                  onClick={() => navigate(`/turmas/${turma.id}/disciplinas`)}
-                                  title="Abrir diário da turma"
-                                >
-                                  {turma.ano} {turma.letra}
-                                </button>
+                              <TableCell className="font-medium text-primary">
+                                {turma.ano} {turma.letra}
                               </TableCell>
                               <TableCell>{turma.turno}</TableCell>
                               <TableCell className="text-sm text-muted-foreground">
@@ -226,7 +219,7 @@ const Turmas = () => {
                               <TableCell className="text-center">
                                 <Badge variant="secondary">{turma.matriculas.length}</Badge>
                               </TableCell>
-                              <TableCell className="text-right">
+                              <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex items-center justify-end gap-1">
                                   <Button variant="ghost" size="icon" title="Adicionar Disciplina"
                                           onClick={() => setDiscDialog(turma)}>
@@ -276,15 +269,13 @@ const Turmas = () => {
                                         {turma.disciplinas.map((d) => {
                                           const carga = cargaHorariaDisciplina(d.nome);
                                           return (
-                                            <TableRow key={d.id} className="bg-background">
-                                              <TableCell className="pl-12">
-                                                <button
-                                                  className="text-left text-sm font-medium text-primary hover:underline"
-                                                  onClick={() => navigate(`/turmas/${turma.id}/disciplinas`)}
-                                                  title="Abrir diário da disciplina"
-                                                >
-                                                  {turma.ano} - {d.nome}
-                                                </button>
+                                            <TableRow
+                                              key={d.id}
+                                              className="bg-background cursor-pointer"
+                                              onClick={() => navigate(`/turmas/${turma.id}/disciplinas`)}
+                                            >
+                                              <TableCell className="pl-12 text-sm font-medium text-edu-orange">
+                                                {d.nome}
                                               </TableCell>
                                               <TableCell className="text-center text-sm">{carga}h</TableCell>
                                               <TableCell className="text-center text-sm">0</TableCell>
@@ -293,7 +284,7 @@ const Turmas = () => {
                                               <TableCell className="text-sm text-muted-foreground">
                                                 {d.professores.length ? d.professores.join(", ") : "—"}
                                               </TableCell>
-                                              <TableCell className="text-right pr-6">
+                                              <TableCell className="text-right pr-6" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex items-center justify-end gap-1.5">
                                                   <Button
                                                     size="icon"
