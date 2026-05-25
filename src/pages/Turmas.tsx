@@ -13,9 +13,11 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Search, Users, Edit, BookOpen, Plus, ChevronDown, ChevronRight,
-  Settings, Trash2, ArrowLeft, CheckCircle2, XCircle, X, Copy,
+  Settings, Trash2, ArrowLeft, X, Copy,
 } from "lucide-react";
 import { useTurmas, Turma, turmasStore, newId, DisciplinaTurma } from "@/lib/turmasStore";
 import { NovaTurmaDialog } from "@/components/turmas/NovaTurmaDialog";
