@@ -233,51 +233,104 @@ const Turmas = () => {
                               </TableCell>
                             </TableRow>
                             {expanded.has(turma.id) && (
-                              <TableRow className="bg-muted/20">
-                                <TableCell colSpan={8} className="p-4">
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                      <div>
-                                        <h4 className="font-semibold text-sm">
-                                          Turma {turma.ano} {turma.letra} — {turma.nivel}
-                                        </h4>
-                                        <p className="text-xs text-muted-foreground">
-                                          {turma.turno} · Código {turma.codigo} · {turma.cargaHoraria}h
-                                        </p>
-                                      </div>
-                                      <div className="flex gap-2">
-                                        <Button size="sm" variant="outline"
-                                                onClick={() => { setEditing(turma); setOpenNova(true); }}>
-                                          <Edit className="w-3 h-3" /> Editar turma
-                                        </Button>
-                                        <Button size="sm" variant="outline" onClick={() => setDiscDialog(turma)}>
-                                          <Plus className="w-3 h-3" /> Disciplina
-                                        </Button>
-                                      </div>
+                              <TableRow className="bg-muted/10 hover:bg-muted/10">
+                                <TableCell colSpan={8} className="p-0">
+                                  {turma.disciplinas.length === 0 ? (
+                                    <div className="p-6 text-center">
+                                      <p className="text-sm text-muted-foreground mb-3">
+                                        Nenhuma disciplina configurada para esta turma.
+                                      </p>
+                                      <Button size="sm" onClick={() => setDiscDialog(turma)}>
+                                        <Plus className="w-3 h-3" /> Adicionar disciplina
+                                      </Button>
                                     </div>
-                                    <div>
-                                      <h5 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
-                                        Disciplinas configuradas ({turma.disciplinas.length})
-                                      </h5>
-                                      {turma.disciplinas.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">Nenhuma disciplina configurada.</p>
-                                      ) : (
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                          {turma.disciplinas.map((d) => (
-                                            <div key={d.id} className="border rounded-md p-3 bg-background">
-                                              <div className="flex items-center justify-between mb-1">
-                                                <span className="font-medium text-sm">{d.nome}</span>
-                                                <Badge variant="outline" className="text-xs">{d.tipoEnsino}</Badge>
-                                              </div>
-                                              <p className="text-xs text-muted-foreground">
-                                                {d.professores.length} prof. · faltas máx {d.faltasMax}%
-                                              </p>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
+                                  ) : (
+                                    <Table>
+                                      <TableHeader>
+                                        <TableRow className="bg-muted/40 hover:bg-muted/40">
+                                          <TableHead className="pl-12">Disciplina</TableHead>
+                                          <TableHead className="text-center">Carga horária</TableHead>
+                                          <TableHead className="text-center">Aulas dadas</TableHead>
+                                          <TableHead className="text-center">Faltas</TableHead>
+                                          <TableHead className="text-center">Bimestres</TableHead>
+                                          <TableHead>Professores</TableHead>
+                                          <TableHead className="text-right pr-6">Ações</TableHead>
+                                        </TableRow>
+                                      </TableHeader>
+                                      <TableBody>
+                                        {turma.disciplinas.map((d) => {
+                                          const carga = cargaHorariaDisciplina(d.nome);
+                                          return (
+                                            <TableRow key={d.id} className="bg-background">
+                                              <TableCell className="pl-12">
+                                                <button
+                                                  className="text-left text-sm font-medium text-primary hover:underline"
+                                                  onClick={() => navigate(`/turmas/${turma.id}/disciplinas`)}
+                                                  title="Abrir diário da disciplina"
+                                                >
+                                                  {turma.ano} - {d.nome}
+                                                </button>
+                                              </TableCell>
+                                              <TableCell className="text-center text-sm">{carga}h</TableCell>
+                                              <TableCell className="text-center text-sm">0</TableCell>
+                                              <TableCell className="text-center text-sm">0</TableCell>
+                                              <TableCell className="text-center text-sm">4</TableCell>
+                                              <TableCell className="text-sm text-muted-foreground">
+                                                {d.professores.length ? d.professores.join(", ") : "—"}
+                                              </TableCell>
+                                              <TableCell className="text-right pr-6">
+                                                <div className="flex items-center justify-end gap-1.5">
+                                                  <Button
+                                                    size="icon"
+                                                    className="h-7 w-7 rounded-full bg-edu-blue hover:bg-edu-blue/90 text-white"
+                                                    title="Editar"
+                                                    onClick={() => { setEditDisc({ turma, disciplina: d }); }}
+                                                  >
+                                                    <Edit className="w-3.5 h-3.5" />
+                                                  </Button>
+                                                  <Button
+                                                    size="icon"
+                                                    className="h-7 w-7 rounded-full bg-destructive hover:bg-destructive/90 text-white"
+                                                    title="Remover"
+                                                    onClick={() => {
+                                                      if (confirm(`Remover disciplina ${d.nome}?`)) {
+                                                        turmasStore.removeDisciplina(turma.id, d.id);
+                                                        toast({ title: "Disciplina removida" });
+                                                      }
+                                                    }}
+                                                  >
+                                                    <X className="w-3.5 h-3.5" />
+                                                  </Button>
+                                                  <Button
+                                                    size="icon"
+                                                    className="h-7 w-7 rounded-full bg-edu-orange hover:bg-edu-orange/90 text-white"
+                                                    title="Duplicar"
+                                                    onClick={() => {
+                                                      turmasStore.addDisciplina(turma.id, {
+                                                        ...d, id: newId(), nome: d.nome,
+                                                      });
+                                                      toast({ title: "Disciplina duplicada" });
+                                                    }}
+                                                  >
+                                                    <Copy className="w-3.5 h-3.5" />
+                                                  </Button>
+                                                  <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="h-7 w-7 rounded-full"
+                                                    title="Configurações"
+                                                    onClick={() => setCfgDialog(turma)}
+                                                  >
+                                                    <Settings className="w-3.5 h-3.5" />
+                                                  </Button>
+                                                </div>
+                                              </TableCell>
+                                            </TableRow>
+                                          );
+                                        })}
+                                      </TableBody>
+                                    </Table>
+                                  )}
                                 </TableCell>
                               </TableRow>
                             )}
