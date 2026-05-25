@@ -103,6 +103,14 @@ export const turmasStore = {
     );
     persist();
   },
+  removeDisciplina: (turmaId: string, disciplinaId: string) => {
+    state = state.map((t) =>
+      t.id === turmaId
+        ? { ...t, disciplinas: t.disciplinas.filter((x) => x.id !== disciplinaId) }
+        : t,
+    );
+    persist();
+  },
   setCoordenadores: (turmaId: string, coords: string[]) => {
     state = state.map((t) => (t.id === turmaId ? { ...t, coordenadores: coords } : t));
     persist();
