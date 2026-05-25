@@ -365,6 +365,14 @@ const Turmas = () => {
       {discDialog && (
         <DisciplinaDialog open={!!discDialog} onOpenChange={(o) => !o && setDiscDialog(null)} turma={discDialog} />
       )}
+      {editDisc && (
+        <DisciplinaDialog
+          open={!!editDisc}
+          onOpenChange={(o) => !o && setEditDisc(null)}
+          turma={editDisc.turma}
+          disciplina={editDisc.disciplina}
+        />
+      )}
       {cfgDialog && (
         <ConfigTurmaDialog open={!!cfgDialog} onOpenChange={(o) => !o && setCfgDialog(null)} turma={cfgDialog} />
       )}
