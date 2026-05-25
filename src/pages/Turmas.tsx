@@ -192,8 +192,11 @@ const Turmas = () => {
                       <TableBody>
                         {filtered.map((turma) => (
                           <Fragment key={turma.id}>
-                            <TableRow className="hover:bg-muted/50">
-                              <TableCell>
+                            <TableRow
+                              className="hover:bg-muted/50 cursor-pointer"
+                              onClick={() => navigate(`/turmas/${turma.id}/disciplinas`)}
+                            >
+                              <TableCell onClick={(e) => e.stopPropagation()}>
                                 <Button size="icon" variant="ghost" onClick={() => toggleExpand(turma.id)} title="Expandir">
                                   {expanded.has(turma.id) ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                                 </Button>
@@ -206,14 +209,8 @@ const Turmas = () => {
                                   : "bg-edu-blue-light text-edu-blue border-0"
                                 }>{turma.nivel}</Badge>
                               </TableCell>
-                              <TableCell>
-                                <button
-                                  className="font-medium text-left hover:underline text-primary"
-                                  onClick={() => navigate(`/turmas/${turma.id}/disciplinas`)}
-                                  title="Abrir diário da turma"
-                                >
-                                  {turma.ano} {turma.letra}
-                                </button>
+                              <TableCell className="font-medium text-primary">
+                                {turma.ano} {turma.letra}
                               </TableCell>
                               <TableCell>{turma.turno}</TableCell>
                               <TableCell className="text-sm text-muted-foreground">
