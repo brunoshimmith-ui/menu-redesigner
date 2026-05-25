@@ -147,22 +147,16 @@ const Turmas = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button
-                    variant={mostrarInativas ? "outline" : "default"}
-                    size="sm"
-                    onClick={() => setMostrarInativas(false)}
-                    className="gap-1"
-                  >
-                    <CheckCircle2 className="w-4 h-4" /> Ativas ({totalAtivas})
-                  </Button>
-                  <Button
-                    variant={mostrarInativas ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setMostrarInativas(true)}
-                    className="gap-1"
-                  >
-                    <XCircle className="w-4 h-4" /> Inativas ({totalInativas})
-                  </Button>
+                  <div className="flex items-center gap-2 px-3 h-9 border rounded-md">
+                    <Label htmlFor="toggle-inativas" className="text-sm cursor-pointer">
+                      {mostrarInativas ? `Inativas (${totalInativas})` : `Ativas (${totalAtivas})`}
+                    </Label>
+                    <Switch
+                      id="toggle-inativas"
+                      checked={mostrarInativas}
+                      onCheckedChange={setMostrarInativas}
+                    />
+                  </div>
                   <Button onClick={() => { setEditing(null); setOpenNova(true); }}>
                     <Plus className="w-4 h-4" /> Nova Turma
                   </Button>
