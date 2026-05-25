@@ -219,7 +219,7 @@ const Turmas = () => {
                               <TableCell className="text-center">
                                 <Badge variant="secondary">{turma.matriculas.length}</Badge>
                               </TableCell>
-                              <TableCell className="text-right">
+                              <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex items-center justify-end gap-1">
                                   <Button variant="ghost" size="icon" title="Adicionar Disciplina"
                                           onClick={() => setDiscDialog(turma)}>
