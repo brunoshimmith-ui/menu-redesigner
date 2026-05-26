@@ -129,7 +129,35 @@ const Disciplinas = () => {
   const [aulaActionsOpen, setAulaActionsOpen] = useState(false);
   const [activeAula, setActiveAula] = useState<AulaSalva | null>(null);
 
+  const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
+
+  const getWeekKind = (): "past" | "current" | "future" => {
+    const today = new Date();
+    const startToday = new Date(today);
+    startToday.setDate(today.getDate() - today.getDay());
+    startToday.setHours(0, 0, 0, 0);
+    const startWeek = new Date(weekDates[0]);
+    startWeek.setHours(0, 0, 0, 0);
+    if (startWeek.getTime() === startToday.getTime()) return "current";
+    return startWeek.getTime() > startToday.getTime() ? "future" : "past";
+  };
+  const weekKind = getWeekKind();
+  const isFutureWeek = weekKind === "future";
+
+  const isAulaFilled = (a: AulaSalva) => {
+    const hasContent = !!(a.conteudo?.objetivo?.trim() && (a.conteudo?.habilidades?.length ?? 0) > 0);
+    const hasFreq = !!(a.frequencia && Object.keys(a.frequencia.registros || {}).length > 0);
+    return hasContent && hasFreq;
+  };
+
   const openAula = (a: AulaSalva) => {
+    if (isFutureWeek) {
+      toast({
+        title: "Aula bloqueada",
+        description: "Esta aula não pode ser preenchida pois está fora da semana atual. Será liberada a partir da data inicial.",
+      });
+      return;
+    }
     setActiveAula(a);
     setAulaActionsOpen(true);
   };
@@ -145,17 +173,27 @@ const Disciplinas = () => {
     { id: crypto.randomUUID(), disciplina: "", horaInicio: "07:00", horaTermino: "08:00", professor: "", diaSemana: 1 },
   ]);
 
-  const toggleSlot = (dayIdx: number, hora: string) => {
-    const key = `${dayIdx}-${hora}`;
-    setSelectedSlots((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
+  const openSingleSlot = (dayIdx: number, hora: string) => {
+    if (isFutureWeek) {
+      toast({
+        title: "Semana bloqueada",
+        description: "Esta semana ainda não foi liberada. Aulas só podem ser criadas/preenchidas a partir da data inicial.",
+      });
+      return;
+    }
+    const startH = parseInt(hora.split(":")[0]);
+    setFormItems([
+      {
+        id: crypto.randomUUID(),
+        disciplina: "",
+        horaInicio: hora,
+        horaTermino: `${String(startH + 1).padStart(2, "0")}:00`,
+        professor: "",
+        diaSemana: dayIdx,
+      },
+    ]);
+    setSelectedSlots(new Set());
+    setDialogOpen(true);
   };
 
   const openDialogFromSelection = () => {
@@ -176,7 +214,6 @@ const Disciplinas = () => {
     setDialogOpen(true);
   };
 
-  const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
 
   const navigateWeek = (dir: number) => {
     setCurrentWeek((prev) => {
@@ -447,18 +484,18 @@ const Disciplinas = () => {
                               <td
                                 key={dayIdx}
                                 rowSpan={rowSpan > 1 ? rowSpan : undefined}
-                                onClick={() => !hasAula && toggleSlot(dayIdx, hora)}
+                                onClick={() => !hasAula && openSingleSlot(dayIdx, hora)}
                                 className={`border-b border-r p-1 align-top transition-colors ${
                                   isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""
-                                } ${!hasAula ? "cursor-pointer hover:bg-accent/20" : ""} ${
-                                  isSelected ? "bg-accent/30 ring-2 ring-inset ring-accent" : ""
-                                }`}
+                                } ${!hasAula ? "cursor-pointer hover:bg-accent/20" : ""}`}
                               >
                                 {startingAulas.map((aula) => {
-                                  const statusClass =
-                                    aula.status === "preenchida"
-                                      ? "bg-green-200 border-green-500 text-green-900"
-                                      : DISCIPLINA_COLORS[aula.disciplina] || "bg-muted border-border";
+                                  const filled = isAulaFilled(aula);
+                                  const statusClass = isFutureWeek
+                                    ? "bg-slate-400/70 border-slate-500 text-slate-900"
+                                    : filled
+                                      ? "bg-edu-green/20 border-edu-green text-edu-green-foreground"
+                                      : "bg-slate-200 border-slate-300 text-slate-700";
                                   return (
                                     <button
                                       key={aula.id}
@@ -467,7 +504,7 @@ const Disciplinas = () => {
                                     >
                                       <div className="font-semibold text-[10px] flex items-center justify-between">
                                         <span>{aula.horaInicio} – {aula.horaTermino}</span>
-                                        {aula.status === "preenchida" && <span className="text-[9px]">✓</span>}
+                                        {filled && !isFutureWeek && <span className="text-[9px]">✓</span>}
                                       </div>
                                       <div className="font-bold truncate">{aula.disciplina}</div>
                                       <div className="text-[9px] opacity-75 truncate">{aula.professor}</div>
@@ -476,6 +513,7 @@ const Disciplinas = () => {
                                 })}
                               </td>
                             );
+
                           })}
                         </tr>
                       ))}
@@ -485,10 +523,11 @@ const Disciplinas = () => {
 
                 {/* Legend — status das aulas */}
                 <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-2">
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-200 border border-blue-400 inline-block" /> Aula criada (a acontecer)</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-200 border border-amber-400 inline-block" /> Aula no horário (cor da disciplina)</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-200 border border-green-500 inline-block" /> Aula preenchida (conteúdo + frequência)</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-200 border border-slate-300 inline-block" /> Aula criada (sem conteúdo)</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-edu-green/20 border border-edu-green inline-block" /> Aula preenchida (objetivo + BNCC + frequência)</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-400/70 border border-slate-500 inline-block" /> Semana futura (bloqueada)</span>
                 </div>
+
               </TabsContent>
 
               <TabsContent value="componentes">
