@@ -484,18 +484,18 @@ const Disciplinas = () => {
                               <td
                                 key={dayIdx}
                                 rowSpan={rowSpan > 1 ? rowSpan : undefined}
-                                onClick={() => !hasAula && toggleSlot(dayIdx, hora)}
+                                onClick={() => !hasAula && openSingleSlot(dayIdx, hora)}
                                 className={`border-b border-r p-1 align-top transition-colors ${
                                   isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""
-                                } ${!hasAula ? "cursor-pointer hover:bg-accent/20" : ""} ${
-                                  isSelected ? "bg-accent/30 ring-2 ring-inset ring-accent" : ""
-                                }`}
+                                } ${!hasAula ? "cursor-pointer hover:bg-accent/20" : ""}`}
                               >
                                 {startingAulas.map((aula) => {
-                                  const statusClass =
-                                    aula.status === "preenchida"
-                                      ? "bg-green-200 border-green-500 text-green-900"
-                                      : DISCIPLINA_COLORS[aula.disciplina] || "bg-muted border-border";
+                                  const filled = isAulaFilled(aula);
+                                  const statusClass = isFutureWeek
+                                    ? "bg-slate-400/70 border-slate-500 text-slate-900"
+                                    : filled
+                                      ? "bg-edu-green/20 border-edu-green text-edu-green-foreground"
+                                      : "bg-slate-200 border-slate-300 text-slate-700";
                                   return (
                                     <button
                                       key={aula.id}
@@ -504,7 +504,7 @@ const Disciplinas = () => {
                                     >
                                       <div className="font-semibold text-[10px] flex items-center justify-between">
                                         <span>{aula.horaInicio} – {aula.horaTermino}</span>
-                                        {aula.status === "preenchida" && <span className="text-[9px]">✓</span>}
+                                        {filled && !isFutureWeek && <span className="text-[9px]">✓</span>}
                                       </div>
                                       <div className="font-bold truncate">{aula.disciplina}</div>
                                       <div className="text-[9px] opacity-75 truncate">{aula.professor}</div>
@@ -513,6 +513,7 @@ const Disciplinas = () => {
                                 })}
                               </td>
                             );
+
                           })}
                         </tr>
                       ))}
