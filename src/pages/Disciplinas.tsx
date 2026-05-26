@@ -33,6 +33,10 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialog";
+import {
+  MediasPanel, ConteudosPanel, FrequenciaPanel, ComplementaresPanel, HorarioPanel,
+} from "@/components/diario/DiarioPanels";
+
 
 const DISCIPLINAS_BASE = [
   "Língua Portuguesa",
