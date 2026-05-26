@@ -414,11 +414,23 @@ const Disciplinas = () => {
                     </DialogContent>
                   </Dialog>
 
-                  <Badge className="bg-green-500 text-white border-0 cursor-pointer">Médias</Badge>
-                  <Badge className="bg-blue-500 text-white border-0 cursor-pointer">Conteúdos</Badge>
-                  <Badge className="bg-red-500 text-white border-0 cursor-pointer">Frequências</Badge>
-                  <Badge className="bg-purple-500 text-white border-0 cursor-pointer">Complementares</Badge>
-                  <Badge className="bg-teal-600 text-white border-0 cursor-pointer">Horário</Badge>
+                  {([
+                    ["grade", "Grade semanal", "bg-slate-500"],
+                    ["medias", "Médias", "bg-green-500"],
+                    ["conteudos", "Conteúdos", "bg-blue-500"],
+                    ["frequencia", "Frequências", "bg-red-500"],
+                    ["complementares", "Complementares", "bg-purple-500"],
+                    ["horario", "Horário", "bg-teal-600"],
+                  ] as const).map(([key, label, color]) => (
+                    <Badge
+                      key={key}
+                      onClick={() => setDiarioView(key)}
+                      className={`${color} text-white border-0 cursor-pointer ${diarioView === key ? "ring-2 ring-offset-2 ring-foreground/40" : "opacity-70 hover:opacity-100"}`}
+                    >
+                      {label}
+                    </Badge>
+                  ))}
+
                 </div>
 
                 {/* Week navigation */}
