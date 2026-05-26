@@ -129,7 +129,35 @@ const Disciplinas = () => {
   const [aulaActionsOpen, setAulaActionsOpen] = useState(false);
   const [activeAula, setActiveAula] = useState<AulaSalva | null>(null);
 
+  const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
+
+  const getWeekKind = (): "past" | "current" | "future" => {
+    const today = new Date();
+    const startToday = new Date(today);
+    startToday.setDate(today.getDate() - today.getDay());
+    startToday.setHours(0, 0, 0, 0);
+    const startWeek = new Date(weekDates[0]);
+    startWeek.setHours(0, 0, 0, 0);
+    if (startWeek.getTime() === startToday.getTime()) return "current";
+    return startWeek.getTime() > startToday.getTime() ? "future" : "past";
+  };
+  const weekKind = getWeekKind();
+  const isFutureWeek = weekKind === "future";
+
+  const isAulaFilled = (a: AulaSalva) => {
+    const hasContent = !!(a.conteudo?.objetivo?.trim() && (a.conteudo?.habilidades?.length ?? 0) > 0);
+    const hasFreq = !!(a.frequencia && Object.keys(a.frequencia.registros || {}).length > 0);
+    return hasContent && hasFreq;
+  };
+
   const openAula = (a: AulaSalva) => {
+    if (isFutureWeek) {
+      toast({
+        title: "Aula bloqueada",
+        description: "Esta aula não pode ser preenchida pois está fora da semana atual. Será liberada a partir da data inicial.",
+      });
+      return;
+    }
     setActiveAula(a);
     setAulaActionsOpen(true);
   };
@@ -145,17 +173,27 @@ const Disciplinas = () => {
     { id: crypto.randomUUID(), disciplina: "", horaInicio: "07:00", horaTermino: "08:00", professor: "", diaSemana: 1 },
   ]);
 
-  const toggleSlot = (dayIdx: number, hora: string) => {
-    const key = `${dayIdx}-${hora}`;
-    setSelectedSlots((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
+  const openSingleSlot = (dayIdx: number, hora: string) => {
+    if (isFutureWeek) {
+      toast({
+        title: "Semana bloqueada",
+        description: "Esta semana ainda não foi liberada. Aulas só podem ser criadas/preenchidas a partir da data inicial.",
+      });
+      return;
+    }
+    const startH = parseInt(hora.split(":")[0]);
+    setFormItems([
+      {
+        id: crypto.randomUUID(),
+        disciplina: "",
+        horaInicio: hora,
+        horaTermino: `${String(startH + 1).padStart(2, "0")}:00`,
+        professor: "",
+        diaSemana: dayIdx,
+      },
+    ]);
+    setSelectedSlots(new Set());
+    setDialogOpen(true);
   };
 
   const openDialogFromSelection = () => {
@@ -176,7 +214,6 @@ const Disciplinas = () => {
     setDialogOpen(true);
   };
 
-  const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
 
   const navigateWeek = (dir: number) => {
     setCurrentWeek((prev) => {
