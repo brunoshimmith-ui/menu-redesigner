@@ -433,118 +433,126 @@ const Disciplinas = () => {
 
                 </div>
 
-                {/* Week navigation */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon" onClick={() => navigateWeek(-1)}>
-                      <ChevronLeft className="w-4 h-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => navigateWeek(1)}>
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <span className="text-sm font-medium">{formatWeekRange(weekDates)}</span>
-                  <div className="flex gap-1">
-                    <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("Mês")}>Mês</Button>
-                    <Button variant={viewMode === "Semana" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("Semana")}>Semana</Button>
-                  </div>
-                </div>
+                {diarioView === "grade" && (
+                  <>
+                    {/* Week navigation */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="icon" onClick={() => navigateWeek(-1)}>
+                          <ChevronLeft className="w-4 h-4" />
+                        </Button>
+                        <Button variant="outline" size="icon" onClick={() => navigateWeek(1)}>
+                          <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <span className="text-sm font-medium">{formatWeekRange(weekDates)}</span>
+                      <div className="flex gap-1">
+                        <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("Mês")}>Mês</Button>
+                        <Button variant={viewMode === "Semana" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("Semana")}>Semana</Button>
+                      </div>
+                    </div>
 
-                {/* Weekly grid */}
-                <div className="border rounded-lg overflow-auto bg-card">
-                  <table className="w-full border-collapse text-sm">
-                    <thead>
-                      <tr>
-                        <th className="border-b border-r p-2 w-16 text-muted-foreground font-normal"></th>
-                        {weekDates.map((date, i) => (
-                          <th
-                            key={i}
-                            className={`border-b border-r p-2 text-center font-medium min-w-[120px] ${isToday(date) ? "bg-primary/10 text-primary" : ""}`}
-                          >
-                            <div>{String(date.getDate()).padStart(2, "0")} {DIAS_SEMANA[i]}</div>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {HORAS.map((hora) => (
-                        <tr key={hora} className="h-14">
-                          <td className="border-b border-r p-2 text-xs text-muted-foreground text-right align-top">
-                            {hora}
-                          </td>
-                          {weekDates.map((_, dayIdx) => {
-                            const slotAulas = getAulasForSlot(dayIdx, hora);
-                            const startingAulas = slotAulas.filter((a) => isStartHour(a, hora));
-                            const coveredKey = `${dayIdx}-${hora}`;
-
-                            // Check if this cell is covered by a multi-hour aula already rendered
-                            if (renderedAulas.has(coveredKey)) {
-                              return null;
-                            }
-
-                            // Mark future hours as rendered for multi-hour aulas
-                            let rowSpan = 1;
-                            if (startingAulas.length > 0) {
-                              const maxSpan = Math.max(...startingAulas.map(getAulaSpan));
-                              rowSpan = maxSpan;
-                              for (let s = 1; s < maxSpan; s++) {
-                                const hIdx = HORAS.indexOf(hora);
-                                if (hIdx + s < HORAS.length) {
-                                  renderedAulas.add(`${dayIdx}-${HORAS[hIdx + s]}`);
-                                }
-                              }
-                            }
-
-                            const isSelected = selectedSlots.has(coveredKey);
-                            const hasAula = startingAulas.length > 0;
-
-                            return (
-                              <td
-                                key={dayIdx}
-                                rowSpan={rowSpan > 1 ? rowSpan : undefined}
-                                onClick={() => !hasAula && openSingleSlot(dayIdx, hora)}
-                                className={`border-b border-r p-1 align-top transition-colors ${
-                                  isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""
-                                } ${!hasAula ? "cursor-pointer hover:bg-accent/20" : ""}`}
+                    {/* Weekly grid */}
+                    <div className="border rounded-lg overflow-auto bg-card">
+                      <table className="w-full border-collapse text-sm">
+                        <thead>
+                          <tr>
+                            <th className="border-b border-r p-2 w-16 text-muted-foreground font-normal"></th>
+                            {weekDates.map((date, i) => (
+                              <th
+                                key={i}
+                                className={`border-b border-r p-2 text-center font-medium min-w-[120px] ${isToday(date) ? "bg-primary/10 text-primary" : ""}`}
                               >
-                                {startingAulas.map((aula) => {
-                                  const filled = isAulaFilled(aula);
-                                  const statusClass = isFutureWeek
-                                    ? "bg-slate-400/70 border-slate-500 text-slate-900"
-                                    : filled
-                                      ? "bg-edu-green/20 border-edu-green text-edu-green-foreground"
-                                      : "bg-slate-200 border-slate-300 text-slate-700";
-                                  return (
-                                    <button
-                                      key={aula.id}
-                                      onClick={(e) => { e.stopPropagation(); openAula(aula); }}
-                                      className={`w-full rounded p-1.5 border text-xs h-full text-left hover:ring-2 hover:ring-primary/40 transition ${statusClass}`}
-                                    >
-                                      <div className="font-semibold text-[10px] flex items-center justify-between">
-                                        <span>{aula.horaInicio} – {aula.horaTermino}</span>
-                                        {filled && !isFutureWeek && <span className="text-[9px]">✓</span>}
-                                      </div>
-                                      <div className="font-bold truncate">{aula.disciplina}</div>
-                                      <div className="text-[9px] opacity-75 truncate">{aula.professor}</div>
-                                    </button>
-                                  );
-                                })}
+                                <div>{String(date.getDate()).padStart(2, "0")} {DIAS_SEMANA[i]}</div>
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {HORAS.map((hora) => (
+                            <tr key={hora} className="h-14">
+                              <td className="border-b border-r p-2 text-xs text-muted-foreground text-right align-top">
+                                {hora}
                               </td>
-                            );
+                              {weekDates.map((_, dayIdx) => {
+                                const slotAulas = getAulasForSlot(dayIdx, hora);
+                                const startingAulas = slotAulas.filter((a) => isStartHour(a, hora));
+                                const coveredKey = `${dayIdx}-${hora}`;
 
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                                if (renderedAulas.has(coveredKey)) {
+                                  return null;
+                                }
 
-                {/* Legend — status das aulas */}
-                <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-2">
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-200 border border-slate-300 inline-block" /> Aula criada (sem conteúdo)</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-edu-green/20 border border-edu-green inline-block" /> Aula preenchida (objetivo + BNCC + frequência)</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-400/70 border border-slate-500 inline-block" /> Semana futura (bloqueada)</span>
-                </div>
+                                let rowSpan = 1;
+                                if (startingAulas.length > 0) {
+                                  const maxSpan = Math.max(...startingAulas.map(getAulaSpan));
+                                  rowSpan = maxSpan;
+                                  for (let s = 1; s < maxSpan; s++) {
+                                    const hIdx = HORAS.indexOf(hora);
+                                    if (hIdx + s < HORAS.length) {
+                                      renderedAulas.add(`${dayIdx}-${HORAS[hIdx + s]}`);
+                                    }
+                                  }
+                                }
+
+                                const hasAula = startingAulas.length > 0;
+
+                                return (
+                                  <td
+                                    key={dayIdx}
+                                    rowSpan={rowSpan > 1 ? rowSpan : undefined}
+                                    onClick={() => !hasAula && openSingleSlot(dayIdx, hora)}
+                                    className={`border-b border-r p-1 align-top transition-colors ${
+                                      isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""
+                                    } ${!hasAula ? "cursor-pointer hover:bg-accent/20" : ""}`}
+                                  >
+                                    {startingAulas.map((aula) => {
+                                      const filled = isAulaFilled(aula);
+                                      const statusClass = isFutureWeek
+                                        ? "bg-slate-400/70 border-slate-500 text-slate-900"
+                                        : filled
+                                          ? "bg-edu-green/20 border-edu-green text-edu-green-foreground"
+                                          : "bg-slate-200 border-slate-300 text-slate-700";
+                                      return (
+                                        <button
+                                          key={aula.id}
+                                          onClick={(e) => { e.stopPropagation(); openAula(aula); }}
+                                          className={`w-full rounded p-1.5 border text-xs h-full text-left hover:ring-2 hover:ring-primary/40 transition ${statusClass}`}
+                                        >
+                                          <div className="font-semibold text-[10px] flex items-center justify-between">
+                                            <span>{aula.horaInicio} – {aula.horaTermino}</span>
+                                            {filled && !isFutureWeek && <span className="text-[9px]">✓</span>}
+                                          </div>
+                                          <div className="font-bold truncate">{aula.disciplina}</div>
+                                          <div className="text-[9px] opacity-75 truncate">{aula.professor}</div>
+                                        </button>
+                                      );
+                                    })}
+                                  </td>
+                                );
+
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Legend — status das aulas */}
+                    <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-2">
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-200 border border-slate-300 inline-block" /> Aula criada (sem conteúdo)</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-edu-green/20 border border-edu-green inline-block" /> Aula preenchida (objetivo + BNCC + frequência)</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-400/70 border border-slate-500 inline-block" /> Semana futura (bloqueada)</span>
+                    </div>
+                  </>
+                )}
+
+                {diarioView === "medias" && <MediasPanel aulas={aulas} />}
+                {diarioView === "conteudos" && <ConteudosPanel aulas={aulas} />}
+                {diarioView === "frequencia" && <FrequenciaPanel aulas={aulas} />}
+                {diarioView === "complementares" && <ComplementaresPanel aulas={aulas} />}
+                {diarioView === "horario" && <HorarioPanel aulas={aulas} />}
+
 
               </TabsContent>
 
