@@ -132,6 +132,8 @@ const Disciplinas = () => {
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
   const [aulaActionsOpen, setAulaActionsOpen] = useState(false);
   const [activeAula, setActiveAula] = useState<AulaSalva | null>(null);
+  const [diarioView, setDiarioView] = useState<"grade" | "medias" | "conteudos" | "frequencia" | "complementares" | "horario">("grade");
+
 
   const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
 
