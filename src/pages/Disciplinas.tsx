@@ -27,9 +27,11 @@ import {
   Plus,
   Trash2,
   Save,
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  Copy,
+  CalendarDays,
+  X,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialog";
@@ -39,6 +41,8 @@ import {
 import {
   ComponentesCurricularesPanel, DrivePanel, AvaliacoesPanel, EmissaoDocumentosPanel,
 } from "@/components/diario/TabPanels";
+import { TipBanner, TipsToggle, useDiarioTips } from "@/components/diario/DiarioTips";
+import { holidays, optionalDays, bimestres, dateKey, toDate } from "@/lib/calendario";
 
 
 const DISCIPLINAS_BASE = [
@@ -136,9 +140,35 @@ const Disciplinas = () => {
   const [aulaActionsOpen, setAulaActionsOpen] = useState(false);
   const [activeAula, setActiveAula] = useState<AulaSalva | null>(null);
   const [diarioView, setDiarioView] = useState<"grade" | "medias" | "conteudos" | "frequencia" | "complementares" | "horario">("grade");
-
+  const { enabled: tipsEnabled, setEnabled: setTipsEnabled } = useDiarioTips();
+  const [replicateOpen, setReplicateOpen] = useState(false);
+  const [replicateWeeks, setReplicateWeeks] = useState(4);
 
   const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
+  const currentWeekKey = dateKey(weekDates[0]);
+
+  // Holiday lookup
+  const holidayMap = useMemo(() => {
+    const m = new Map<string, string>();
+    holidays.forEach((h) => m.set(h.date, h.name));
+    return m;
+  }, []);
+  const optionalMap = useMemo(() => {
+    const m = new Map<string, string>();
+    optionalDays.forEach((h) => m.set(h.date, h.name));
+    return m;
+  }, []);
+
+  const currentBimestre = useMemo(() => {
+    const k = dateKey(weekDates[0]);
+    return bimestres.find((b) => k >= b.inicio && k <= b.fim) || null;
+  }, [weekDates]);
+
+  // Aulas filtered to current week (or legacy aulas without weekStart show in any week)
+  const weekAulas = useMemo(
+    () => aulas.filter((a) => !a.weekStart || a.weekStart === currentWeekKey),
+    [aulas, currentWeekKey]
+  );
 
   const getWeekKind = (): "past" | "current" | "future" => {
     const today = new Date();
@@ -270,6 +300,7 @@ const Disciplinas = () => {
       horaInicio: d.horaInicio,
       horaTermino: d.horaTermino,
       status: "criada",
+      weekStart: currentWeekKey,
     }));
     setAulas((prev) => [...prev, ...novas]);
     setFormItems([{ id: crypto.randomUUID(), disciplina: "", horaInicio: "07:00", horaTermino: "08:00", professor: "", diaSemana: 1 }]);
@@ -278,10 +309,58 @@ const Disciplinas = () => {
     toast({ title: "Aulas adicionadas!", description: `${novas.length} aula(s) adicionada(s) ao diário.` });
   };
 
-  // Get aulas for a specific day/hour
+  const deleteAula = (id: string) => {
+    setAulas((prev) => prev.filter((a) => a.id !== id));
+    toast({ title: "Aula excluída" });
+  };
+
+  const replicarAulas = () => {
+    if (weekAulas.length === 0) {
+      toast({ title: "Nada para replicar", description: "Não há aulas nesta semana.", variant: "destructive" });
+      return;
+    }
+    const novas: AulaSalva[] = [];
+    let skipCount = 0;
+    for (let w = 1; w <= replicateWeeks; w++) {
+      const target = new Date(weekDates[0]);
+      target.setDate(target.getDate() + w * 7);
+      const targetWeek = getWeekDates(target);
+      const targetKey = dateKey(targetWeek[0]);
+      weekAulas.forEach((a) => {
+        const dayDate = targetWeek[a.diaSemana];
+        const k = dateKey(dayDate);
+        if (holidayMap.has(k) || optionalMap.has(k)) {
+          skipCount++;
+          return;
+        }
+        novas.push({
+          ...a,
+          id: crypto.randomUUID(),
+          weekStart: targetKey,
+          status: "criada",
+          conteudo: undefined,
+          frequencia: undefined,
+        });
+      });
+    }
+    setAulas((prev) => [...prev, ...novas]);
+    setReplicateOpen(false);
+    toast({
+      title: "Aulas replicadas",
+      description: `${novas.length} aula(s) criada(s) em ${replicateWeeks} semana(s). ${skipCount} pulada(s) por feriado/ponto facultativo.`,
+    });
+  };
+
+  const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const goToMonth = (m: number) => {
+    const d = new Date(currentWeek.getFullYear(), m, 1);
+    setCurrentWeek(d);
+  };
+
+  // Get aulas for a specific day/hour (filtered by current week)
   const getAulasForSlot = (dayIndex: number, hour: string) => {
     const hourNum = parseInt(hour.split(":")[0]);
-    return aulas.filter((a) => {
+    return weekAulas.filter((a) => {
       if (a.diaSemana !== dayIndex) return false;
       const startH = parseInt(a.horaInicio.split(":")[0]);
       const endH = parseInt(a.horaTermino.split(":")[0]);
@@ -434,47 +513,175 @@ const Disciplinas = () => {
                     </Badge>
                   ))}
 
+                  <div className="ml-auto">
+                    <TipsToggle enabled={tipsEnabled} onChange={setTipsEnabled} />
+                  </div>
                 </div>
+
+                {/* Contextual tips per screen */}
+                {tipsEnabled && diarioView === "grade" && (
+                  <TipBanner variant="tip" title="Dica — Grade semanal" dismissKey="grade">
+                    Clique em uma célula vazia para criar 1 aula, ou use <b>+</b> para várias.
+                    Semanas futuras ficam bloqueadas até a data de início. Use o botão{" "}
+                    <b>Replicar</b> para copiar a semana atual respeitando feriados e pontos facultativos.
+                  </TipBanner>
+                )}
+                {tipsEnabled && diarioView === "medias" && (
+                  <TipBanner variant="info" title="Dica — Médias" dismissKey="medias">
+                    Lance as notas AV1–AV4 e recuperações (RP). A média e o status (Aprovado/Reprovado) são calculados automaticamente. Média mínima: 6,0.
+                  </TipBanner>
+                )}
+                {tipsEnabled && diarioView === "conteudos" && (
+                  <TipBanner variant="info" title="Dica — Conteúdos" dismissKey="conteudos">
+                    Os conteúdos refletem o que foi registrado em cada aula. Preencha <b>Objetivo</b>, <b>Habilidades BNCC</b> e <b>Metodologia</b> dentro de cada aula da grade.
+                  </TipBanner>
+                )}
+                {tipsEnabled && diarioView === "frequencia" && (
+                  <TipBanner variant="warn" title="Atenção — Frequência" dismissKey="freq">
+                    A frequência deve ser registrada <b>diariamente</b>. Alunos com presença abaixo de 75% serão sinalizados em vermelho.
+                  </TipBanner>
+                )}
+                {tipsEnabled && diarioView === "complementares" && (
+                  <TipBanner variant="info" title="Dica — Complementares" dismissKey="comp">
+                    Use este espaço para registrar observações pedagógicas que complementam o diário (comportamento, participação, dificuldades).
+                  </TipBanner>
+                )}
+                {tipsEnabled && diarioView === "horario" && (
+                  <TipBanner variant="info" title="Dica — Horário" dismissKey="hor">
+                    Visualize a distribuição semanal de aulas e professores. As aulas são geradas a partir dos lançamentos na grade.
+                  </TipBanner>
+                )}
 
                 {diarioView === "grade" && (
                   <>
-                    {/* Week navigation */}
-                    <div className="flex items-center justify-between">
+                    {/* Toolbar — week navigation + month filter + replicate */}
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
                       <div className="flex items-center gap-2">
-                        <Button variant="outline" size="icon" onClick={() => navigateWeek(-1)}>
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigateWeek(-1)}>
                           <ChevronLeft className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="icon" onClick={() => navigateWeek(1)}>
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigateWeek(1)}>
                           <ChevronRight className="w-4 h-4" />
                         </Button>
+                        <span className="text-sm font-medium">{formatWeekRange(weekDates)}</span>
                       </div>
-                      <span className="text-sm font-medium">{formatWeekRange(weekDates)}</span>
-                      <div className="flex gap-1">
-                        <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("Mês")}>Mês</Button>
-                        <Button variant={viewMode === "Semana" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("Semana")}>Semana</Button>
+
+                      <div className="flex items-center gap-2">
+                        <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
+                          <SelectTrigger className="h-8 w-36 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {months.map((m, i) => (
+                              <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        <Dialog open={replicateOpen} onOpenChange={setReplicateOpen}>
+                          <DialogTrigger asChild>
+                            <Button size="sm" variant="outline" className="h-8 gap-1 text-xs" disabled={weekAulas.length === 0}>
+                              <Copy className="w-3.5 h-3.5" /> Replicar
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-md">
+                            <DialogHeader>
+                              <DialogTitle>Replicar aulas desta semana</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-3 pt-2">
+                              <p className="text-sm text-muted-foreground">
+                                As {weekAulas.length} aula(s) desta semana serão copiadas para as próximas semanas. Feriados e pontos facultativos serão automaticamente pulados.
+                              </p>
+                              <div className="space-y-1.5">
+                                <Label className="text-xs">Quantidade de semanas</Label>
+                                <Input
+                                  type="number"
+                                  min={1}
+                                  max={52}
+                                  value={replicateWeeks}
+                                  onChange={(e) => setReplicateWeeks(Math.max(1, Math.min(52, parseInt(e.target.value) || 1)))}
+                                />
+                              </div>
+                            </div>
+                            <div className="flex justify-end gap-2 pt-3">
+                              <Button variant="outline" onClick={() => setReplicateOpen(false)}>Cancelar</Button>
+                              <Button onClick={replicarAulas} className="gap-1">
+                                <Copy className="w-4 h-4" /> Replicar
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+
+                        <div className="flex gap-1">
+                          <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" className="h-8" onClick={() => setViewMode("Mês")}>Mês</Button>
+                          <Button variant={viewMode === "Semana" ? "default" : "ghost"} size="sm" className="h-8" onClick={() => setViewMode("Semana")}>Semana</Button>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Weekly grid */}
+                    {/* Bimestre / week meta info */}
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <CalendarDays className="w-3.5 h-3.5" />
+                        {currentBimestre
+                          ? <>Bimestre {currentBimestre.n}: <b className="text-foreground">{toDate(currentBimestre.inicio).toLocaleDateString("pt-BR")}</b> a <b className="text-foreground">{toDate(currentBimestre.fim).toLocaleDateString("pt-BR")}</b></>
+                          : "Fora do período letivo"}
+                      </span>
+                      {weekDates.some((d) => holidayMap.has(dateKey(d)) || optionalMap.has(dateKey(d))) && (
+                        <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400">
+                          • Esta semana tem feriado / ponto facultativo
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Empty-week warning */}
+                    {tipsEnabled && !isFutureWeek && weekAulas.length === 0 && (
+                      <TipBanner variant="warn" title="Semana sem preenchimento">
+                        Esta semana ainda não tem aulas lançadas. Lembre-se de registrar <b>conteúdos</b>, <b>frequência</b> e, quando houver, <b>notas</b>.
+                        Clique em uma célula para criar uma aula ou use <b>+</b> para várias.
+                      </TipBanner>
+                    )}
+                    {tipsEnabled && !isFutureWeek && weekAulas.length > 0 && weekAulas.every((a) => !isAulaFilled(a)) && (
+                      <TipBanner variant="warn" title="Aulas pendentes de preenchimento">
+                        As aulas desta semana foram criadas mas ainda não têm <b>objetivo</b>, <b>habilidades BNCC</b> e <b>frequência</b> registrados.
+                      </TipBanner>
+                    )}
+
+                    {/* Weekly grid — compacted */}
                     <div className="border rounded-lg overflow-auto bg-card">
-                      <table className="w-full border-collapse text-sm">
+                      <table className="w-full border-collapse text-xs">
                         <thead>
                           <tr>
-                            <th className="border-b border-r p-2 w-16 text-muted-foreground font-normal"></th>
-                            {weekDates.map((date, i) => (
-                              <th
-                                key={i}
-                                className={`border-b border-r p-2 text-center font-medium min-w-[120px] ${isToday(date) ? "bg-primary/10 text-primary" : ""}`}
-                              >
-                                <div>{String(date.getDate()).padStart(2, "0")} {DIAS_SEMANA[i]}</div>
-                              </th>
-                            ))}
+                            <th className="border-b border-r p-1 w-12 text-muted-foreground font-normal"></th>
+                            {weekDates.map((date, i) => {
+                              const k = dateKey(date);
+                              const holiday = holidayMap.get(k);
+                              const optional = optionalMap.get(k);
+                              return (
+                                <th
+                                  key={i}
+                                  className={`border-b border-r p-1.5 text-center font-medium min-w-[100px] ${isToday(date) ? "bg-primary/10 text-primary" : ""} ${holiday ? "bg-red-50 dark:bg-red-950/30" : optional ? "bg-amber-50 dark:bg-amber-950/30" : ""}`}
+                                >
+                                  <div className="text-xs">{String(date.getDate()).padStart(2, "0")} {DIAS_SEMANA[i]}</div>
+                                  {holiday && (
+                                    <div className="text-[9px] font-normal text-red-700 dark:text-red-400 truncate" title={holiday}>
+                                      🔴 {holiday}
+                                    </div>
+                                  )}
+                                  {!holiday && optional && (
+                                    <div className="text-[9px] font-normal text-amber-700 dark:text-amber-400 truncate" title={optional}>
+                                      🟡 Facultativo
+                                    </div>
+                                  )}
+                                </th>
+                              );
+                            })}
                           </tr>
                         </thead>
                         <tbody>
                           {HORAS.map((hora) => (
-                            <tr key={hora} className="h-14">
-                              <td className="border-b border-r p-2 text-xs text-muted-foreground text-right align-top">
+                            <tr key={hora} className="h-9">
+                              <td className="border-b border-r px-1 text-[10px] text-muted-foreground text-right align-top">
                                 {hora}
                               </td>
                               {weekDates.map((_, dayIdx) => {
@@ -499,15 +706,17 @@ const Disciplinas = () => {
                                 }
 
                                 const hasAula = startingAulas.length > 0;
+                                const dayKey = dateKey(weekDates[dayIdx]);
+                                const isHoliday = holidayMap.has(dayKey);
 
                                 return (
                                   <td
                                     key={dayIdx}
                                     rowSpan={rowSpan > 1 ? rowSpan : undefined}
-                                    onClick={() => !hasAula && openSingleSlot(dayIdx, hora)}
-                                    className={`border-b border-r p-1 align-top transition-colors ${
+                                    onClick={() => !hasAula && !isHoliday && openSingleSlot(dayIdx, hora)}
+                                    className={`border-b border-r p-0.5 align-top transition-colors ${
                                       isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""
-                                    } ${!hasAula ? "cursor-pointer hover:bg-accent/20" : ""}`}
+                                    } ${isHoliday ? "bg-red-50/40 dark:bg-red-950/10" : ""} ${!hasAula && !isHoliday ? "cursor-pointer hover:bg-accent/20" : ""}`}
                                   >
                                     {startingAulas.map((aula) => {
                                       const filled = isAulaFilled(aula);
@@ -517,18 +726,29 @@ const Disciplinas = () => {
                                           ? "bg-edu-green/20 border-edu-green text-edu-green-foreground"
                                           : "bg-slate-200 border-slate-300 text-slate-700";
                                       return (
-                                        <button
+                                        <div
                                           key={aula.id}
-                                          onClick={(e) => { e.stopPropagation(); openAula(aula); }}
-                                          className={`w-full rounded p-1.5 border text-xs h-full text-left hover:ring-2 hover:ring-primary/40 transition ${statusClass}`}
+                                          className={`relative w-full rounded p-1 border text-[10px] h-full hover:ring-2 hover:ring-primary/40 transition ${statusClass}`}
                                         >
-                                          <div className="font-semibold text-[10px] flex items-center justify-between">
-                                            <span>{aula.horaInicio} – {aula.horaTermino}</span>
-                                            {filled && !isFutureWeek && <span className="text-[9px]">✓</span>}
-                                          </div>
-                                          <div className="font-bold truncate">{aula.disciplina}</div>
-                                          <div className="text-[9px] opacity-75 truncate">{aula.professor}</div>
-                                        </button>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); openAula(aula); }}
+                                            className="w-full text-left"
+                                          >
+                                            <div className="font-semibold text-[9px] flex items-center justify-between pr-4">
+                                              <span>{aula.horaInicio}–{aula.horaTermino}</span>
+                                              {filled && !isFutureWeek && <span className="text-[9px]">✓</span>}
+                                            </div>
+                                            <div className="font-bold truncate leading-tight">{aula.disciplina}</div>
+                                            <div className="text-[9px] opacity-75 truncate leading-tight">{aula.professor}</div>
+                                          </button>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); deleteAula(aula.id); }}
+                                            title="Excluir aula"
+                                            className="absolute top-0.5 right-0.5 p-0.5 rounded hover:bg-destructive/20 text-destructive opacity-60 hover:opacity-100"
+                                          >
+                                            <X className="w-3 h-3" />
+                                          </button>
+                                        </div>
                                       );
                                     })}
                                   </td>
@@ -542,10 +762,12 @@ const Disciplinas = () => {
                     </div>
 
                     {/* Legend — status das aulas */}
-                    <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-2">
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-200 border border-slate-300 inline-block" /> Aula criada (sem conteúdo)</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-edu-green/20 border border-edu-green inline-block" /> Aula preenchida (objetivo + BNCC + frequência)</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-400/70 border border-slate-500 inline-block" /> Semana futura (bloqueada)</span>
+                    <div className="flex flex-wrap gap-3 text-[11px] text-muted-foreground pt-1">
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-200 border border-slate-300 inline-block" /> Aula criada</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-edu-green/20 border border-edu-green inline-block" /> Aula preenchida</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-400/70 border border-slate-500 inline-block" /> Semana futura</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Feriado</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300 inline-block" /> Ponto facultativo</span>
                     </div>
                   </>
                 )}

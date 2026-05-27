@@ -39,6 +39,7 @@ export interface AulaSalva {
   isAvaliacao?: boolean;
   isFalta?: boolean;
   recorrente?: boolean;
+  weekStart?: string; // ISO yyyy-mm-dd of Sunday of the week this aula belongs to
   conteudo?: {
     objetivo: string;
     habilidades: string[];
