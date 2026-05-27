@@ -36,6 +36,9 @@ import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialo
 import {
   MediasPanel, ConteudosPanel, FrequenciaPanel, ComplementaresPanel, HorarioPanel,
 } from "@/components/diario/DiarioPanels";
+import {
+  ComponentesCurricularesPanel, DrivePanel, AvaliacoesPanel, EmissaoDocumentosPanel,
+} from "@/components/diario/TabPanels";
 
 
 const DISCIPLINAS_BASE = [
@@ -557,24 +560,16 @@ const Disciplinas = () => {
               </TabsContent>
 
               <TabsContent value="componentes">
-                <div className="text-center py-12 text-muted-foreground">
-                  Componentes Curriculares — Em desenvolvimento
-                </div>
+                <ComponentesCurricularesPanel aulas={aulas} />
               </TabsContent>
               <TabsContent value="drive">
-                <div className="text-center py-12 text-muted-foreground">
-                  Drive — Em desenvolvimento
-                </div>
+                <DrivePanel aulas={aulas} />
               </TabsContent>
               <TabsContent value="avaliacoes">
-                <div className="text-center py-12 text-muted-foreground">
-                  Avaliações — Em desenvolvimento
-                </div>
+                <AvaliacoesPanel aulas={aulas} />
               </TabsContent>
               <TabsContent value="documentos">
-                <div className="text-center py-12 text-muted-foreground">
-                  Emissão de Documentos — Em desenvolvimento
-                </div>
+                <EmissaoDocumentosPanel />
               </TabsContent>
             </Tabs>
 
