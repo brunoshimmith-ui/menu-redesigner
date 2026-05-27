@@ -27,9 +27,11 @@ import {
   Plus,
   Trash2,
   Save,
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  Copy,
+  CalendarDays,
+  X,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialog";
@@ -39,6 +41,8 @@ import {
 import {
   ComponentesCurricularesPanel, DrivePanel, AvaliacoesPanel, EmissaoDocumentosPanel,
 } from "@/components/diario/TabPanels";
+import { TipBanner, TipsToggle, useDiarioTips } from "@/components/diario/DiarioTips";
+import { holidays, optionalDays, bimestres, dateKey, toDate } from "@/lib/calendario";
 
 
 const DISCIPLINAS_BASE = [
