@@ -36,6 +36,9 @@ import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialo
 import {
   MediasPanel, ConteudosPanel, FrequenciaPanel, ComplementaresPanel, HorarioPanel,
 } from "@/components/diario/DiarioPanels";
+import {
+  ComponentesCurricularesPanel, DrivePanel, AvaliacoesPanel, EmissaoDocumentosPanel,
+} from "@/components/diario/TabPanels";
 
 
 const DISCIPLINAS_BASE = [
