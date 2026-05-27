@@ -140,9 +140,35 @@ const Disciplinas = () => {
   const [aulaActionsOpen, setAulaActionsOpen] = useState(false);
   const [activeAula, setActiveAula] = useState<AulaSalva | null>(null);
   const [diarioView, setDiarioView] = useState<"grade" | "medias" | "conteudos" | "frequencia" | "complementares" | "horario">("grade");
-
+  const { enabled: tipsEnabled, setEnabled: setTipsEnabled } = useDiarioTips();
+  const [replicateOpen, setReplicateOpen] = useState(false);
+  const [replicateWeeks, setReplicateWeeks] = useState(4);
 
   const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
+  const currentWeekKey = dateKey(weekDates[0]);
+
+  // Holiday lookup
+  const holidayMap = useMemo(() => {
+    const m = new Map<string, string>();
+    holidays.forEach((h) => m.set(h.date, h.name));
+    return m;
+  }, []);
+  const optionalMap = useMemo(() => {
+    const m = new Map<string, string>();
+    optionalDays.forEach((h) => m.set(h.date, h.name));
+    return m;
+  }, []);
+
+  const currentBimestre = useMemo(() => {
+    const k = dateKey(weekDates[0]);
+    return bimestres.find((b) => k >= b.inicio && k <= b.fim) || null;
+  }, [weekDates]);
+
+  // Aulas filtered to current week (or legacy aulas without weekStart show in any week)
+  const weekAulas = useMemo(
+    () => aulas.filter((a) => !a.weekStart || a.weekStart === currentWeekKey),
+    [aulas, currentWeekKey]
+  );
 
   const getWeekKind = (): "past" | "current" | "future" => {
     const today = new Date();
