@@ -116,9 +116,13 @@ export function AppSidebar() {
               <h3 className="font-semibold text-white">Suporte</h3>
             </div>
             <p className="text-xs opacity-70 mb-3">Precisa de ajuda?</p>
-            <button className="text-sm text-[#6d7cff] font-semibold hover:underline">
-              Abrir chamado →
-            </button>
+            <SuporteChamadoDialog
+              trigger={
+                <button className="text-sm text-[#6d7cff] font-semibold hover:underline">
+                  Abrir chamado →
+                </button>
+              }
+            />
             <button
               onClick={handleLogout}
               className="w-full mt-3 flex items-center justify-center gap-2 text-xs text-slate-400 hover:text-white transition-colors"
