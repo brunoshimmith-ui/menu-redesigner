@@ -568,39 +568,6 @@ const Disciplinas = () => {
                           </SelectContent>
                         </Select>
 
-                        <Dialog open={replicateOpen} onOpenChange={setReplicateOpen}>
-                          <DialogTrigger asChild>
-                            <Button size="sm" variant="outline" className="h-8 gap-1 text-xs" disabled={weekAulas.length === 0}>
-                              <Copy className="w-3.5 h-3.5" /> Replicar
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-md">
-                            <DialogHeader>
-                              <DialogTitle>Replicar aulas desta semana</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-3 pt-2">
-                              <p className="text-sm text-muted-foreground">
-                                As {weekAulas.length} aula(s) desta semana serão copiadas para as próximas semanas. Feriados e pontos facultativos serão automaticamente pulados.
-                              </p>
-                              <div className="space-y-1.5">
-                                <Label className="text-xs">Quantidade de semanas</Label>
-                                <Input
-                                  type="number"
-                                  min={1}
-                                  max={52}
-                                  value={replicateWeeks}
-                                  onChange={(e) => setReplicateWeeks(Math.max(1, Math.min(52, parseInt(e.target.value) || 1)))}
-                                />
-                              </div>
-                            </div>
-                            <div className="flex justify-end gap-2 pt-3">
-                              <Button variant="outline" onClick={() => setReplicateOpen(false)}>Cancelar</Button>
-                              <Button onClick={replicarAulas} className="gap-1">
-                                <Copy className="w-4 h-4" /> Replicar
-                              </Button>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
 
                         <div className="flex gap-1">
                           <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" className="h-8" onClick={() => setViewMode("Mês")}>Mês</Button>
