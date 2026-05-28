@@ -543,9 +543,8 @@ const Disciplinas = () => {
                 {/* Contextual tips per screen */}
                 {tipsEnabled && diarioView === "grade" && (
                   <TipBanner variant="tip" title="Dica — Grade semanal" dismissKey="grade">
-                    Clique em uma célula vazia para criar 1 aula, ou use <b>+</b> para várias.
-                    Semanas futuras ficam bloqueadas até a data de início. Use o botão{" "}
-                    <b>Replicar</b> para copiar a semana atual respeitando feriados e pontos facultativos.
+                    Clique em uma célula vazia para criar 1 aula ou use <b>+</b> para várias.
+                    Dentro da criação, marque <b>Replicar</b> para copiar a grade para as próximas semanas (feriados são pulados automaticamente).
                   </TipBanner>
                 )}
                 {tipsEnabled && diarioView === "medias" && (
