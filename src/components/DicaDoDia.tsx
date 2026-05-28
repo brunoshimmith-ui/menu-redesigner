@@ -87,12 +87,12 @@ export function DicaDoDia({ role }: { role: Role }) {
                 idx === i ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"
               )}
             >
-              <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white/70 text-edu-purple flex-shrink-0">
+              <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white/70 dark:bg-white/10 text-edu-purple dark:text-edu-purple-light flex-shrink-0">
                 <DIcon className="w-6 h-6" />
               </div>
               <div className="flex-1">
                 <p className="text-base font-bold text-foreground mb-1">{d.title}</p>
-                <p className="text-sm text-foreground/75 leading-relaxed">{d.text}</p>
+                <p className="text-sm text-foreground/75 dark:text-foreground/80 leading-relaxed">{d.text}</p>
               </div>
             </div>
           );
