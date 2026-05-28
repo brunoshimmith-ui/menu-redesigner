@@ -50,11 +50,11 @@ export function CalendarioEscolar({ extraDates = [], filterTurma, filterCreatedB
     avaliacao: avalDates,
   };
   const modifiersClassNames: Record<string, string> = {
-    holiday: "bg-edu-coral-light text-edu-coral font-bold",
-    optional: "bg-edu-orange-light text-edu-orange font-semibold",
+    holiday: "bg-edu-coral-light dark:bg-edu-coral/20 text-edu-coral dark:text-edu-coral-foreground font-bold",
+    optional: "bg-edu-orange-light dark:bg-edu-orange/20 text-edu-orange dark:text-edu-orange-foreground font-semibold",
     bimestreStart: "ring-2 ring-edu-green",
     bimestreEnd: "ring-2 ring-edu-blue",
-    avaliacao: "bg-edu-purple-light text-edu-purple font-bold",
+    avaliacao: "bg-edu-purple-light dark:bg-edu-purple/20 text-edu-purple dark:text-edu-purple-foreground font-bold",
   };
   extraDates.forEach((e, i) => {
     modifiers[`extra${i}`] = e.dates;
@@ -85,31 +85,31 @@ export function CalendarioEscolar({ extraDates = [], filterTurma, filterCreatedB
 
       <div className="mt-4 space-y-2">
         {holidayForDay && (
-          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-coral-light">
+          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-coral-light dark:bg-edu-coral/15">
             <Badge className="bg-edu-coral text-white border-0 text-[10px]">Feriado</Badge>
             <p className="text-xs font-medium flex-1">{holidayForDay.name}</p>
           </div>
         )}
         {optionalForDay && (
-          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-orange-light">
+          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-orange-light dark:bg-edu-orange/15">
             <Badge className="bg-edu-orange text-white border-0 text-[10px]">Facultativo</Badge>
             <p className="text-xs font-medium flex-1">{optionalForDay.name}</p>
           </div>
         )}
         {bimestreStart && (
-          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-green-light">
+          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-green-light dark:bg-edu-green/15">
             <Badge className="bg-edu-green text-white border-0 text-[10px]">Bimestre</Badge>
             <p className="text-xs font-medium flex-1">Início do {bimestreStart.n}º bimestre</p>
           </div>
         )}
         {bimestreEnd && (
-          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-blue-light">
+          <div className="flex items-start gap-2 p-2 rounded-md bg-edu-blue-light dark:bg-edu-blue/15">
             <Badge className="bg-edu-blue text-white border-0 text-[10px]">Bimestre</Badge>
             <p className="text-xs font-medium flex-1">Fim do {bimestreEnd.n}º bimestre</p>
           </div>
         )}
         {avalsForDay.map((a) => (
-          <div key={a.id} className="flex items-start gap-2 p-2 rounded-md bg-edu-purple-light">
+          <div key={a.id} className="flex items-start gap-2 p-2 rounded-md bg-edu-purple-light dark:bg-edu-purple/15">
             <Badge className="bg-edu-purple text-white border-0 text-[10px]">Avaliação</Badge>
             <div className="flex-1">
               <p className="text-xs font-medium">{a.title}</p>
