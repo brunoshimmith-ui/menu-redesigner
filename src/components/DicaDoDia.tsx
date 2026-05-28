@@ -70,10 +70,10 @@ export function DicaDoDia({ role }: { role: Role }) {
   const Icon = current.icon;
 
   return (
-    <div className="bg-gradient-to-br from-edu-purple-light via-edu-purple-light to-edu-blue-light border border-edu-purple/20 rounded-3xl p-6 relative overflow-hidden shadow-sm">
+    <div className="bg-gradient-to-br from-edu-purple-light via-edu-purple-light to-edu-blue-light dark:from-edu-purple/20 dark:via-edu-purple/15 dark:to-edu-blue/20 border border-edu-purple/20 dark:border-edu-purple/40 rounded-3xl p-6 relative overflow-hidden shadow-sm">
       <div className="flex items-center gap-2 mb-4">
-        <Lightbulb className="w-5 h-5 text-edu-purple" />
-        <p className="text-sm font-bold text-edu-purple uppercase tracking-wider">Dica do dia</p>
+        <Lightbulb className="w-5 h-5 text-edu-purple dark:text-edu-purple-light" />
+        <p className="text-sm font-bold text-edu-purple dark:text-edu-purple-light uppercase tracking-wider">Dica do dia</p>
       </div>
 
       <div className="relative min-h-[110px]">
