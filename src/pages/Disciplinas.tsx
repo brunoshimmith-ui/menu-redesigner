@@ -680,7 +680,7 @@ const Disciplinas = () => {
                         </thead>
                         <tbody>
                           {HORAS.map((hora) => (
-                            <tr key={hora} className="h-9">
+                            <tr key={hora} className="h-7">
                               <td className="border-b border-r px-1 text-[10px] text-muted-foreground text-right align-top">
                                 {hora}
                               </td>
