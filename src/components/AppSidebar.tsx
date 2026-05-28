@@ -63,7 +63,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="offcanvas"
-      className="[&_[data-sidebar=sidebar]]:bg-[#07152c] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0"
+      className="[&_[data-sidebar=sidebar]]:bg-[#07152c] dark:[&_[data-sidebar=sidebar]]:bg-[#050b1a] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0 dark:[&_[data-sidebar=sidebar]]:border-r dark:[&_[data-sidebar=sidebar]]:border-white/5"
     >
       {/* Header / Logo */}
       <SidebarHeader className="border-b border-white/10 p-6">
