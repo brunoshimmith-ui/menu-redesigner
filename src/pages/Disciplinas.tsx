@@ -70,15 +70,15 @@ const PROFESSORES = [
 ];
 
 const DISCIPLINA_COLORS: Record<string, string> = {
-  "Língua Portuguesa": "bg-amber-200 border-amber-400 text-amber-900",
-  "Matemática": "bg-green-200 border-green-400 text-green-900",
-  "Inglês": "bg-blue-200 border-blue-400 text-blue-900",
-  "Ciências": "bg-purple-200 border-purple-400 text-purple-900",
-  "Ensino Religioso": "bg-pink-200 border-pink-400 text-pink-900",
-  "História": "bg-orange-200 border-orange-400 text-orange-900",
-  "Geografia": "bg-red-200 border-red-400 text-red-900",
-  "Artes": "bg-teal-200 border-teal-400 text-teal-900",
-  "Educação Física": "bg-indigo-200 border-indigo-400 text-indigo-900",
+  "Língua Portuguesa": "bg-amber-400 border-amber-600 text-amber-950 dark:bg-amber-500 dark:text-amber-50 dark:border-amber-400",
+  "Matemática": "bg-emerald-400 border-emerald-600 text-emerald-950 dark:bg-emerald-500 dark:text-emerald-50 dark:border-emerald-400",
+  "Inglês": "bg-sky-400 border-sky-600 text-sky-950 dark:bg-sky-500 dark:text-sky-50 dark:border-sky-400",
+  "Ciências": "bg-violet-400 border-violet-600 text-violet-950 dark:bg-violet-500 dark:text-violet-50 dark:border-violet-400",
+  "Ensino Religioso": "bg-pink-400 border-pink-600 text-pink-950 dark:bg-pink-500 dark:text-pink-50 dark:border-pink-400",
+  "História": "bg-orange-400 border-orange-600 text-orange-950 dark:bg-orange-500 dark:text-orange-50 dark:border-orange-400",
+  "Geografia": "bg-red-400 border-red-600 text-red-950 dark:bg-red-500 dark:text-red-50 dark:border-red-400",
+  "Artes": "bg-teal-400 border-teal-600 text-teal-950 dark:bg-teal-500 dark:text-teal-50 dark:border-teal-400",
+  "Educação Física": "bg-indigo-400 border-indigo-600 text-indigo-950 dark:bg-indigo-500 dark:text-indigo-50 dark:border-indigo-400",
 };
 
 const turmasInfo: Record<string, { nivel: string; turma: string; edicao: string; escola: string }> = {
