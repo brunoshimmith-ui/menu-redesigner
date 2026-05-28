@@ -478,6 +478,38 @@ const Disciplinas = () => {
                           <Button variant="outline" onClick={addFormItem} className="gap-2">
                             <Plus className="w-4 h-4" /> Adicionar Mais
                           </Button>
+                        </div>
+
+                        {/* Replicar para próximas semanas */}
+                        <div className="rounded-lg border border-dashed bg-muted/30 p-3 space-y-2">
+                          <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={replicarOnSave}
+                              onChange={(e) => setReplicarOnSave(e.target.checked)}
+                              className="h-4 w-4 rounded accent-primary"
+                            />
+                            <Copy className="w-4 h-4" /> Replicar estas aulas para as próximas semanas
+                          </label>
+                          {replicarOnSave && (
+                            <div className="flex items-center gap-2 pl-6">
+                              <Label className="text-xs">Quantidade de semanas:</Label>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={52}
+                                value={replicateWeeks}
+                                onChange={(e) => setReplicateWeeks(Math.max(1, Math.min(52, parseInt(e.target.value) || 1)))}
+                                className="h-8 w-20"
+                              />
+                              <span className="text-[11px] text-muted-foreground">
+                                Feriados e pontos facultativos são pulados automaticamente.
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex justify-end pt-2">
                           <Button onClick={handleSalvar} className="gap-2">
                             <Save className="w-4 h-4" /> Salvar Todas ({formItems.length})
                           </Button>
