@@ -302,11 +302,36 @@ const Disciplinas = () => {
       status: "criada",
       weekStart: currentWeekKey,
     }));
-    setAulas((prev) => [...prev, ...novas]);
+
+    // Replicate to next weeks if requested
+    const replicadas: AulaSalva[] = [];
+    let skipCount = 0;
+    if (replicarOnSave && replicateWeeks > 0) {
+      for (let w = 1; w <= replicateWeeks; w++) {
+        const target = new Date(weekDates[0]);
+        target.setDate(target.getDate() + w * 7);
+        const targetWeek = getWeekDates(target);
+        const targetKey = dateKey(targetWeek[0]);
+        novas.forEach((a) => {
+          const dayDate = targetWeek[a.diaSemana];
+          const k = dateKey(dayDate);
+          if (holidayMap.has(k) || optionalMap.has(k)) { skipCount++; return; }
+          replicadas.push({ ...a, id: crypto.randomUUID(), weekStart: targetKey });
+        });
+      }
+    }
+
+    setAulas((prev) => [...prev, ...novas, ...replicadas]);
     setFormItems([{ id: crypto.randomUUID(), disciplina: "", horaInicio: "07:00", horaTermino: "08:00", professor: "", diaSemana: 1 }]);
     setDialogOpen(false);
     setSelectedSlots(new Set());
-    toast({ title: "Aulas adicionadas!", description: `${novas.length} aula(s) adicionada(s) ao diário.` });
+    setReplicarOnSave(false);
+    toast({
+      title: "Aulas adicionadas!",
+      description: replicadas.length > 0
+        ? `${novas.length} aula(s) criada(s) + ${replicadas.length} replicada(s) em ${replicateWeeks} semana(s). ${skipCount} pulada(s) por feriado.`
+        : `${novas.length} aula(s) adicionada(s) ao diário.`,
+    });
   };
 
   const deleteAula = (id: string) => {
@@ -314,42 +339,7 @@ const Disciplinas = () => {
     toast({ title: "Aula excluída" });
   };
 
-  const replicarAulas = () => {
-    if (weekAulas.length === 0) {
-      toast({ title: "Nada para replicar", description: "Não há aulas nesta semana.", variant: "destructive" });
-      return;
-    }
-    const novas: AulaSalva[] = [];
-    let skipCount = 0;
-    for (let w = 1; w <= replicateWeeks; w++) {
-      const target = new Date(weekDates[0]);
-      target.setDate(target.getDate() + w * 7);
-      const targetWeek = getWeekDates(target);
-      const targetKey = dateKey(targetWeek[0]);
-      weekAulas.forEach((a) => {
-        const dayDate = targetWeek[a.diaSemana];
-        const k = dateKey(dayDate);
-        if (holidayMap.has(k) || optionalMap.has(k)) {
-          skipCount++;
-          return;
-        }
-        novas.push({
-          ...a,
-          id: crypto.randomUUID(),
-          weekStart: targetKey,
-          status: "criada",
-          conteudo: undefined,
-          frequencia: undefined,
-        });
-      });
-    }
-    setAulas((prev) => [...prev, ...novas]);
-    setReplicateOpen(false);
-    toast({
-      title: "Aulas replicadas",
-      description: `${novas.length} aula(s) criada(s) em ${replicateWeeks} semana(s). ${skipCount} pulada(s) por feriado/ponto facultativo.`,
-    });
-  };
+
 
   const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
   const goToMonth = (m: number) => {
