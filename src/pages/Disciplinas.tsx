@@ -105,8 +105,8 @@ interface DisciplinaItem {
 }
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-const HORAS = Array.from({ length: 14 }, (_, i) => {
-  const h = i + 5;
+const HORAS = Array.from({ length: 11 }, (_, i) => {
+  const h = i + 7;
   return `${String(h).padStart(2, "0")}:00`;
 });
 
