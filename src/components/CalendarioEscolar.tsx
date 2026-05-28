@@ -50,11 +50,11 @@ export function CalendarioEscolar({ extraDates = [], filterTurma, filterCreatedB
     avaliacao: avalDates,
   };
   const modifiersClassNames: Record<string, string> = {
-    holiday: "bg-edu-coral-light text-edu-coral font-bold",
-    optional: "bg-edu-orange-light text-edu-orange font-semibold",
+    holiday: "bg-edu-coral-light dark:bg-edu-coral/20 text-edu-coral dark:text-edu-coral-foreground font-bold",
+    optional: "bg-edu-orange-light dark:bg-edu-orange/20 text-edu-orange dark:text-edu-orange-foreground font-semibold",
     bimestreStart: "ring-2 ring-edu-green",
     bimestreEnd: "ring-2 ring-edu-blue",
-    avaliacao: "bg-edu-purple-light text-edu-purple font-bold",
+    avaliacao: "bg-edu-purple-light dark:bg-edu-purple/20 text-edu-purple dark:text-edu-purple-foreground font-bold",
   };
   extraDates.forEach((e, i) => {
     modifiers[`extra${i}`] = e.dates;
