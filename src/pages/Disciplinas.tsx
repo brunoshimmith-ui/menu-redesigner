@@ -720,15 +720,14 @@ const Disciplinas = () => {
                                   >
                                     {startingAulas.map((aula) => {
                                       const filled = isAulaFilled(aula);
+                                      const baseColor = DISCIPLINA_COLORS[aula.disciplina] || "bg-slate-300 border-slate-500 text-slate-900";
                                       const statusClass = isFutureWeek
-                                        ? "bg-slate-400/70 border-slate-500 text-slate-900"
-                                        : filled
-                                          ? "bg-edu-green/20 border-edu-green text-edu-green-foreground"
-                                          : "bg-slate-200 border-slate-300 text-slate-700";
+                                        ? "bg-slate-300/80 border-slate-500 text-slate-700 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600 opacity-70"
+                                        : baseColor;
                                       return (
                                         <div
                                           key={aula.id}
-                                          className={`relative w-full rounded p-1 border text-[10px] h-full hover:ring-2 hover:ring-primary/40 transition ${statusClass}`}
+                                          className={`relative w-full rounded p-1 border text-[10px] h-full hover:ring-2 hover:ring-primary/60 transition shadow-sm ${statusClass}`}
                                         >
                                           <button
                                             onClick={(e) => { e.stopPropagation(); openAula(aula); }}
@@ -736,15 +735,15 @@ const Disciplinas = () => {
                                           >
                                             <div className="font-semibold text-[9px] flex items-center justify-between pr-4">
                                               <span>{aula.horaInicio}–{aula.horaTermino}</span>
-                                              {filled && !isFutureWeek && <span className="text-[9px]">✓</span>}
+                                              {filled && !isFutureWeek && <span className="text-[10px]">✓</span>}
                                             </div>
                                             <div className="font-bold truncate leading-tight">{aula.disciplina}</div>
-                                            <div className="text-[9px] opacity-75 truncate leading-tight">{aula.professor}</div>
+                                            <div className="text-[9px] opacity-80 truncate leading-tight">{aula.professor}</div>
                                           </button>
                                           <button
                                             onClick={(e) => { e.stopPropagation(); deleteAula(aula.id); }}
                                             title="Excluir aula"
-                                            className="absolute top-0.5 right-0.5 p-0.5 rounded hover:bg-destructive/20 text-destructive opacity-60 hover:opacity-100"
+                                            className="absolute top-0.5 right-0.5 p-0.5 rounded hover:bg-black/20 opacity-60 hover:opacity-100"
                                           >
                                             <X className="w-3 h-3" />
                                           </button>
