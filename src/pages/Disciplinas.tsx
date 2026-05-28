@@ -660,9 +660,9 @@ const Disciplinas = () => {
                               return (
                                 <th
                                   key={i}
-                                  className={`border-b border-r p-1.5 text-center font-medium min-w-[100px] ${isToday(date) ? "bg-primary/10 text-primary" : ""} ${holiday ? "bg-red-50 dark:bg-red-950/30" : optional ? "bg-amber-50 dark:bg-amber-950/30" : ""}`}
+                                  className={`border-b border-r p-1 text-center font-medium min-w-[78px] ${isToday(date) ? "bg-primary/10 text-primary" : ""} ${holiday ? "bg-red-50 dark:bg-red-950/30" : optional ? "bg-amber-50 dark:bg-amber-950/30" : ""}`}
                                 >
-                                  <div className="text-xs">{String(date.getDate()).padStart(2, "0")} {DIAS_SEMANA[i]}</div>
+                                  <div className="text-[11px]">{String(date.getDate()).padStart(2, "0")} {DIAS_SEMANA[i]}</div>
                                   {holiday && (
                                     <div className="text-[9px] font-normal text-red-700 dark:text-red-400 truncate" title={holiday}>
                                       🔴 {holiday}
