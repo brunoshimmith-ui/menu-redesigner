@@ -87,7 +87,10 @@ export function SuporteDashboard({ name }: { name: string }) {
             </div>
           </div>
 
+          <ComparativoAnual role="suporte" />
+
           <DicaDoDia role="suporte" />
+
         </div>
 
         <div className="space-y-6">
