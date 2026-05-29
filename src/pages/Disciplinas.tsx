@@ -764,13 +764,15 @@ const Disciplinas = () => {
 
 
                     {/* Legend — status das aulas */}
-                    <div className="flex flex-wrap gap-3 text-[11px] text-muted-foreground pt-1">
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-200 border border-slate-300 inline-block" /> Aula criada</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-edu-green/20 border border-edu-green inline-block" /> Aula preenchida</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-400/70 border border-slate-500 inline-block" /> Semana futura</span>
+                    <div className="flex flex-wrap gap-3 text-[12px] text-muted-foreground pt-1">
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-200 border border-slate-400 inline-block" /> Criada</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-200 border border-amber-500 inline-block" /> Rascunho</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-500 border border-emerald-700 inline-block" /> Validada</span>
+                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-300/70 border border-slate-500 inline-block" /> Semana futura</span>
                       <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Feriado</span>
                       <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300 inline-block" /> Ponto facultativo</span>
                     </div>
+
                   </>
                 )}
 
