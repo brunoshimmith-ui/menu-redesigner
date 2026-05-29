@@ -4,6 +4,7 @@ import { BookOpen, Calendar as CalendarIcon, TrendingUp, IdCard, MapPin, Users a
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
 import { AvisosImportantes } from "@/components/AvisosImportantes";
 import { DicaDoDia } from "@/components/DicaDoDia";
+import { ComparativoAnual } from "@/components/dashboards/ComparativoAnual";
 import { avaliacoesByTurma } from "@/lib/store";
 import { useEffect, useState } from "react";
 
