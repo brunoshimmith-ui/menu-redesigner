@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
 import { AvisosImportantes } from "@/components/AvisosImportantes";
 import { DicaDoDia } from "@/components/DicaDoDia";
+import { ComparativoAnual } from "@/components/dashboards/ComparativoAnual";
 import { Role } from "@/contexts/AuthContext";
 
 const variantStyles: Record<string, string> = {
