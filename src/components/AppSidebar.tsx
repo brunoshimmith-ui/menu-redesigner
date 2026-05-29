@@ -63,12 +63,12 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="offcanvas"
-      className="[&_[data-sidebar=sidebar]]:bg-[#07152c] dark:[&_[data-sidebar=sidebar]]:bg-[#050b1a] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0 dark:[&_[data-sidebar=sidebar]]:border-r dark:[&_[data-sidebar=sidebar]]:border-white/5"
+      className="[&_[data-sidebar=sidebar]]:bg-gradient-to-b [&_[data-sidebar=sidebar]]:from-[#0a1f4d] [&_[data-sidebar=sidebar]]:via-[#0a1838] [&_[data-sidebar=sidebar]]:to-[#07152c] dark:[&_[data-sidebar=sidebar]]:from-[#0a1226] dark:[&_[data-sidebar=sidebar]]:via-[#070e1f] dark:[&_[data-sidebar=sidebar]]:to-[#050b1a] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0 dark:[&_[data-sidebar=sidebar]]:border-r dark:[&_[data-sidebar=sidebar]]:border-white/5"
     >
       {/* Header / Logo */}
       <SidebarHeader className="border-b border-white/10 p-6">
         {!isCollapsed ? (
-          <div>
+          <div className="text-center">
             <h1 className="text-4xl font-extrabold tracking-tight text-white">SEMEI</h1>
             <p className="text-[10px] font-medium opacity-60 mt-2 leading-tight uppercase tracking-[0.2em]">
               Sistema Municipal<br />de Educação

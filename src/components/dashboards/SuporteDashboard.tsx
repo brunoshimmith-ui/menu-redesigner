@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
 import { AvisosImportantes } from "@/components/AvisosImportantes";
 import { DicaDoDia } from "@/components/DicaDoDia";
+import { ComparativoAnual } from "@/components/dashboards/ComparativoAnual";
 
 const stats = [
   { label: "Unidades", value: "8", icon: School, variant: "blue" },
@@ -86,7 +87,10 @@ export function SuporteDashboard({ name }: { name: string }) {
             </div>
           </div>
 
+          <ComparativoAnual role="suporte" />
+
           <DicaDoDia role="suporte" />
+
         </div>
 
         <div className="space-y-6">

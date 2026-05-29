@@ -4,6 +4,7 @@ import { BookOpen, Calendar as CalendarIcon, TrendingUp, IdCard, MapPin, Users a
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
 import { AvisosImportantes } from "@/components/AvisosImportantes";
 import { DicaDoDia } from "@/components/DicaDoDia";
+import { ComparativoAnual } from "@/components/dashboards/ComparativoAnual";
 import { avaliacoesByTurma } from "@/lib/store";
 import { useEffect, useState } from "react";
 
@@ -135,7 +136,10 @@ export function AlunoDashboard({ name, turma }: { name: string; turma: string })
             )}
           </div>
 
+          <ComparativoAnual role="aluno" />
+
           <DicaDoDia role="aluno" />
+
         </div>
 
         <div className="space-y-6">

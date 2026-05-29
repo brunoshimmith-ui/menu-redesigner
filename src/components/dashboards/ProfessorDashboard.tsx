@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
 import { AvisosImportantes } from "@/components/AvisosImportantes";
 import { DicaDoDia } from "@/components/DicaDoDia";
+import { ComparativoAnual } from "@/components/dashboards/ComparativoAnual";
 import { AnotacoesProfessor } from "@/components/AnotacoesProfessor";
 import { saveAvaliacao, avaliacoesByProf, Avaliacao } from "@/lib/store";
 import { useAuth } from "@/contexts/AuthContext";
@@ -150,6 +151,11 @@ export function ProfessorDashboard({ name }: { name: string }) {
               ))}
             </div>
           </div>
+
+          <ComparativoAnual role="professor" />
+
+
+
 
           {/* Resumo por turma */}
           <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">

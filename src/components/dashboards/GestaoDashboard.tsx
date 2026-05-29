@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
 import { AvisosImportantes } from "@/components/AvisosImportantes";
 import { DicaDoDia } from "@/components/DicaDoDia";
+import { ComparativoAnual } from "@/components/dashboards/ComparativoAnual";
 import { Role } from "@/contexts/AuthContext";
 
 const variantStyles: Record<string, string> = {
@@ -99,7 +100,10 @@ export function GestaoDashboard({ name, role }: { name: string; role: Role }) {
             </div>
           </div>
 
+          <ComparativoAnual role={role} />
+
           <DicaDoDia role={role} />
+
         </div>
 
         <div className="space-y-6">
