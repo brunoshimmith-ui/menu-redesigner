@@ -386,7 +386,7 @@ const Disciplinas = () => {
           <main className="flex-1 p-6 space-y-4">
             {/* Turma Header */}
             <div className="space-y-1">
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-2xl font-bold text-slate-700 dark:text-slate-200">
                 {info.nivel === "Ensino Fundamental II" ? "EFII" : info.nivel === "Ensino Fundamental I" ? "EFI" : info.nivel} – {info.turma}
               </h1>
               <p className="text-sm text-muted-foreground">
