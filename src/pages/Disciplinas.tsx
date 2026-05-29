@@ -640,12 +640,12 @@ const Disciplinas = () => {
                       </TipBanner>
                     )}
 
-                    {/* Weekly grid — compacted */}
-                    <div className="border rounded-lg overflow-auto bg-card">
-                      <table className="w-full border-collapse text-xs">
+                    {/* Weekly grid — compact width, taller rows for breathing room */}
+                    <div className="border rounded-lg overflow-auto bg-card max-w-5xl">
+                      <table className="w-full border-collapse text-xs table-fixed">
                         <thead>
                           <tr>
-                            <th className="border-b border-r p-1 w-12 text-muted-foreground font-normal"></th>
+                            <th className="border-b border-r p-1.5 w-14 text-muted-foreground font-normal"></th>
                             {weekDates.map((date, i) => {
                               const k = dateKey(date);
                               const holiday = holidayMap.get(k);
@@ -653,16 +653,16 @@ const Disciplinas = () => {
                               return (
                                 <th
                                   key={i}
-                                  className={`border-b border-r p-1 text-center font-medium min-w-[78px] ${isToday(date) ? "bg-primary/10 text-primary" : ""} ${holiday ? "bg-red-50 dark:bg-red-950/30" : optional ? "bg-amber-50 dark:bg-amber-950/30" : ""}`}
+                                  className={`border-b border-r p-1.5 text-center font-medium ${isToday(date) ? "bg-primary/10 text-primary" : ""} ${holiday ? "bg-red-50 dark:bg-red-950/30" : optional ? "bg-amber-50 dark:bg-amber-950/30" : ""}`}
                                 >
-                                  <div className="text-[11px]">{String(date.getDate()).padStart(2, "0")} {DIAS_SEMANA[i]}</div>
+                                  <div className="text-[12px]">{String(date.getDate()).padStart(2, "0")} {DIAS_SEMANA[i]}</div>
                                   {holiday && (
-                                    <div className="text-[9px] font-normal text-red-700 dark:text-red-400 truncate" title={holiday}>
+                                    <div className="text-[10px] font-normal text-red-700 dark:text-red-400 truncate" title={holiday}>
                                       🔴 {holiday}
                                     </div>
                                   )}
                                   {!holiday && optional && (
-                                    <div className="text-[9px] font-normal text-amber-700 dark:text-amber-400 truncate" title={optional}>
+                                    <div className="text-[10px] font-normal text-amber-700 dark:text-amber-400 truncate" title={optional}>
                                       🟡 Facultativo
                                     </div>
                                   )}
@@ -673,8 +673,8 @@ const Disciplinas = () => {
                         </thead>
                         <tbody>
                           {HORAS.map((hora) => (
-                            <tr key={hora} className="h-7">
-                              <td className="border-b border-r px-1 text-[10px] text-muted-foreground text-right align-top">
+                            <tr key={hora} className="h-12">
+                              <td className="border-b border-r px-1.5 text-[11px] text-muted-foreground text-right align-top pt-1">
                                 {hora}
                               </td>
                               {weekDates.map((_, dayIdx) => {
@@ -707,31 +707,40 @@ const Disciplinas = () => {
                                     key={dayIdx}
                                     rowSpan={rowSpan > 1 ? rowSpan : undefined}
                                     onClick={() => !hasAula && !isHoliday && openSingleSlot(dayIdx, hora)}
-                                    className={`border-b border-r p-0.5 align-top transition-colors ${
+                                    className={`border-b border-r p-1 align-top transition-colors ${
                                       isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""
                                     } ${isHoliday ? "bg-red-50/40 dark:bg-red-950/10" : ""} ${!hasAula && !isHoliday ? "cursor-pointer hover:bg-accent/20" : ""}`}
                                   >
                                     {startingAulas.map((aula) => {
                                       const filled = isAulaFilled(aula);
-                                      const baseColor = DISCIPLINA_COLORS[aula.disciplina] || "bg-slate-300 border-slate-500 text-slate-900";
-                                      const statusClass = isFutureWeek
-                                        ? "bg-slate-300/80 border-slate-500 text-slate-700 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600 opacity-70"
-                                        : baseColor;
+                                      const draft = isAulaDraft(aula);
+                                      // Cinza claro por padrão; verde forte quando validada
+                                      let statusClass = "bg-slate-200 border-slate-400 text-slate-800 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-500";
+                                      if (isFutureWeek) {
+                                        statusClass = "bg-slate-200/60 border-slate-400 text-slate-500 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-600 opacity-70";
+                                      } else if (filled) {
+                                        statusClass = "bg-emerald-500 border-emerald-700 text-white dark:bg-emerald-600 dark:border-emerald-400";
+                                      } else if (draft) {
+                                        statusClass = "bg-amber-200 border-amber-500 text-amber-900 dark:bg-amber-600/70 dark:text-amber-50 dark:border-amber-400";
+                                      }
                                       return (
                                         <div
                                           key={aula.id}
-                                          className={`relative w-full rounded p-1 border text-[10px] h-full hover:ring-2 hover:ring-primary/60 transition shadow-sm ${statusClass}`}
+                                          className={`relative w-full rounded-md p-1.5 border text-[11px] h-full hover:ring-2 hover:ring-primary/60 transition shadow-sm ${statusClass}`}
                                         >
                                           <button
                                             onClick={(e) => { e.stopPropagation(); openAula(aula); }}
                                             className="w-full text-left"
                                           >
-                                            <div className="font-semibold text-[9px] flex items-center justify-between pr-4">
+                                            <div className="font-semibold text-[10px] flex items-center justify-between pr-4">
                                               <span>{aula.horaInicio}–{aula.horaTermino}</span>
-                                              {filled && !isFutureWeek && <span className="text-[10px]">✓</span>}
+                                              {filled && !isFutureWeek && <span title="Validada">✓</span>}
+                                              {draft && !filled && !isFutureWeek && (
+                                                <span className="text-[9px] px-1 rounded bg-black/10 dark:bg-white/10" title="Rascunho">rascunho</span>
+                                              )}
                                             </div>
-                                            <div className="font-bold truncate leading-tight">{aula.disciplina}</div>
-                                            <div className="text-[9px] opacity-80 truncate leading-tight">{aula.professor}</div>
+                                            <div className="font-bold truncate leading-tight text-[12px]">{aula.disciplina}</div>
+                                            <div className="text-[10px] opacity-80 truncate leading-tight">{aula.professor}</div>
                                           </button>
                                           <button
                                             onClick={(e) => { e.stopPropagation(); deleteAula(aula.id); }}
@@ -752,6 +761,7 @@ const Disciplinas = () => {
                         </tbody>
                       </table>
                     </div>
+
 
                     {/* Legend — status das aulas */}
                     <div className="flex flex-wrap gap-3 text-[11px] text-muted-foreground pt-1">
