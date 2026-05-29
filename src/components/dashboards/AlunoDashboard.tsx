@@ -136,7 +136,10 @@ export function AlunoDashboard({ name, turma }: { name: string; turma: string })
             )}
           </div>
 
+          <ComparativoAnual role="aluno" />
+
           <DicaDoDia role="aluno" />
+
         </div>
 
         <div className="space-y-6">
