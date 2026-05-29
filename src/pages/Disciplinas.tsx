@@ -188,6 +188,11 @@ const Disciplinas = () => {
     const hasFreq = !!(a.frequencia && Object.keys(a.frequencia.registros || {}).length > 0);
     return hasContent && hasFreq;
   };
+  const isAulaDraft = (a: AulaSalva) => {
+    const hasContent = !!(a.conteudo?.objetivo?.trim() || (a.conteudo?.habilidades?.length ?? 0) > 0);
+    const hasFreq = !!(a.frequencia && Object.keys(a.frequencia.registros || {}).length > 0);
+    return (hasContent || hasFreq) && !isAulaFilled(a);
+  };
 
   const openAula = (a: AulaSalva) => {
     if (isFutureWeek) {
