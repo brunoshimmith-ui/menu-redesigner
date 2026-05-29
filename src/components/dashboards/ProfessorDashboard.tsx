@@ -149,8 +149,10 @@ export function ProfessorDashboard({ name }: { name: string }) {
                   <p className="text-xs text-muted-foreground mt-1 leading-snug">{p.label}</p>
                 </button>
               ))}
-            </div>
           </div>
+
+          <ComparativoAnual role="professor" />
+
 
           {/* Resumo por turma */}
           <div className="bg-card rounded-3xl border border-border p-6 shadow-sm">
