@@ -100,7 +100,10 @@ export function GestaoDashboard({ name, role }: { name: string; role: Role }) {
             </div>
           </div>
 
+          <ComparativoAnual role={role} />
+
           <DicaDoDia role={role} />
+
         </div>
 
         <div className="space-y-6">
