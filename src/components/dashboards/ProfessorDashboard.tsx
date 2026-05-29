@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { CalendarioEscolar } from "@/components/CalendarioEscolar";
 import { AvisosImportantes } from "@/components/AvisosImportantes";
 import { DicaDoDia } from "@/components/DicaDoDia";
+import { ComparativoAnual } from "@/components/dashboards/ComparativoAnual";
 import { AnotacoesProfessor } from "@/components/AnotacoesProfessor";
 import { saveAvaliacao, avaliacoesByProf, Avaliacao } from "@/lib/store";
 import { useAuth } from "@/contexts/AuthContext";
