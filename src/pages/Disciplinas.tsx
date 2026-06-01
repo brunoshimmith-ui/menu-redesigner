@@ -32,7 +32,20 @@ import {
   Copy,
   CalendarDays,
   X,
+  CalendarRange,
+  TrendingUp,
+  BookOpen,
+  ClipboardList,
+  Sparkles,
+  Clock,
+  Lightbulb,
+  ChevronDown,
+  AlertTriangle,
+  Calendar as CalendarIcon,
+  BarChart3,
+  User as UserIcon,
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
 import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialog";
 import {
@@ -41,7 +54,7 @@ import {
 import {
   ComponentesCurricularesPanel, DrivePanel, AvaliacoesPanel, EmissaoDocumentosPanel,
 } from "@/components/diario/TabPanels";
-import { TipBanner, TipsToggle, useDiarioTips } from "@/components/diario/DiarioTips";
+import { TipsToggle, useDiarioTips } from "@/components/diario/DiarioTips";
 import { holidays, optionalDays, bimestres, dateKey, toDate } from "@/lib/calendario";
 
 
