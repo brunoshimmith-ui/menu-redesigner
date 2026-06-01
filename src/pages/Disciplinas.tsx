@@ -629,7 +629,8 @@ const Disciplinas = () => {
                       )}
                     </div>
 
-                    {/* Empty-week warning */}
+                    {/* Empty-week warning — centered, 70% width */}
+                    <div className="w-full max-w-[980px] mx-auto space-y-2">
                     {tipsEnabled && !isFutureWeek && weekAulas.length === 0 && (
                       <TipBanner variant="warn" title="Semana sem preenchimento">
                         Esta semana ainda não tem aulas lançadas. Lembre-se de registrar <b>conteúdos</b>, <b>frequência</b> e, quando houver, <b>notas</b>.
@@ -641,9 +642,10 @@ const Disciplinas = () => {
                         As aulas desta semana foram criadas mas ainda não têm <b>objetivo</b>, <b>habilidades BNCC</b> e <b>frequência</b> registrados.
                       </TipBanner>
                     )}
+                    </div>
 
-                    {/* Weekly grid — compact width, taller rows for breathing room */}
-                    <div className="border rounded-lg overflow-auto bg-card max-w-5xl">
+                    {/* Weekly grid — centered, wider for prominence */}
+                    <div className="border rounded-lg overflow-auto bg-card w-full max-w-[1400px] mx-auto">
                       <table className="w-full border-collapse text-xs table-fixed">
                         <thead>
                           <tr>
