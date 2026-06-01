@@ -17,7 +17,7 @@ export function PageShell({ title, description, children }: PageShellProps) {
         <div className="flex-1 flex flex-col">
           <HeaderWithNotifications />
           <main className="flex-1 p-6 overflow-auto">
-            <div className="max-w-7xl mx-auto space-y-6">
+            <div className="max-w-[1500px] mx-auto space-y-6">
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-[#1d2746]">{title}</h1>
                 {description && (
