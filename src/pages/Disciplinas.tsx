@@ -5,7 +5,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { HeaderWithNotifications } from "@/components/HeaderWithNotifications";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -32,7 +32,20 @@ import {
   Copy,
   CalendarDays,
   X,
+  CalendarRange,
+  TrendingUp,
+  BookOpen,
+  ClipboardList,
+  Sparkles,
+  Clock,
+  Lightbulb,
+  ChevronDown,
+  AlertTriangle,
+  Calendar as CalendarIcon,
+  BarChart3,
+  User as UserIcon,
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
 import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialog";
 import {
@@ -41,7 +54,7 @@ import {
 import {
   ComponentesCurricularesPanel, DrivePanel, AvaliacoesPanel, EmissaoDocumentosPanel,
 } from "@/components/diario/TabPanels";
-import { TipBanner, TipsToggle, useDiarioTips } from "@/components/diario/DiarioTips";
+import { TipsToggle, useDiarioTips } from "@/components/diario/DiarioTips";
 import { holidays, optionalDays, bimestres, dateKey, toDate } from "@/lib/calendario";
 
 
@@ -523,80 +536,102 @@ const Disciplinas = () => {
                     </DialogContent>
                   </Dialog>
 
+                  {/* Top horizontal SaaS nav with icons */}
                   {([
-                    ["grade", "Grade semanal", "bg-slate-500"],
-                    ["medias", "Médias", "bg-green-500"],
-                    ["conteudos", "Conteúdos", "bg-blue-500"],
-                    ["frequencia", "Frequências", "bg-red-500"],
-                    ["complementares", "Complementares", "bg-purple-500"],
-                    ["horario", "Horário", "bg-teal-600"],
-                  ] as const).map(([key, label, color]) => (
-                    <Badge
-                      key={key}
-                      onClick={() => setDiarioView(key)}
-                      className={`${color} text-white border-0 cursor-pointer ${diarioView === key ? "ring-2 ring-offset-2 ring-foreground/40" : "opacity-70 hover:opacity-100"}`}
-                    >
-                      {label}
-                    </Badge>
-                  ))}
+                    ["grade", "Grade semanal", CalendarRange],
+                    ["medias", "Médias", TrendingUp],
+                    ["conteudos", "Conteúdos", BookOpen],
+                    ["frequencia", "Frequências", ClipboardList],
+                    ["complementares", "Complementares", Sparkles],
+                    ["horario", "Horário", Clock],
+                  ] as const).map(([key, label, Icon]) => {
+                    const active = diarioView === key;
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setDiarioView(key)}
+                        className={`relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                          active
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {label}
+                        {active && (
+                          <span className="absolute -bottom-1 left-3 right-3 h-0.5 rounded-full bg-primary" />
+                        )}
+                      </button>
+                    );
+                  })}
 
                   <div className="ml-auto">
                     <TipsToggle enabled={tipsEnabled} onChange={setTipsEnabled} />
                   </div>
                 </div>
 
-                {/* Contextual tips per screen — centered, 70% width */}
-                <div className="w-full max-w-[980px] mx-auto space-y-2">
-                {tipsEnabled && diarioView === "grade" && (
-                  <TipBanner variant="tip" title="Dica — Grade semanal" dismissKey="grade">
-                    Clique em uma célula vazia para criar 1 aula ou use <b>+</b> para várias.
-                    Dentro da criação, marque <b>Replicar</b> para copiar a grade para as próximas semanas (feriados são pulados automaticamente).
-                  </TipBanner>
+                {/* Collapsible tips panel — compact, centered */}
+                {tipsEnabled && (
+                  <div className="w-full max-w-[720px] mx-auto">
+                    <Collapsible defaultOpen={false}>
+                      <div className="rounded-2xl border border-blue-200 bg-blue-50/60 dark:bg-blue-950/20 dark:border-blue-900/60 overflow-hidden">
+                        <CollapsibleTrigger className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-blue-100/40 dark:hover:bg-blue-900/20 transition-colors group">
+                          <span className="flex items-center gap-2 text-[13px] font-semibold text-blue-900 dark:text-blue-100">
+                            <Lightbulb className="w-4 h-4" />
+                            Dicas importantes
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-blue-700 dark:text-blue-200 transition-transform group-data-[state=open]:rotate-180" />
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <div className="px-4 pb-3 pt-1 text-[12.5px] leading-relaxed text-blue-900/90 dark:text-blue-100/90 space-y-1">
+                            {diarioView === "grade" && (
+                              <ul className="space-y-1 list-disc list-inside">
+                                <li>Clique em uma célula vazia para criar uma aula.</li>
+                                <li>Utilize <b>Replicar</b> para copiar a grade para semanas futuras.</li>
+                                <li>Feriados e pontos facultativos são tratados automaticamente.</li>
+                              </ul>
+                            )}
+                            {diarioView === "medias" && "Lance AV1–AV4 e RP. A média e o status são calculados automaticamente. Média mínima: 6,0."}
+                            {diarioView === "conteudos" && "Preencha objetivo, habilidades BNCC e metodologia dentro de cada aula da grade."}
+                            {diarioView === "frequencia" && "Registre frequência diariamente. Alunos abaixo de 75% são sinalizados em vermelho."}
+                            {diarioView === "complementares" && "Use para observações pedagógicas (comportamento, participação, dificuldades)."}
+                            {diarioView === "horario" && "Visualize a distribuição semanal de aulas e professores gerada pela grade."}
+                          </div>
+                        </CollapsibleContent>
+                      </div>
+                    </Collapsible>
+                  </div>
                 )}
-                {tipsEnabled && diarioView === "medias" && (
-                  <TipBanner variant="info" title="Dica — Médias" dismissKey="medias">
-                    Lance as notas AV1–AV4 e recuperações (RP). A média e o status (Aprovado/Reprovado) são calculados automaticamente. Média mínima: 6,0.
-                  </TipBanner>
-                )}
-                {tipsEnabled && diarioView === "conteudos" && (
-                  <TipBanner variant="info" title="Dica — Conteúdos" dismissKey="conteudos">
-                    Os conteúdos refletem o que foi registrado em cada aula. Preencha <b>Objetivo</b>, <b>Habilidades BNCC</b> e <b>Metodologia</b> dentro de cada aula da grade.
-                  </TipBanner>
-                )}
-                {tipsEnabled && diarioView === "frequencia" && (
-                  <TipBanner variant="warn" title="Atenção — Frequência" dismissKey="freq">
-                    A frequência deve ser registrada <b>diariamente</b>. Alunos com presença abaixo de 75% serão sinalizados em vermelho.
-                  </TipBanner>
-                )}
-                {tipsEnabled && diarioView === "complementares" && (
-                  <TipBanner variant="info" title="Dica — Complementares" dismissKey="comp">
-                    Use este espaço para registrar observações pedagógicas que complementam o diário (comportamento, participação, dificuldades).
-                  </TipBanner>
-                )}
-                {tipsEnabled && diarioView === "horario" && (
-                  <TipBanner variant="info" title="Dica — Horário" dismissKey="hor">
-                    Visualize a distribuição semanal de aulas e professores. As aulas são geradas a partir dos lançamentos na grade.
-                  </TipBanner>
-                )}
-                </div>
 
                 {diarioView === "grade" && (
                   <>
-                    {/* Toolbar — week navigation + month filter + replicate */}
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigateWeek(-1)}>
+                    {/* Centered week navigation toolbar */}
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="flex-1" />
+                      <div className="flex items-center gap-2 bg-card border border-border rounded-2xl px-2 py-1.5 shadow-sm">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => navigateWeek(-1)}>
                           <ChevronLeft className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => navigateWeek(1)}>
+                        <div className="px-2 text-sm font-semibold text-foreground min-w-[180px] text-center">
+                          {formatWeekRange(weekDates)}
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => navigateWeek(1)}>
                           <ChevronRight className="w-4 h-4" />
                         </Button>
-                        <span className="text-sm font-medium">{formatWeekRange(weekDates)}</span>
+                        <div className="w-px h-6 bg-border mx-1" />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 rounded-xl gap-1.5 text-xs font-semibold"
+                          onClick={() => setCurrentWeek(new Date())}
+                        >
+                          <CalendarIcon className="w-3.5 h-3.5" /> Hoje
+                        </Button>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex-1 flex items-center justify-end gap-2">
                         <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
-                          <SelectTrigger className="h-8 w-36 text-xs">
+                          <SelectTrigger className="h-9 w-36 text-xs rounded-xl">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -605,16 +640,14 @@ const Disciplinas = () => {
                             ))}
                           </SelectContent>
                         </Select>
-
-
-                        <div className="flex gap-1">
-                          <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" className="h-8" onClick={() => setViewMode("Mês")}>Mês</Button>
-                          <Button variant={viewMode === "Semana" ? "default" : "ghost"} size="sm" className="h-8" onClick={() => setViewMode("Semana")}>Semana</Button>
+                        <div className="flex gap-0.5 bg-muted rounded-xl p-1">
+                          <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" className="h-7 rounded-lg text-xs" onClick={() => setViewMode("Mês")}>Mês</Button>
+                          <Button variant={viewMode === "Semana" ? "default" : "ghost"} size="sm" className="h-7 rounded-lg text-xs" onClick={() => setViewMode("Semana")}>Semana</Button>
                         </div>
                       </div>
                     </div>
 
-                    {/* Bimestre / week meta info */}
+                    {/* Bimestre meta */}
                     <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <CalendarDays className="w-3.5 h-3.5" />
@@ -629,154 +662,246 @@ const Disciplinas = () => {
                       )}
                     </div>
 
-                    {/* Empty-week warning — centered, 70% width */}
-                    <div className="w-full max-w-[980px] mx-auto space-y-2">
-                    {tipsEnabled && !isFutureWeek && weekAulas.length === 0 && (
-                      <TipBanner variant="warn" title="Semana sem preenchimento">
-                        Esta semana ainda não tem aulas lançadas. Lembre-se de registrar <b>conteúdos</b>, <b>frequência</b> e, quando houver, <b>notas</b>.
-                        Clique em uma célula para criar uma aula ou use <b>+</b> para várias.
-                      </TipBanner>
-                    )}
-                    {tipsEnabled && !isFutureWeek && weekAulas.length > 0 && weekAulas.every((a) => !isAulaFilled(a)) && (
-                      <TipBanner variant="warn" title="Aulas pendentes de preenchimento">
-                        As aulas desta semana foram criadas mas ainda não têm <b>objetivo</b>, <b>habilidades BNCC</b> e <b>frequência</b> registrados.
-                      </TipBanner>
-                    )}
-                    </div>
+                    {/* Modern alert card */}
+                    {tipsEnabled && !isFutureWeek && (weekAulas.length === 0 || weekAulas.some((a) => !isAulaFilled(a))) && (() => {
+                      const pendentes = weekAulas.filter((a) => !isAulaFilled(a)).length;
+                      const empty = weekAulas.length === 0;
+                      return (
+                        <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-900/60 px-4 py-3">
+                          <div className="shrink-0 w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
+                            <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-300" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-semibold text-amber-900 dark:text-amber-100">
+                              {empty ? "Semana sem preenchimento" : "Aulas pendentes de preenchimento"}
+                            </p>
+                            <p className="text-[12px] text-amber-800/80 dark:text-amber-200/80 leading-snug">
+                              {empty
+                                ? "Clique em uma célula para criar uma aula ou use + para várias."
+                                : `${pendentes} ${pendentes === 1 ? "aula precisa" : "aulas precisam"} de objetivos, habilidades BNCC ou frequência.`}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
-                    {/* Weekly grid — centered, wider for prominence */}
-                    <div className="border rounded-lg overflow-auto bg-card w-full max-w-[1400px] mx-auto">
-                      <table className="w-full border-collapse text-xs table-fixed">
-                        <thead>
-                          <tr>
-                            <th className="border-b border-r p-1.5 w-14 text-muted-foreground font-normal"></th>
-                            {weekDates.map((date, i) => {
-                              const k = dateKey(date);
-                              const holiday = holidayMap.get(k);
-                              const optional = optionalMap.get(k);
-                              return (
-                                <th
-                                  key={i}
-                                  className={`border-b border-r p-1.5 text-center font-medium ${isToday(date) ? "bg-primary/10 text-primary" : ""} ${holiday ? "bg-red-50 dark:bg-red-950/30" : optional ? "bg-amber-50 dark:bg-amber-950/30" : ""}`}
-                                >
-                                  <div className="text-[12px]">{String(date.getDate()).padStart(2, "0")} {DIAS_SEMANA[i]}</div>
-                                  {holiday && (
-                                    <div className="text-[10px] font-normal text-red-700 dark:text-red-400 truncate" title={holiday}>
-                                      🔴 {holiday}
-                                    </div>
-                                  )}
-                                  {!holiday && optional && (
-                                    <div className="text-[10px] font-normal text-amber-700 dark:text-amber-400 truncate" title={optional}>
-                                      🟡 Facultativo
-                                    </div>
-                                  )}
-                                </th>
-                              );
-                            })}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {HORAS.map((hora) => (
-                            <tr key={hora} className="h-12">
-                              <td className="border-b border-r px-1.5 text-[11px] text-muted-foreground text-right align-top pt-1">
-                                {hora}
-                              </td>
-                              {weekDates.map((_, dayIdx) => {
-                                const slotAulas = getAulasForSlot(dayIdx, hora);
-                                const startingAulas = slotAulas.filter((a) => isStartHour(a, hora));
-                                const coveredKey = `${dayIdx}-${hora}`;
-
-                                if (renderedAulas.has(coveredKey)) {
-                                  return null;
-                                }
-
-                                let rowSpan = 1;
-                                if (startingAulas.length > 0) {
-                                  const maxSpan = Math.max(...startingAulas.map(getAulaSpan));
-                                  rowSpan = maxSpan;
-                                  for (let s = 1; s < maxSpan; s++) {
-                                    const hIdx = HORAS.indexOf(hora);
-                                    if (hIdx + s < HORAS.length) {
-                                      renderedAulas.add(`${dayIdx}-${HORAS[hIdx + s]}`);
-                                    }
-                                  }
-                                }
-
-                                const hasAula = startingAulas.length > 0;
-                                const dayKey = dateKey(weekDates[dayIdx]);
-                                const isHoliday = holidayMap.has(dayKey);
-
+                    {/* Grid + right dashboard layout */}
+                    <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
+                      {/* Weekly grid (≈80% via grid template) */}
+                      <div className="border border-border rounded-2xl overflow-hidden bg-card shadow-sm">
+                        <table className="w-full border-collapse text-xs table-fixed">
+                          <thead>
+                            <tr className="bg-muted/40">
+                              <th className="border-b border-r border-border p-2 w-16 text-muted-foreground font-normal"></th>
+                              {weekDates.map((date, i) => {
+                                const k = dateKey(date);
+                                const holiday = holidayMap.get(k);
+                                const optional = optionalMap.get(k);
                                 return (
-                                  <td
-                                    key={dayIdx}
-                                    rowSpan={rowSpan > 1 ? rowSpan : undefined}
-                                    onClick={() => !hasAula && !isHoliday && openSingleSlot(dayIdx, hora)}
-                                    className={`border-b border-r p-1 align-top transition-colors ${
-                                      isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""
-                                    } ${isHoliday ? "bg-red-50/40 dark:bg-red-950/10" : ""} ${!hasAula && !isHoliday ? "cursor-pointer hover:bg-accent/20" : ""}`}
+                                  <th
+                                    key={i}
+                                    className={`border-b border-r border-border p-2 text-center font-medium ${isToday(date) ? "bg-primary/10 text-primary" : ""} ${holiday ? "bg-red-50 dark:bg-red-950/30" : optional ? "bg-amber-50 dark:bg-amber-950/30" : ""}`}
                                   >
-                                    {startingAulas.map((aula) => {
-                                      const filled = isAulaFilled(aula);
-                                      const draft = isAulaDraft(aula);
-                                      // Cinza claro por padrão; verde forte quando validada
-                                      let statusClass = "bg-slate-200 border-slate-400 text-slate-800 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-500";
-                                      if (isFutureWeek) {
-                                        statusClass = "bg-slate-200/60 border-slate-400 text-slate-500 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-600 opacity-70";
-                                      } else if (filled) {
-                                        statusClass = "bg-emerald-500 border-emerald-700 text-white dark:bg-emerald-600 dark:border-emerald-400";
-                                      } else if (draft) {
-                                        statusClass = "bg-amber-200 border-amber-500 text-amber-900 dark:bg-amber-600/70 dark:text-amber-50 dark:border-amber-400";
-                                      }
-                                      return (
-                                        <div
-                                          key={aula.id}
-                                          className={`relative w-full rounded-md p-1.5 border text-[11px] h-full hover:ring-2 hover:ring-primary/60 transition shadow-sm ${statusClass}`}
-                                        >
-                                          <button
-                                            onClick={(e) => { e.stopPropagation(); openAula(aula); }}
-                                            className="w-full text-left"
-                                          >
-                                            <div className="font-semibold text-[10px] flex items-center justify-between pr-4">
-                                              <span>{aula.horaInicio}–{aula.horaTermino}</span>
-                                              {filled && !isFutureWeek && <span title="Validada">✓</span>}
-                                              {draft && !filled && !isFutureWeek && (
-                                                <span className="text-[9px] px-1 rounded bg-black/10 dark:bg-white/10" title="Rascunho">rascunho</span>
-                                              )}
-                                            </div>
-                                            <div className="font-bold truncate leading-tight text-[12px]">{aula.disciplina}</div>
-                                            <div className="text-[10px] opacity-80 truncate leading-tight">{aula.professor}</div>
-                                          </button>
-                                          <button
-                                            onClick={(e) => { e.stopPropagation(); deleteAula(aula.id); }}
-                                            title="Excluir aula"
-                                            className="absolute top-0.5 right-0.5 p-0.5 rounded hover:bg-black/20 opacity-60 hover:opacity-100"
-                                          >
-                                            <X className="w-3 h-3" />
-                                          </button>
-                                        </div>
-                                      );
-                                    })}
-                                  </td>
+                                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{DIAS_SEMANA[i]}</div>
+                                    <div className="text-[15px] font-bold leading-tight mt-0.5">{String(date.getDate()).padStart(2, "0")}</div>
+                                    {holiday && (
+                                      <div className="text-[9.5px] font-medium text-red-700 dark:text-red-400 truncate mt-0.5" title={holiday}>
+                                        Feriado
+                                      </div>
+                                    )}
+                                    {!holiday && optional && (
+                                      <div className="text-[9.5px] font-medium text-amber-700 dark:text-amber-400 truncate mt-0.5" title={optional}>
+                                        Facultativo
+                                      </div>
+                                    )}
+                                  </th>
                                 );
-
                               })}
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {HORAS.map((hora) => (
+                              <tr key={hora} className="h-16">
+                                <td className="border-b border-r border-border px-2 text-[11px] text-muted-foreground text-right align-top pt-1.5 font-medium">
+                                  {hora}
+                                </td>
+                                {weekDates.map((_, dayIdx) => {
+                                  const slotAulas = getAulasForSlot(dayIdx, hora);
+                                  const startingAulas = slotAulas.filter((a) => isStartHour(a, hora));
+                                  const coveredKey = `${dayIdx}-${hora}`;
+
+                                  if (renderedAulas.has(coveredKey)) return null;
+
+                                  let rowSpan = 1;
+                                  if (startingAulas.length > 0) {
+                                    const maxSpan = Math.max(...startingAulas.map(getAulaSpan));
+                                    rowSpan = maxSpan;
+                                    for (let s = 1; s < maxSpan; s++) {
+                                      const hIdx = HORAS.indexOf(hora);
+                                      if (hIdx + s < HORAS.length) {
+                                        renderedAulas.add(`${dayIdx}-${HORAS[hIdx + s]}`);
+                                      }
+                                    }
+                                  }
+
+                                  const hasAula = startingAulas.length > 0;
+                                  const dayKey = dateKey(weekDates[dayIdx]);
+                                  const isHoliday = holidayMap.has(dayKey);
+                                  const isOptional = optionalMap.has(dayKey);
+
+                                  return (
+                                    <td
+                                      key={dayIdx}
+                                      rowSpan={rowSpan > 1 ? rowSpan : undefined}
+                                      onClick={() => !hasAula && !isHoliday && openSingleSlot(dayIdx, hora)}
+                                      className={`border-b border-r border-border p-1 align-top transition-colors ${
+                                        isToday(weekDates[dayIdx]) ? "bg-primary/5" : ""
+                                      } ${isHoliday ? "bg-red-50/40 dark:bg-red-950/10" : isOptional ? "bg-amber-50/30 dark:bg-amber-950/10" : ""} ${!hasAula && !isHoliday ? "cursor-pointer hover:bg-accent/10" : ""}`}
+                                    >
+                                      {startingAulas.map((aula) => {
+                                        const filled = isAulaFilled(aula);
+                                        const draft = isAulaDraft(aula);
+                                        let statusClass = "bg-slate-100 border-slate-300 text-slate-800 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700";
+                                        if (isFutureWeek) {
+                                          statusClass = "bg-slate-100/60 border-slate-300 text-slate-500 dark:bg-slate-800/60 dark:text-slate-400 dark:border-slate-700 opacity-70";
+                                        } else if (filled) {
+                                          statusClass = "bg-emerald-50 border-emerald-300 text-emerald-950 dark:bg-emerald-950/40 dark:border-emerald-700 dark:text-emerald-50";
+                                        } else if (draft) {
+                                          statusClass = "bg-amber-50 border-amber-300 text-amber-950 dark:bg-amber-950/40 dark:text-amber-50 dark:border-amber-700";
+                                        }
+                                        return (
+                                          <div
+                                            key={aula.id}
+                                            className={`group relative w-full rounded-xl p-2 border text-[11px] h-full hover:shadow-md hover:-translate-y-px transition-all shadow-sm ${statusClass}`}
+                                          >
+                                            <button
+                                              onClick={(e) => { e.stopPropagation(); openAula(aula); }}
+                                              className="w-full text-left"
+                                            >
+                                              <div className="font-bold leading-tight text-[12.5px] flex items-center gap-1.5 pr-5">
+                                                <BookOpen className="w-3 h-3 shrink-0 opacity-70" />
+                                                <span className="truncate">{aula.disciplina}</span>
+                                                {filled && !isFutureWeek && <span className="ml-auto text-emerald-600 dark:text-emerald-400 text-[11px]">✓</span>}
+                                              </div>
+                                              <div className="text-[10.5px] mt-1 opacity-80 flex items-center gap-1">
+                                                <Clock className="w-2.5 h-2.5" />
+                                                {aula.horaInicio} – {aula.horaTermino}
+                                              </div>
+                                              <div className="text-[10.5px] opacity-80 flex items-center gap-1 truncate">
+                                                <UserIcon className="w-2.5 h-2.5 shrink-0" />
+                                                <span className="truncate">{aula.professor}</span>
+                                              </div>
+                                              {draft && !filled && !isFutureWeek && (
+                                                <div className="mt-1 inline-block text-[9px] px-1.5 py-0.5 rounded-md bg-amber-200/70 dark:bg-amber-700/40 text-amber-900 dark:text-amber-100 font-semibold">
+                                                  rascunho
+                                                </div>
+                                              )}
+                                            </button>
+                                            <button
+                                              onClick={(e) => { e.stopPropagation(); deleteAula(aula.id); }}
+                                              title="Excluir aula"
+                                              className="absolute top-1 right-1 p-0.5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                              <X className="w-3 h-3" />
+                                            </button>
+                                          </div>
+                                        );
+                                      })}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Right dashboard panel */}
+                      <aside className="space-y-4">
+                        {/* Próximas aulas */}
+                        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                          <div className="flex items-center gap-2 mb-3">
+                            <CalendarIcon className="w-4 h-4 text-primary" />
+                            <h3 className="text-sm font-semibold text-foreground">Próximas aulas de hoje</h3>
+                          </div>
+                          {(() => {
+                            const today = new Date();
+                            const todayIdx = today.getDay();
+                            const isCurrentWeek = weekKind === "current";
+                            const todays = isCurrentWeek
+                              ? weekAulas
+                                  .filter((a) => a.diaSemana === todayIdx)
+                                  .sort((a, b) => a.horaInicio.localeCompare(b.horaInicio))
+                                  .slice(0, 4)
+                              : [];
+                            if (todays.length === 0) {
+                              return (
+                                <p className="text-xs text-muted-foreground py-3 text-center">
+                                  Nenhuma aula programada para hoje.
+                                </p>
+                              );
+                            }
+                            return (
+                              <ul className="space-y-2">
+                                {todays.map((a) => (
+                                  <li key={a.id} className="flex items-start gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => openAula(a)}>
+                                    <div className="text-[11px] font-bold text-primary leading-tight min-w-[40px]">
+                                      {a.horaInicio}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-[12.5px] font-semibold truncate">{a.disciplina}</div>
+                                      <div className="text-[11px] text-muted-foreground truncate">{a.professor}</div>
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Resumo da Semana */}
+                        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                          <div className="flex items-center gap-2 mb-3">
+                            <BarChart3 className="w-4 h-4 text-primary" />
+                            <h3 className="text-sm font-semibold text-foreground">Resumo da Semana</h3>
+                          </div>
+                          {(() => {
+                            const total = weekAulas.length;
+                            const pendentes = weekAulas.filter((a) => !isAulaFilled(a)).length;
+                            const validadas = weekAulas.filter(isAulaFilled).length;
+                            const feriados = weekDates.filter((d) => holidayMap.has(dateKey(d)) || optionalMap.has(dateKey(d))).length;
+                            const items = [
+                              { label: "aulas criadas", value: total, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200" },
+                              { label: "pendentes", value: pendentes, color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200" },
+                              { label: "validadas", value: validadas, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200" },
+                              { label: "feriados/facultativos", value: feriados, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200" },
+                            ];
+                            return (
+                              <ul className="space-y-2">
+                                {items.map((it) => (
+                                  <li key={it.label} className="flex items-center justify-between">
+                                    <span className="text-[12.5px] text-muted-foreground capitalize">{it.label}</span>
+                                    <span className={`text-[12px] font-bold px-2 py-0.5 rounded-lg ${it.color}`}>{it.value}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Legend */}
+                        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                          <h3 className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Legenda</h3>
+                          <ul className="space-y-1.5 text-[11.5px]">
+                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-slate-100 border border-slate-300 dark:bg-slate-800 dark:border-slate-700 inline-block" /> Criada</li>
+                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300 inline-block" /> Rascunho</li>
+                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300 inline-block" /> Validada</li>
+                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Feriado</li>
+                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-amber-50 border border-amber-200 inline-block" /> Facultativo</li>
+                          </ul>
+                        </div>
+                      </aside>
                     </div>
-
-
-                    {/* Legend — status das aulas */}
-                    <div className="flex flex-wrap gap-3 text-[12px] text-muted-foreground pt-1">
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-200 border border-slate-400 inline-block" /> Criada</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-200 border border-amber-500 inline-block" /> Rascunho</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-500 border border-emerald-700 inline-block" /> Validada</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-slate-300/70 border border-slate-500 inline-block" /> Semana futura</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Feriado</span>
-                      <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300 inline-block" /> Ponto facultativo</span>
-                    </div>
-
                   </>
                 )}
 
