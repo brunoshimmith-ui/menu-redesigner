@@ -545,7 +545,8 @@ const Disciplinas = () => {
                   </div>
                 </div>
 
-                {/* Contextual tips per screen */}
+                {/* Contextual tips per screen — centered, 70% width */}
+                <div className="w-full max-w-[980px] mx-auto space-y-2">
                 {tipsEnabled && diarioView === "grade" && (
                   <TipBanner variant="tip" title="Dica — Grade semanal" dismissKey="grade">
                     Clique em uma célula vazia para criar 1 aula ou use <b>+</b> para várias.
@@ -577,6 +578,7 @@ const Disciplinas = () => {
                     Visualize a distribuição semanal de aulas e professores. As aulas são geradas a partir dos lançamentos na grade.
                   </TipBanner>
                 )}
+                </div>
 
                 {diarioView === "grade" && (
                   <>
