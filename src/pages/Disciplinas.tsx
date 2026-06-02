@@ -380,7 +380,7 @@ const Disciplinas = () => {
     toast({
       title: "Aulas adicionadas!",
       description: replicadas.length > 0
-        ? `${novas.length} aula(s) criada(s) + ${replicadas.length} replicada(s) em ${replicateWeeks} semana(s). ${skipCount} pulada(s) por feriado.`
+        ? `${novas.length} aula(s) criada(s) + ${replicadas.length} replicada(s). ${skipCount} pulada(s) por feriado.`
         : `${novas.length} aula(s) adicionada(s) ao diário.`,
     });
   };
