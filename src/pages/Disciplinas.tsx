@@ -531,7 +531,7 @@ const Disciplinas = () => {
                           </Button>
                         </div>
 
-                        {/* Replicar para próximas semanas */}
+                        {/* Replicar para próximas semanas / mês */}
                         <div className="rounded-lg border border-dashed bg-muted/30 p-3 space-y-2">
                           <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
                             <input
@@ -540,25 +540,63 @@ const Disciplinas = () => {
                               onChange={(e) => setReplicarOnSave(e.target.checked)}
                               className="h-4 w-4 rounded accent-primary"
                             />
-                            <Copy className="w-4 h-4" /> Replicar estas aulas para as próximas semanas
+                            <Copy className="w-4 h-4" /> Replicar estas aulas
                           </label>
                           {replicarOnSave && (
-                            <div className="flex items-center gap-2 pl-6">
-                              <Label className="text-xs">Quantidade de semanas:</Label>
-                              <Input
-                                type="number"
-                                min={1}
-                                max={52}
-                                value={replicateWeeks}
-                                onChange={(e) => setReplicateWeeks(Math.max(1, Math.min(52, parseInt(e.target.value) || 1)))}
-                                className="h-8 w-20"
-                              />
-                              <span className="text-[11px] text-muted-foreground">
-                                Feriados e pontos facultativos são pulados automaticamente.
-                              </span>
+                            <div className="pl-6 space-y-2">
+                              <div className="flex gap-1 bg-muted rounded-lg p-1 w-fit">
+                                <Button type="button" size="sm" variant={replicateMode === "semanas" ? "default" : "ghost"} className="h-7 text-xs" onClick={() => setReplicateMode("semanas")}>Por semanas</Button>
+                                <Button type="button" size="sm" variant={replicateMode === "mes" ? "default" : "ghost"} className="h-7 text-xs" onClick={() => setReplicateMode("mes")}>Por mês</Button>
+                              </div>
+                              {replicateMode === "semanas" ? (
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-xs">Quantidade de semanas:</Label>
+                                  <Input
+                                    type="number"
+                                    min={1}
+                                    max={52}
+                                    value={replicateWeeks}
+                                    onChange={(e) => setReplicateWeeks(Math.max(1, Math.min(52, parseInt(e.target.value) || 1)))}
+                                    className="h-8 w-20"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <Label className="text-xs">Mês:</Label>
+                                  <Select value={String(replicateMonth)} onValueChange={(v) => setReplicateMonth(parseInt(v))}>
+                                    <SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                      {months.map((m, i) => (
+                                        <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <Input
+                                    type="number"
+                                    min={2020}
+                                    max={2099}
+                                    value={replicateMonthYear}
+                                    onChange={(e) => setReplicateMonthYear(parseInt(e.target.value) || new Date().getFullYear())}
+                                    className="h-8 w-20"
+                                  />
+                                  <Label className="text-xs">Até o dia:</Label>
+                                  <Input
+                                    type="number"
+                                    min={1}
+                                    max={31}
+                                    value={replicateMonthEndDay}
+                                    onChange={(e) => setReplicateMonthEndDay(Math.max(1, Math.min(31, parseInt(e.target.value) || 1)))}
+                                    className="h-8 w-20"
+                                  />
+                                </div>
+                              )}
+                              <p className="text-[11px] text-muted-foreground">
+                                Feriados e pontos facultativos são pulados automaticamente. É possível replicar em meses anteriores ou futuros.
+                              </p>
                             </div>
                           )}
                         </div>
+
 
                         <div className="flex justify-end pt-2">
                           <Button onClick={handleSalvar} className="gap-2">
