@@ -328,18 +328,47 @@ const Disciplinas = () => {
     // Replicate to next weeks if requested
     const replicadas: AulaSalva[] = [];
     let skipCount = 0;
-    if (replicarOnSave && replicateWeeks > 0) {
-      for (let w = 1; w <= replicateWeeks; w++) {
-        const target = new Date(weekDates[0]);
-        target.setDate(target.getDate() + w * 7);
-        const targetWeek = getWeekDates(target);
-        const targetKey = dateKey(targetWeek[0]);
-        novas.forEach((a) => {
-          const dayDate = targetWeek[a.diaSemana];
-          const k = dateKey(dayDate);
-          if (holidayMap.has(k) || optionalMap.has(k)) { skipCount++; return; }
-          replicadas.push({ ...a, id: crypto.randomUUID(), weekStart: targetKey });
-        });
+    if (replicarOnSave) {
+      if (replicateMode === "semanas" && replicateWeeks > 0) {
+        for (let w = 1; w <= replicateWeeks; w++) {
+          const target = new Date(weekDates[0]);
+          target.setDate(target.getDate() + w * 7);
+          const targetWeek = getWeekDates(target);
+          const targetKey = dateKey(targetWeek[0]);
+          novas.forEach((a) => {
+            const dayDate = targetWeek[a.diaSemana];
+            const k = dateKey(dayDate);
+            if (holidayMap.has(k) || optionalMap.has(k)) { skipCount++; return; }
+            replicadas.push({ ...a, id: crypto.randomUUID(), weekStart: targetKey });
+          });
+        }
+      } else if (replicateMode === "mes") {
+        // Replicate across selected month up to end day, weekly, skipping holidays
+        const monthStart = new Date(replicateMonthYear, replicateMonth, 1);
+        const lastDayOfMonth = new Date(replicateMonthYear, replicateMonth + 1, 0).getDate();
+        const endDay = Math.min(replicateMonthEndDay, lastDayOfMonth);
+        const endDate = new Date(replicateMonthYear, replicateMonth, endDay);
+        // Start iterating from the Sunday of the week containing the 1st of month
+        const cursor = new Date(monthStart);
+        cursor.setDate(cursor.getDate() - cursor.getDay());
+        const seenWeeks = new Set<string>();
+        while (cursor <= endDate) {
+          const targetWeek = getWeekDates(cursor);
+          const targetKey = dateKey(targetWeek[0]);
+          // skip if it's the same as current week being saved
+          if (targetKey !== currentWeekKey && !seenWeeks.has(targetKey)) {
+            seenWeeks.add(targetKey);
+            novas.forEach((a) => {
+              const dayDate = targetWeek[a.diaSemana];
+              if (dayDate.getMonth() !== replicateMonth || dayDate.getFullYear() !== replicateMonthYear) return;
+              if (dayDate > endDate) return;
+              const k = dateKey(dayDate);
+              if (holidayMap.has(k) || optionalMap.has(k)) { skipCount++; return; }
+              replicadas.push({ ...a, id: crypto.randomUUID(), weekStart: targetKey });
+            });
+          }
+          cursor.setDate(cursor.getDate() + 7);
+        }
       }
     }
 
