@@ -328,6 +328,7 @@ const Disciplinas = () => {
     // Replicate to next weeks if requested
     const replicadas: AulaSalva[] = [];
     let skipCount = 0;
+    let novasFinal: AulaSalva[] = novas;
     if (replicarOnSave) {
       if (replicateMode === "semanas" && replicateWeeks > 0) {
         for (let w = 1; w <= replicateWeeks; w++) {
@@ -343,20 +344,29 @@ const Disciplinas = () => {
           });
         }
       } else if (replicateMode === "mes") {
-        // Replicate across selected month up to end day, weekly, skipping holidays
+        // Replicate across every week of the selected month up to end day, skipping holidays.
+        // Ensures replicated aulas appear in the week view of every week within the target month.
         const monthStart = new Date(replicateMonthYear, replicateMonth, 1);
         const lastDayOfMonth = new Date(replicateMonthYear, replicateMonth + 1, 0).getDate();
         const endDay = Math.min(replicateMonthEndDay, lastDayOfMonth);
         const endDate = new Date(replicateMonthYear, replicateMonth, endDay);
-        // Start iterating from the Sunday of the week containing the 1st of month
+        endDate.setHours(23, 59, 59, 999);
+
+        // Does the currently viewed week intersect the target month?
+        const currentWeekInMonth = weekDates.some(
+          (d) => d.getMonth() === replicateMonth && d.getFullYear() === replicateMonthYear && d <= endDate
+        );
+        // If replicating to a different month, don't anchor novas to the current week
+        if (!currentWeekInMonth) novasFinal = [];
+
         const cursor = new Date(monthStart);
         cursor.setDate(cursor.getDate() - cursor.getDay());
         const seenWeeks = new Set<string>();
+        if (currentWeekInMonth) seenWeeks.add(currentWeekKey); // avoid duplicating novas in current week
         while (cursor <= endDate) {
           const targetWeek = getWeekDates(cursor);
           const targetKey = dateKey(targetWeek[0]);
-          // skip if it's the same as current week being saved
-          if (targetKey !== currentWeekKey && !seenWeeks.has(targetKey)) {
+          if (!seenWeeks.has(targetKey)) {
             seenWeeks.add(targetKey);
             novas.forEach((a) => {
               const dayDate = targetWeek[a.diaSemana];
@@ -369,10 +379,15 @@ const Disciplinas = () => {
           }
           cursor.setDate(cursor.getDate() + 7);
         }
+
+        // Jump view to the first week of the target month if we replicated elsewhere
+        if (!currentWeekInMonth) {
+          setCurrentWeek(new Date(replicateMonthYear, replicateMonth, 1));
+        }
       }
     }
 
-    setAulas((prev) => [...prev, ...novas, ...replicadas]);
+    setAulas((prev) => [...prev, ...novasFinal, ...replicadas]);
     setFormItems([{ id: crypto.randomUUID(), disciplina: "", horaInicio: "07:00", horaTermino: "08:00", professor: "", diaSemana: 1 }]);
     setDialogOpen(false);
     setSelectedSlots(new Set());
