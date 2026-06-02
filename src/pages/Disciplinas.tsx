@@ -641,37 +641,9 @@ const Disciplinas = () => {
                   </div>
                 </div>
 
-                {/* Collapsible tips panel — compact, centered */}
+                {/* Slides — Dicas importantes */}
                 {tipsEnabled && (
-                  <div className="w-full max-w-[720px] mx-auto">
-                    <Collapsible defaultOpen={false}>
-                      <div className="rounded-2xl border border-blue-200 bg-blue-50/60 dark:bg-blue-950/20 dark:border-blue-900/60 overflow-hidden">
-                        <CollapsibleTrigger className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-blue-100/40 dark:hover:bg-blue-900/20 transition-colors group">
-                          <span className="flex items-center gap-2 text-[13px] font-semibold text-blue-900 dark:text-blue-100">
-                            <Lightbulb className="w-4 h-4" />
-                            Dicas importantes
-                          </span>
-                          <ChevronDown className="w-4 h-4 text-blue-700 dark:text-blue-200 transition-transform group-data-[state=open]:rotate-180" />
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <div className="px-4 pb-3 pt-1 text-[12.5px] leading-relaxed text-blue-900/90 dark:text-blue-100/90 space-y-1">
-                            {diarioView === "grade" && (
-                              <ul className="space-y-1 list-disc list-inside">
-                                <li>Clique em uma célula vazia para criar uma aula.</li>
-                                <li>Utilize <b>Replicar</b> para copiar a grade para semanas futuras.</li>
-                                <li>Feriados e pontos facultativos são tratados automaticamente.</li>
-                              </ul>
-                            )}
-                            {diarioView === "medias" && "Lance AV1–AV4 e RP. A média e o status são calculados automaticamente. Média mínima: 6,0."}
-                            {diarioView === "conteudos" && "Preencha objetivo, habilidades BNCC e metodologia dentro de cada aula da grade."}
-                            {diarioView === "frequencia" && "Registre frequência diariamente. Alunos abaixo de 75% são sinalizados em vermelho."}
-                            {diarioView === "complementares" && "Use para observações pedagógicas (comportamento, participação, dificuldades)."}
-                            {diarioView === "horario" && "Visualize a distribuição semanal de aulas e professores gerada pela grade."}
-                          </div>
-                        </CollapsibleContent>
-                      </div>
-                    </Collapsible>
-                  </div>
+                  <TipsSlider view={diarioView} />
                 )}
 
                 {diarioView === "grade" && (
