@@ -156,6 +156,10 @@ const Disciplinas = () => {
   const { enabled: tipsEnabled, setEnabled: setTipsEnabled } = useDiarioTips();
   const [replicarOnSave, setReplicarOnSave] = useState(false);
   const [replicateWeeks, setReplicateWeeks] = useState(4);
+  const [replicateMode, setReplicateMode] = useState<"semanas" | "mes">("semanas");
+  const [replicateMonth, setReplicateMonth] = useState(new Date().getMonth());
+  const [replicateMonthYear, setReplicateMonthYear] = useState(new Date().getFullYear());
+  const [replicateMonthEndDay, setReplicateMonthEndDay] = useState(31);
 
   const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
   const currentWeekKey = dateKey(weekDates[0]);
