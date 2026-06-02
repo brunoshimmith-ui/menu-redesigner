@@ -986,4 +986,92 @@ const Disciplinas = () => {
   );
 };
 
+const TIPS_BY_VIEW: Record<string, string[]> = {
+  grade: [
+    "Clique em uma célula vazia para criar uma aula rapidamente.",
+    "Use Replicar dentro da criação para copiar a grade por semanas ou por mês.",
+    "Feriados e pontos facultativos são pulados automaticamente na replicação.",
+    "Aulas em verde estão validadas; em amarelo são rascunhos pendentes.",
+  ],
+  medias: [
+    "Lance AV1–AV4 e RP. A média e o status são calculados automaticamente.",
+    "Média mínima para aprovação: 6,0.",
+    "Alunos abaixo da média ficam destacados em vermelho.",
+  ],
+  conteudos: [
+    "Preencha objetivo, habilidades BNCC e metodologia dentro de cada aula.",
+    "Conteúdos preenchidos avançam o status da aula para rascunho.",
+    "Use as habilidades BNCC sugeridas para acelerar o registro.",
+  ],
+  frequencia: [
+    "Registre a frequência diariamente para evitar pendências.",
+    "Alunos abaixo de 75% de presença são sinalizados em vermelho.",
+    "Use Presença/Falta coletiva para acelerar a chamada.",
+  ],
+  complementares: [
+    "Use para observações pedagógicas: comportamento, participação, dificuldades.",
+    "Anotações ajudam no acompanhamento individual do aluno.",
+  ],
+  horario: [
+    "Visualize a distribuição semanal das aulas e professores.",
+    "O horário é gerado automaticamente a partir da grade.",
+  ],
+};
+
+function TipsSlider({ view }: { view: string }) {
+  const slides = TIPS_BY_VIEW[view] || [];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { setIdx(0); }, [view]);
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 5000);
+    return () => clearInterval(t);
+  }, [slides.length]);
+  if (slides.length === 0) return null;
+  const prev = () => setIdx((i) => (i - 1 + slides.length) % slides.length);
+  const next = () => setIdx((i) => (i + 1) % slides.length);
+  return (
+    <div className="w-full max-w-[820px] mx-auto">
+      <div className="relative rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 dark:border-blue-900/60 overflow-hidden">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="shrink-0 w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+            <Lightbulb className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[12px] font-semibold text-blue-900 dark:text-blue-100 leading-none mb-1">
+              Dicas importantes
+            </p>
+            <p key={idx} className="text-[12.5px] text-blue-900/90 dark:text-blue-100/90 leading-snug animate-in fade-in slide-in-from-right-2 duration-300">
+              {slides[idx]}
+            </p>
+          </div>
+          {slides.length > 1 && (
+            <div className="flex items-center gap-1 shrink-0">
+              <button onClick={prev} className="p-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40" aria-label="Anterior">
+                <ChevronLeft className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+              </button>
+              <button onClick={next} className="p-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40" aria-label="Próximo">
+                <ChevronRight className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+              </button>
+            </div>
+          )}
+        </div>
+        {slides.length > 1 && (
+          <div className="flex items-center justify-center gap-1.5 pb-2">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-blue-600 dark:bg-blue-300" : "w-1.5 bg-blue-300 dark:bg-blue-700"}`}
+                aria-label={`Ir para slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default Disciplinas;
+
