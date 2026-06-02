@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -156,6 +156,10 @@ const Disciplinas = () => {
   const { enabled: tipsEnabled, setEnabled: setTipsEnabled } = useDiarioTips();
   const [replicarOnSave, setReplicarOnSave] = useState(false);
   const [replicateWeeks, setReplicateWeeks] = useState(4);
+  const [replicateMode, setReplicateMode] = useState<"semanas" | "mes">("semanas");
+  const [replicateMonth, setReplicateMonth] = useState(new Date().getMonth());
+  const [replicateMonthYear, setReplicateMonthYear] = useState(new Date().getFullYear());
+  const [replicateMonthEndDay, setReplicateMonthEndDay] = useState(31);
 
   const weekDates = useMemo(() => getWeekDates(currentWeek), [currentWeek]);
   const currentWeekKey = dateKey(weekDates[0]);
@@ -324,18 +328,47 @@ const Disciplinas = () => {
     // Replicate to next weeks if requested
     const replicadas: AulaSalva[] = [];
     let skipCount = 0;
-    if (replicarOnSave && replicateWeeks > 0) {
-      for (let w = 1; w <= replicateWeeks; w++) {
-        const target = new Date(weekDates[0]);
-        target.setDate(target.getDate() + w * 7);
-        const targetWeek = getWeekDates(target);
-        const targetKey = dateKey(targetWeek[0]);
-        novas.forEach((a) => {
-          const dayDate = targetWeek[a.diaSemana];
-          const k = dateKey(dayDate);
-          if (holidayMap.has(k) || optionalMap.has(k)) { skipCount++; return; }
-          replicadas.push({ ...a, id: crypto.randomUUID(), weekStart: targetKey });
-        });
+    if (replicarOnSave) {
+      if (replicateMode === "semanas" && replicateWeeks > 0) {
+        for (let w = 1; w <= replicateWeeks; w++) {
+          const target = new Date(weekDates[0]);
+          target.setDate(target.getDate() + w * 7);
+          const targetWeek = getWeekDates(target);
+          const targetKey = dateKey(targetWeek[0]);
+          novas.forEach((a) => {
+            const dayDate = targetWeek[a.diaSemana];
+            const k = dateKey(dayDate);
+            if (holidayMap.has(k) || optionalMap.has(k)) { skipCount++; return; }
+            replicadas.push({ ...a, id: crypto.randomUUID(), weekStart: targetKey });
+          });
+        }
+      } else if (replicateMode === "mes") {
+        // Replicate across selected month up to end day, weekly, skipping holidays
+        const monthStart = new Date(replicateMonthYear, replicateMonth, 1);
+        const lastDayOfMonth = new Date(replicateMonthYear, replicateMonth + 1, 0).getDate();
+        const endDay = Math.min(replicateMonthEndDay, lastDayOfMonth);
+        const endDate = new Date(replicateMonthYear, replicateMonth, endDay);
+        // Start iterating from the Sunday of the week containing the 1st of month
+        const cursor = new Date(monthStart);
+        cursor.setDate(cursor.getDate() - cursor.getDay());
+        const seenWeeks = new Set<string>();
+        while (cursor <= endDate) {
+          const targetWeek = getWeekDates(cursor);
+          const targetKey = dateKey(targetWeek[0]);
+          // skip if it's the same as current week being saved
+          if (targetKey !== currentWeekKey && !seenWeeks.has(targetKey)) {
+            seenWeeks.add(targetKey);
+            novas.forEach((a) => {
+              const dayDate = targetWeek[a.diaSemana];
+              if (dayDate.getMonth() !== replicateMonth || dayDate.getFullYear() !== replicateMonthYear) return;
+              if (dayDate > endDate) return;
+              const k = dateKey(dayDate);
+              if (holidayMap.has(k) || optionalMap.has(k)) { skipCount++; return; }
+              replicadas.push({ ...a, id: crypto.randomUUID(), weekStart: targetKey });
+            });
+          }
+          cursor.setDate(cursor.getDate() + 7);
+        }
       }
     }
 
@@ -347,7 +380,7 @@ const Disciplinas = () => {
     toast({
       title: "Aulas adicionadas!",
       description: replicadas.length > 0
-        ? `${novas.length} aula(s) criada(s) + ${replicadas.length} replicada(s) em ${replicateWeeks} semana(s). ${skipCount} pulada(s) por feriado.`
+        ? `${novas.length} aula(s) criada(s) + ${replicadas.length} replicada(s). ${skipCount} pulada(s) por feriado.`
         : `${novas.length} aula(s) adicionada(s) ao diário.`,
     });
   };
@@ -498,7 +531,7 @@ const Disciplinas = () => {
                           </Button>
                         </div>
 
-                        {/* Replicar para próximas semanas */}
+                        {/* Replicar para próximas semanas / mês */}
                         <div className="rounded-lg border border-dashed bg-muted/30 p-3 space-y-2">
                           <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
                             <input
@@ -507,25 +540,63 @@ const Disciplinas = () => {
                               onChange={(e) => setReplicarOnSave(e.target.checked)}
                               className="h-4 w-4 rounded accent-primary"
                             />
-                            <Copy className="w-4 h-4" /> Replicar estas aulas para as próximas semanas
+                            <Copy className="w-4 h-4" /> Replicar estas aulas
                           </label>
                           {replicarOnSave && (
-                            <div className="flex items-center gap-2 pl-6">
-                              <Label className="text-xs">Quantidade de semanas:</Label>
-                              <Input
-                                type="number"
-                                min={1}
-                                max={52}
-                                value={replicateWeeks}
-                                onChange={(e) => setReplicateWeeks(Math.max(1, Math.min(52, parseInt(e.target.value) || 1)))}
-                                className="h-8 w-20"
-                              />
-                              <span className="text-[11px] text-muted-foreground">
-                                Feriados e pontos facultativos são pulados automaticamente.
-                              </span>
+                            <div className="pl-6 space-y-2">
+                              <div className="flex gap-1 bg-muted rounded-lg p-1 w-fit">
+                                <Button type="button" size="sm" variant={replicateMode === "semanas" ? "default" : "ghost"} className="h-7 text-xs" onClick={() => setReplicateMode("semanas")}>Por semanas</Button>
+                                <Button type="button" size="sm" variant={replicateMode === "mes" ? "default" : "ghost"} className="h-7 text-xs" onClick={() => setReplicateMode("mes")}>Por mês</Button>
+                              </div>
+                              {replicateMode === "semanas" ? (
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-xs">Quantidade de semanas:</Label>
+                                  <Input
+                                    type="number"
+                                    min={1}
+                                    max={52}
+                                    value={replicateWeeks}
+                                    onChange={(e) => setReplicateWeeks(Math.max(1, Math.min(52, parseInt(e.target.value) || 1)))}
+                                    className="h-8 w-20"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <Label className="text-xs">Mês:</Label>
+                                  <Select value={String(replicateMonth)} onValueChange={(v) => setReplicateMonth(parseInt(v))}>
+                                    <SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                      {months.map((m, i) => (
+                                        <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <Input
+                                    type="number"
+                                    min={2020}
+                                    max={2099}
+                                    value={replicateMonthYear}
+                                    onChange={(e) => setReplicateMonthYear(parseInt(e.target.value) || new Date().getFullYear())}
+                                    className="h-8 w-20"
+                                  />
+                                  <Label className="text-xs">Até o dia:</Label>
+                                  <Input
+                                    type="number"
+                                    min={1}
+                                    max={31}
+                                    value={replicateMonthEndDay}
+                                    onChange={(e) => setReplicateMonthEndDay(Math.max(1, Math.min(31, parseInt(e.target.value) || 1)))}
+                                    className="h-8 w-20"
+                                  />
+                                </div>
+                              )}
+                              <p className="text-[11px] text-muted-foreground">
+                                Feriados e pontos facultativos são pulados automaticamente. É possível replicar em meses anteriores ou futuros.
+                              </p>
                             </div>
                           )}
                         </div>
+
 
                         <div className="flex justify-end pt-2">
                           <Button onClick={handleSalvar} className="gap-2">
@@ -570,37 +641,9 @@ const Disciplinas = () => {
                   </div>
                 </div>
 
-                {/* Collapsible tips panel — compact, centered */}
+                {/* Slides — Dicas importantes */}
                 {tipsEnabled && (
-                  <div className="w-full max-w-[720px] mx-auto">
-                    <Collapsible defaultOpen={false}>
-                      <div className="rounded-2xl border border-blue-200 bg-blue-50/60 dark:bg-blue-950/20 dark:border-blue-900/60 overflow-hidden">
-                        <CollapsibleTrigger className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-blue-100/40 dark:hover:bg-blue-900/20 transition-colors group">
-                          <span className="flex items-center gap-2 text-[13px] font-semibold text-blue-900 dark:text-blue-100">
-                            <Lightbulb className="w-4 h-4" />
-                            Dicas importantes
-                          </span>
-                          <ChevronDown className="w-4 h-4 text-blue-700 dark:text-blue-200 transition-transform group-data-[state=open]:rotate-180" />
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <div className="px-4 pb-3 pt-1 text-[12.5px] leading-relaxed text-blue-900/90 dark:text-blue-100/90 space-y-1">
-                            {diarioView === "grade" && (
-                              <ul className="space-y-1 list-disc list-inside">
-                                <li>Clique em uma célula vazia para criar uma aula.</li>
-                                <li>Utilize <b>Replicar</b> para copiar a grade para semanas futuras.</li>
-                                <li>Feriados e pontos facultativos são tratados automaticamente.</li>
-                              </ul>
-                            )}
-                            {diarioView === "medias" && "Lance AV1–AV4 e RP. A média e o status são calculados automaticamente. Média mínima: 6,0."}
-                            {diarioView === "conteudos" && "Preencha objetivo, habilidades BNCC e metodologia dentro de cada aula da grade."}
-                            {diarioView === "frequencia" && "Registre frequência diariamente. Alunos abaixo de 75% são sinalizados em vermelho."}
-                            {diarioView === "complementares" && "Use para observações pedagógicas (comportamento, participação, dificuldades)."}
-                            {diarioView === "horario" && "Visualize a distribuição semanal de aulas e professores gerada pela grade."}
-                          </div>
-                        </CollapsibleContent>
-                      </div>
-                    </Collapsible>
-                  </div>
+                  <TipsSlider view={diarioView} />
                 )}
 
                 {diarioView === "grade" && (
@@ -943,4 +986,92 @@ const Disciplinas = () => {
   );
 };
 
+const TIPS_BY_VIEW: Record<string, string[]> = {
+  grade: [
+    "Clique em uma célula vazia para criar uma aula rapidamente.",
+    "Use Replicar dentro da criação para copiar a grade por semanas ou por mês.",
+    "Feriados e pontos facultativos são pulados automaticamente na replicação.",
+    "Aulas em verde estão validadas; em amarelo são rascunhos pendentes.",
+  ],
+  medias: [
+    "Lance AV1–AV4 e RP. A média e o status são calculados automaticamente.",
+    "Média mínima para aprovação: 6,0.",
+    "Alunos abaixo da média ficam destacados em vermelho.",
+  ],
+  conteudos: [
+    "Preencha objetivo, habilidades BNCC e metodologia dentro de cada aula.",
+    "Conteúdos preenchidos avançam o status da aula para rascunho.",
+    "Use as habilidades BNCC sugeridas para acelerar o registro.",
+  ],
+  frequencia: [
+    "Registre a frequência diariamente para evitar pendências.",
+    "Alunos abaixo de 75% de presença são sinalizados em vermelho.",
+    "Use Presença/Falta coletiva para acelerar a chamada.",
+  ],
+  complementares: [
+    "Use para observações pedagógicas: comportamento, participação, dificuldades.",
+    "Anotações ajudam no acompanhamento individual do aluno.",
+  ],
+  horario: [
+    "Visualize a distribuição semanal das aulas e professores.",
+    "O horário é gerado automaticamente a partir da grade.",
+  ],
+};
+
+function TipsSlider({ view }: { view: string }) {
+  const slides = TIPS_BY_VIEW[view] || [];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { setIdx(0); }, [view]);
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 5000);
+    return () => clearInterval(t);
+  }, [slides.length]);
+  if (slides.length === 0) return null;
+  const prev = () => setIdx((i) => (i - 1 + slides.length) % slides.length);
+  const next = () => setIdx((i) => (i + 1) % slides.length);
+  return (
+    <div className="w-full max-w-[820px] mx-auto">
+      <div className="relative rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 dark:border-blue-900/60 overflow-hidden">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="shrink-0 w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+            <Lightbulb className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[12px] font-semibold text-blue-900 dark:text-blue-100 leading-none mb-1">
+              Dicas importantes
+            </p>
+            <p key={idx} className="text-[12.5px] text-blue-900/90 dark:text-blue-100/90 leading-snug animate-in fade-in slide-in-from-right-2 duration-300">
+              {slides[idx]}
+            </p>
+          </div>
+          {slides.length > 1 && (
+            <div className="flex items-center gap-1 shrink-0">
+              <button onClick={prev} className="p-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40" aria-label="Anterior">
+                <ChevronLeft className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+              </button>
+              <button onClick={next} className="p-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40" aria-label="Próximo">
+                <ChevronRight className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+              </button>
+            </div>
+          )}
+        </div>
+        {slides.length > 1 && (
+          <div className="flex items-center justify-center gap-1.5 pb-2">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-blue-600 dark:bg-blue-300" : "w-1.5 bg-blue-300 dark:bg-blue-700"}`}
+                aria-label={`Ir para slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default Disciplinas;
+
