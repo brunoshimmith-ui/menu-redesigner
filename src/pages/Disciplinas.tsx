@@ -651,45 +651,51 @@ const Disciplinas = () => {
                     );
                   })}
 
-                  <div className="ml-auto">
-                    <TipsToggle enabled={tipsEnabled} onChange={setTipsEnabled} />
-                  </div>
                 </div>
 
                 {/* Slides — Dicas importantes */}
-                {tipsEnabled && (
-                  <TipsSlider view={diarioView} />
+                {tipsEnabled && diarioView === "grade" && (
+                  <TipsSlider view={diarioView} onClose={() => setTipsEnabled(false)} />
                 )}
 
                 {diarioView === "grade" && (
                   <>
-                    {/* Centered week navigation toolbar */}
+                    {/* Toolbar: pills (semana anterior • intervalo • próxima semana • hoje) | mês • mês/semana */}
                     <div className="flex items-center justify-between gap-3 flex-wrap">
-                      <div className="flex-1" />
-                      <div className="flex items-center gap-2 bg-card border border-border rounded-2xl px-2 py-1.5 shadow-sm">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => navigateWeek(-1)}>
-                          <ChevronLeft className="w-4 h-4" />
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9 rounded-xl gap-2 text-xs font-medium"
+                          onClick={() => navigateWeek(-1)}
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" /> Semana anterior
                         </Button>
-                        <div className="px-2 text-sm font-semibold text-foreground min-w-[180px] text-center">
+                        <div className="flex items-center gap-2 h-9 px-3 rounded-xl border bg-card text-xs font-semibold">
+                          <CalendarIcon className="w-3.5 h-3.5 text-muted-foreground" />
                           {formatWeekRange(weekDates)}
                         </div>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => navigateWeek(1)}>
-                          <ChevronRight className="w-4 h-4" />
-                        </Button>
-                        <div className="w-px h-6 bg-border mx-1" />
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
-                          className="h-8 rounded-xl gap-1.5 text-xs font-semibold"
+                          className="h-9 rounded-xl gap-2 text-xs font-medium"
+                          onClick={() => navigateWeek(1)}
+                        >
+                          Próxima semana <ChevronRight className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9 rounded-xl gap-1.5 text-xs font-semibold"
                           onClick={() => setCurrentWeek(new Date())}
                         >
                           <CalendarIcon className="w-3.5 h-3.5" /> Hoje
                         </Button>
                       </div>
 
-                      <div className="flex-1 flex items-center justify-end gap-2">
+                      <div className="flex items-center gap-2">
                         <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
-                          <SelectTrigger className="h-9 w-36 text-xs rounded-xl">
+                          <SelectTrigger className="h-9 w-32 text-xs rounded-xl">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -760,16 +766,18 @@ const Disciplinas = () => {
                                     key={i}
                                     className={`border-b border-r border-border p-2 text-center font-medium ${isToday(date) ? "bg-primary/10 text-primary" : ""} ${holiday ? "bg-red-50 dark:bg-red-950/30" : optional ? "bg-amber-50 dark:bg-amber-950/30" : ""}`}
                                   >
-                                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{DIAS_SEMANA[i]}</div>
-                                    <div className="text-[15px] font-bold leading-tight mt-0.5">{String(date.getDate()).padStart(2, "0")}</div>
+                                    <div className="text-[13px] font-semibold leading-tight">
+                                      <span className="text-foreground">{String(date.getDate()).padStart(2, "0")}</span>{" "}
+                                      <span className="text-muted-foreground font-medium">{DIAS_SEMANA[i].charAt(0) + DIAS_SEMANA[i].slice(1).toLowerCase()}</span>
+                                    </div>
                                     {holiday && (
-                                      <div className="text-[9.5px] font-medium text-red-700 dark:text-red-400 truncate mt-0.5" title={holiday}>
-                                        Feriado
+                                      <div className="text-[10px] font-medium text-red-700 dark:text-red-400 truncate mt-1 flex items-center justify-center gap-1" title={holiday}>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> {holiday}
                                       </div>
                                     )}
                                     {!holiday && optional && (
-                                      <div className="text-[9.5px] font-medium text-amber-700 dark:text-amber-400 truncate mt-0.5" title={optional}>
-                                        Facultativo
+                                      <div className="text-[10px] font-medium text-amber-700 dark:text-amber-400 truncate mt-1 flex items-center justify-center gap-1" title={optional}>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Facultativo
                                       </div>
                                     )}
                                   </th>
@@ -819,33 +827,55 @@ const Disciplinas = () => {
                                       {startingAulas.map((aula) => {
                                         const filled = isAulaFilled(aula);
                                         const draft = isAulaDraft(aula);
-                                        let statusClass = "bg-slate-100 border-slate-300 text-slate-800 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700";
-                                        if (isFutureWeek) {
-                                          statusClass = "bg-slate-100/60 border-slate-300 text-slate-500 dark:bg-slate-800/60 dark:text-slate-400 dark:border-slate-700 opacity-70";
-                                        } else if (filled) {
-                                          statusClass = "bg-emerald-50 border-emerald-300 text-emerald-950 dark:bg-emerald-950/40 dark:border-emerald-700 dark:text-emerald-50";
-                                        } else if (draft) {
-                                          statusClass = "bg-amber-50 border-amber-300 text-amber-950 dark:bg-amber-950/40 dark:text-amber-50 dark:border-amber-700";
-                                        }
+                                        // Subject color used as left accent bar
+                                        const subjectAccent: Record<string, string> = {
+                                          "Língua Portuguesa": "bg-amber-500",
+                                          "Matemática": "bg-emerald-500",
+                                          "Inglês": "bg-sky-500",
+                                          "Ciências": "bg-violet-500",
+                                          "Ensino Religioso": "bg-pink-500",
+                                          "História": "bg-orange-500",
+                                          "Geografia": "bg-red-500",
+                                          "Artes": "bg-teal-500",
+                                          "Educação Física": "bg-indigo-500",
+                                        };
+                                        const subjectText: Record<string, string> = {
+                                          "Língua Portuguesa": "text-amber-700 dark:text-amber-300",
+                                          "Matemática": "text-emerald-700 dark:text-emerald-300",
+                                          "Inglês": "text-sky-700 dark:text-sky-300",
+                                          "Ciências": "text-violet-700 dark:text-violet-300",
+                                          "Ensino Religioso": "text-pink-700 dark:text-pink-300",
+                                          "História": "text-orange-700 dark:text-orange-300",
+                                          "Geografia": "text-red-700 dark:text-red-300",
+                                          "Artes": "text-teal-700 dark:text-teal-300",
+                                          "Educação Física": "text-indigo-700 dark:text-indigo-300",
+                                        };
+                                        const accentBar = subjectAccent[aula.disciplina] || "bg-slate-400";
+                                        const titleColor = subjectText[aula.disciplina] || "text-slate-700 dark:text-slate-200";
+                                        let statusBg = "bg-card";
+                                        if (isFutureWeek) statusBg = "bg-muted/30 opacity-70";
+                                        else if (filled) statusBg = "bg-emerald-50 dark:bg-emerald-950/30";
+                                        else if (draft) statusBg = "bg-amber-50 dark:bg-amber-950/30";
                                         return (
                                           <div
                                             key={aula.id}
-                                            className={`group relative w-full rounded-xl p-2 border text-[11px] h-full hover:shadow-md hover:-translate-y-px transition-all shadow-sm ${statusClass}`}
+                                            className={`group relative w-full rounded-lg pl-2 pr-2 py-1.5 border border-border text-[11px] h-full hover:shadow-md transition-all shadow-sm overflow-hidden ${statusBg}`}
                                           >
+                                            <span className={`absolute left-0 top-0 bottom-0 w-1 ${accentBar}`} />
                                             <button
                                               onClick={(e) => { e.stopPropagation(); openAula(aula); }}
-                                              className="w-full text-left"
+                                              className="w-full text-left pl-1.5"
                                             >
-                                              <div className="font-bold leading-tight text-[12.5px] flex items-center gap-1.5 pr-5">
-                                                <BookOpen className="w-3 h-3 shrink-0 opacity-70" />
-                                                <span className="truncate">{aula.disciplina}</span>
-                                                {filled && !isFutureWeek && <span className="ml-auto text-emerald-600 dark:text-emerald-400 text-[11px]">✓</span>}
-                                              </div>
-                                              <div className="text-[10.5px] mt-1 opacity-80 flex items-center gap-1">
+                                              <div className="text-[10px] text-muted-foreground leading-tight flex items-center gap-1">
                                                 <Clock className="w-2.5 h-2.5" />
                                                 {aula.horaInicio} – {aula.horaTermino}
                                               </div>
-                                              <div className="text-[10.5px] opacity-80 flex items-center gap-1 truncate">
+                                              <div className={`font-bold leading-tight text-[12.5px] mt-0.5 flex items-center gap-1.5 pr-5 ${titleColor}`}>
+                                                <BookOpen className="w-3 h-3 shrink-0 opacity-80" />
+                                                <span className="truncate">{aula.disciplina}</span>
+                                                {filled && !isFutureWeek && <span className="ml-auto text-emerald-600 dark:text-emerald-400 text-[11px]">✓</span>}
+                                              </div>
+                                              <div className="text-[10.5px] text-muted-foreground mt-0.5 flex items-center gap-1 truncate">
                                                 <UserIcon className="w-2.5 h-2.5 shrink-0" />
                                                 <span className="truncate">{aula.professor}</span>
                                               </div>
@@ -901,17 +931,33 @@ const Disciplinas = () => {
                             }
                             return (
                               <ul className="space-y-2">
-                                {todays.map((a) => (
-                                  <li key={a.id} className="flex items-start gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => openAula(a)}>
-                                    <div className="text-[11px] font-bold text-primary leading-tight min-w-[40px]">
-                                      {a.horaInicio}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="text-[12.5px] font-semibold truncate">{a.disciplina}</div>
+                                {todays.map((a) => {
+                                  const subjectAccent: Record<string, string> = {
+                                    "Língua Portuguesa": "border-l-amber-500",
+                                    "Matemática": "border-l-emerald-500",
+                                    "Inglês": "border-l-sky-500",
+                                    "Ciências": "border-l-violet-500",
+                                    "Ensino Religioso": "border-l-pink-500",
+                                    "História": "border-l-orange-500",
+                                    "Geografia": "border-l-red-500",
+                                    "Artes": "border-l-teal-500",
+                                    "Educação Física": "border-l-indigo-500",
+                                  };
+                                  const accent = subjectAccent[a.disciplina] || "border-l-slate-400";
+                                  return (
+                                    <li
+                                      key={a.id}
+                                      className={`flex flex-col gap-0.5 p-2.5 rounded-xl border border-border border-l-4 ${accent} bg-card hover:bg-muted/40 transition-colors cursor-pointer`}
+                                      onClick={() => openAula(a)}
+                                    >
+                                      <div className="text-[11px] font-semibold text-muted-foreground">
+                                        {a.horaInicio} – {a.horaTermino}
+                                      </div>
+                                      <div className="text-[13px] font-bold text-foreground truncate">{a.disciplina}</div>
                                       <div className="text-[11px] text-muted-foreground truncate">{a.professor}</div>
-                                    </div>
-                                  </li>
-                                ))}
+                                    </li>
+                                  );
+                                })}
                               </ul>
                             );
                           })()}
@@ -947,18 +993,17 @@ const Disciplinas = () => {
                           })()}
                         </div>
 
-                        {/* Legend */}
-                        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                          <h3 className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Legenda</h3>
-                          <ul className="space-y-1.5 text-[11.5px]">
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-slate-100 border border-slate-300 dark:bg-slate-800 dark:border-slate-700 inline-block" /> Criada</li>
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300 inline-block" /> Rascunho</li>
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300 inline-block" /> Validada</li>
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Feriado</li>
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-amber-50 border border-amber-200 inline-block" /> Facultativo</li>
-                          </ul>
-                        </div>
                       </aside>
+                    </div>
+
+                    {/* Bottom legend strip */}
+                    <div className="flex flex-wrap items-center justify-start gap-x-5 gap-y-1.5 text-[11px] text-muted-foreground px-1">
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-slate-100 border border-slate-300 dark:bg-slate-800 dark:border-slate-700 inline-block" /> Criada</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300 inline-block" /> Rascunho</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300 inline-block" /> Validada</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-muted border border-border inline-block opacity-60" /> Semana futura</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Feriado</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-50 border border-amber-200 inline-block" /> Ponto facultativo</span>
                     </div>
                   </>
                 )}
@@ -1033,51 +1078,61 @@ const TIPS_BY_VIEW: Record<string, string[]> = {
   ],
 };
 
-function TipsSlider({ view }: { view: string }) {
+function TipsSlider({ view, onClose }: { view: string; onClose?: () => void }) {
   const slides = TIPS_BY_VIEW[view] || [];
   const [idx, setIdx] = useState(0);
+  const [open, setOpen] = useState(true);
   useEffect(() => { setIdx(0); }, [view]);
   useEffect(() => {
-    if (slides.length <= 1) return;
+    if (!open || slides.length <= 1) return;
     const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 5000);
     return () => clearInterval(t);
-  }, [slides.length]);
+  }, [slides.length, open]);
   if (slides.length === 0) return null;
   const prev = () => setIdx((i) => (i - 1 + slides.length) % slides.length);
   const next = () => setIdx((i) => (i + 1) % slides.length);
   return (
-    <div className="w-full max-w-[820px] mx-auto">
-      <div className="relative rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 dark:border-blue-900/60 overflow-hidden">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <div className="shrink-0 w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
-            <Lightbulb className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+    <div className="w-full">
+      <div className="relative rounded-2xl border border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-900/60 overflow-hidden">
+        <div className="flex items-start gap-3 px-4 py-3">
+          <div className="shrink-0 w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center mt-0.5">
+            <Lightbulb className="w-4 h-4 text-amber-700 dark:text-amber-300" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-semibold text-blue-900 dark:text-blue-100 leading-none mb-1">
+            <p className="text-[13px] font-semibold text-amber-900 dark:text-amber-100 leading-none mb-1.5">
               Dicas importantes
             </p>
-            <p key={idx} className="text-[12.5px] text-blue-900/90 dark:text-blue-100/90 leading-snug animate-in fade-in slide-in-from-right-2 duration-300">
-              {slides[idx]}
-            </p>
+            {open && (
+              <p key={idx} className="text-[12.5px] text-amber-900/90 dark:text-amber-100/90 leading-snug animate-in fade-in slide-in-from-right-2 duration-300">
+                {slides[idx]}
+              </p>
+            )}
           </div>
-          {slides.length > 1 && (
+          {open && slides.length > 1 && (
             <div className="flex items-center gap-1 shrink-0">
-              <button onClick={prev} className="p-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40" aria-label="Anterior">
-                <ChevronLeft className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+              <button onClick={prev} className="p-1 rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/40" aria-label="Anterior">
+                <ChevronLeft className="w-4 h-4 text-amber-700 dark:text-amber-300" />
               </button>
-              <button onClick={next} className="p-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40" aria-label="Próximo">
-                <ChevronRight className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+              <button onClick={next} className="p-1 rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/40" aria-label="Próximo">
+                <ChevronRight className="w-4 h-4 text-amber-700 dark:text-amber-300" />
               </button>
             </div>
           )}
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="shrink-0 p-1 rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/40"
+            aria-label={open ? "Minimizar" : "Expandir"}
+          >
+            <ChevronDown className={`w-4 h-4 text-amber-700 dark:text-amber-300 transition-transform ${open ? "" : "-rotate-90"}`} />
+          </button>
         </div>
-        {slides.length > 1 && (
+        {open && slides.length > 1 && (
           <div className="flex items-center justify-center gap-1.5 pb-2">
             {slides.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setIdx(i)}
-                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-blue-600 dark:bg-blue-300" : "w-1.5 bg-blue-300 dark:bg-blue-700"}`}
+                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-amber-600 dark:bg-amber-300" : "w-1.5 bg-amber-300 dark:bg-amber-700"}`}
                 aria-label={`Ir para slide ${i + 1}`}
               />
             ))}
