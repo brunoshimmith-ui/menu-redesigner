@@ -828,10 +828,10 @@ const Disciplinas = () => {
                                         };
                                         const accentBar = subjectAccent[aula.disciplina] || "bg-slate-400";
                                         const titleColor = subjectText[aula.disciplina] || "text-slate-700 dark:text-slate-200";
-                                        let statusBg = "bg-card";
-                                        if (isFutureWeek) statusBg = "bg-muted/30 opacity-70";
-                                        else if (filled) statusBg = "bg-emerald-50 dark:bg-emerald-950/30";
-                                        else if (draft) statusBg = "bg-amber-50 dark:bg-amber-950/30";
+                                        let statusBg = "bg-slate-100 dark:bg-slate-800/40";
+                                        if (isFutureWeek) statusBg = "bg-slate-300/70 dark:bg-slate-700/60 opacity-90";
+                                        else if (filled) statusBg = "bg-emerald-100 dark:bg-emerald-900/40";
+                                        else if (draft) statusBg = "bg-slate-200/80 dark:bg-slate-700/50";
                                         return (
                                           <div
                                             key={aula.id}
