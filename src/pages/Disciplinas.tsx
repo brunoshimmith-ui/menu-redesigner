@@ -803,39 +803,25 @@ const Disciplinas = () => {
                                       {startingAulas.map((aula) => {
                                         const filled = isAulaFilled(aula);
                                         const draft = isAulaDraft(aula);
-                                        // Subject color used as left accent bar
-                                        const subjectAccent: Record<string, string> = {
-                                          "Língua Portuguesa": "bg-amber-500",
-                                          "Matemática": "bg-emerald-500",
-                                          "Inglês": "bg-sky-500",
-                                          "Ciências": "bg-violet-500",
-                                          "Ensino Religioso": "bg-pink-500",
-                                          "História": "bg-orange-500",
-                                          "Geografia": "bg-red-500",
-                                          "Artes": "bg-teal-500",
-                                          "Educação Física": "bg-indigo-500",
-                                        };
-                                        const subjectText: Record<string, string> = {
-                                          "Língua Portuguesa": "text-amber-700 dark:text-amber-300",
-                                          "Matemática": "text-emerald-700 dark:text-emerald-300",
-                                          "Inglês": "text-sky-700 dark:text-sky-300",
-                                          "Ciências": "text-violet-700 dark:text-violet-300",
-                                          "Ensino Religioso": "text-pink-700 dark:text-pink-300",
-                                          "História": "text-orange-700 dark:text-orange-300",
-                                          "Geografia": "text-red-700 dark:text-red-300",
-                                          "Artes": "text-teal-700 dark:text-teal-300",
-                                          "Educação Física": "text-indigo-700 dark:text-indigo-300",
-                                        };
-                                        const accentBar = subjectAccent[aula.disciplina] || "bg-slate-400";
-                                        const titleColor = subjectText[aula.disciplina] || "text-slate-700 dark:text-slate-200";
-                                        let statusBg = "bg-slate-100 dark:bg-slate-800/40";
-                                        if (isFutureWeek) statusBg = "bg-slate-300/70 dark:bg-slate-700/60 opacity-90";
-                                        else if (filled) statusBg = "bg-emerald-100 dark:bg-emerald-900/40";
-                                        else if (draft) statusBg = "bg-slate-200/80 dark:bg-slate-700/50";
+                                        // Padronizado: cinza (criada), verde (validada), cinza translúcido (futura)
+                                        let statusBg = "bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700";
+                                        let accentBar = "bg-slate-400 dark:bg-slate-500";
+                                        let titleColor = "text-slate-700 dark:text-slate-200";
+                                        if (isFutureWeek) {
+                                          statusBg = "bg-slate-200/40 dark:bg-slate-700/30 border-slate-200/60 dark:border-slate-700/60";
+                                          accentBar = "bg-slate-300 dark:bg-slate-600";
+                                          titleColor = "text-slate-500 dark:text-slate-400";
+                                        } else if (filled) {
+                                          statusBg = "bg-emerald-100 dark:bg-emerald-900/40 border-emerald-200 dark:border-emerald-800";
+                                          accentBar = "bg-emerald-500";
+                                          titleColor = "text-emerald-800 dark:text-emerald-200";
+                                        } else if (draft) {
+                                          statusBg = "bg-slate-200/80 dark:bg-slate-700/50 border-slate-300 dark:border-slate-600";
+                                        }
                                         return (
                                           <div
                                             key={aula.id}
-                                            className={`group relative w-full rounded-lg pl-2 pr-2 py-1.5 border border-border text-[11px] h-full hover:shadow-md transition-all shadow-sm overflow-hidden ${statusBg}`}
+                                            className={`group relative w-full rounded-lg pl-2 pr-2 py-1.5 border text-[11px] h-full hover:shadow-md transition-all shadow-sm overflow-hidden ${statusBg}`}
                                           >
                                             <span className={`absolute left-0 top-0 bottom-0 w-1 ${accentBar}`} />
                                             <button
@@ -846,7 +832,7 @@ const Disciplinas = () => {
                                                 <Clock className="w-2.5 h-2.5" />
                                                 {aula.horaInicio} – {aula.horaTermino}
                                               </div>
-                                              <div className={`font-bold leading-tight text-[12.5px] mt-0.5 flex items-center gap-1.5 pr-5 ${titleColor}`}>
+                                              <div className={`font-bold leading-tight text-[12.5px] mt-0.5 flex items-center gap-1.5 pr-1 ${titleColor}`}>
                                                 <BookOpen className="w-3 h-3 shrink-0 opacity-80" />
                                                 <span className="truncate">{aula.disciplina}</span>
                                                 {filled && !isFutureWeek && <span className="ml-auto text-emerald-600 dark:text-emerald-400 text-[11px]">✓</span>}
@@ -856,17 +842,10 @@ const Disciplinas = () => {
                                                 <span className="truncate">{aula.professor}</span>
                                               </div>
                                               {draft && !filled && !isFutureWeek && (
-                                                <div className="mt-1 inline-block text-[9px] px-1.5 py-0.5 rounded-md bg-amber-200/70 dark:bg-amber-700/40 text-amber-900 dark:text-amber-100 font-semibold">
+                                                <div className="mt-1 inline-block text-[9px] px-1.5 py-0.5 rounded-md bg-slate-300/70 dark:bg-slate-600/40 text-slate-700 dark:text-slate-100 font-semibold">
                                                   rascunho
                                                 </div>
                                               )}
-                                            </button>
-                                            <button
-                                              onClick={(e) => { e.stopPropagation(); deleteAula(aula.id); }}
-                                              title="Excluir aula"
-                                              className="absolute top-1 right-1 p-0.5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                              <X className="w-3 h-3" />
                                             </button>
                                           </div>
                                         );
