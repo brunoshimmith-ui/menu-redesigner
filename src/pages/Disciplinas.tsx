@@ -662,39 +662,39 @@ const Disciplinas = () => {
 
                 {diarioView === "grade" && (
                   <>
-                    {/* Toolbar: centered navigation (semana anterior • intervalo • próxima semana • hoje) with month / view-mode on the right */}
-                    <div className="relative flex items-center justify-center gap-2 flex-wrap">
-                      <div className="flex items-center gap-2 flex-wrap justify-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-9 rounded-xl gap-2 text-xs font-medium"
-                          onClick={() => navigateWeek(-1)}
-                        >
-                          <ChevronLeft className="w-3.5 h-3.5" /> Semana anterior
-                        </Button>
-                        <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
-                          <SelectTrigger className="h-9 w-36 text-xs rounded-xl">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {months.map((m, i) => (
-                              <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <div className="flex items-center gap-2 h-9 px-3 rounded-xl border bg-card text-xs font-semibold">
-                          <CalendarIcon className="w-3.5 h-3.5 text-muted-foreground" />
-                          {formatWeekRange(weekDates)}
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-9 rounded-xl gap-2 text-xs font-medium"
-                          onClick={() => navigateWeek(1)}
-                        >
-                          Próxima semana <ChevronRight className="w-3.5 h-3.5" />
-                        </Button>
+                    {/* Toolbar: navegação à esquerda (◀ ▶ Hoje) • intervalo central • mês/seletor à direita */}
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-1.5">
+                        <TooltipProvider delayDuration={150}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-9 w-9 rounded-xl"
+                                onClick={() => viewMode === "Mês" ? setCurrentWeek(new Date(currentWeek.getFullYear(), currentWeek.getMonth() - 1, 1)) : navigateWeek(-1)}
+                                aria-label="Anterior"
+                              >
+                                <ChevronLeft className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom" className="text-xs">{viewMode === "Mês" ? "Mês anterior" : "Semana anterior"}</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-9 w-9 rounded-xl"
+                                onClick={() => viewMode === "Mês" ? setCurrentWeek(new Date(currentWeek.getFullYear(), currentWeek.getMonth() + 1, 1)) : navigateWeek(1)}
+                                aria-label="Próximo"
+                              >
+                                <ChevronRight className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom" className="text-xs">{viewMode === "Mês" ? "Próximo mês" : "Próxima semana"}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                         <Button
                           variant="outline"
                           size="sm"
@@ -705,13 +705,31 @@ const Disciplinas = () => {
                         </Button>
                       </div>
 
-                      <div className="lg:absolute lg:right-0 flex items-center gap-2">
+                      <div className="flex items-center gap-2 h-9 px-3 rounded-xl border bg-card text-xs font-semibold">
+                        <CalendarIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                        {viewMode === "Mês"
+                          ? `${months[currentWeek.getMonth()]} ${currentWeek.getFullYear()}`
+                          : formatWeekRange(weekDates)}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
+                          <SelectTrigger className="h-9 w-36 text-xs rounded-xl">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {months.map((m, i) => (
+                              <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <div className="flex gap-0.5 bg-muted rounded-xl p-1">
                           <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" className="h-7 rounded-lg text-xs" onClick={() => setViewMode("Mês")}>Mês</Button>
                           <Button variant={viewMode === "Semana" ? "default" : "ghost"} size="sm" className="h-7 rounded-lg text-xs" onClick={() => setViewMode("Semana")}>Semana</Button>
                         </div>
                       </div>
                     </div>
+
 
 
                     {/* Bimestre meta */}
