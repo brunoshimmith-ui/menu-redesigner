@@ -653,16 +653,11 @@ const Disciplinas = () => {
 
                 </div>
 
-                {/* Slides — Dicas importantes */}
-                {tipsEnabled && diarioView === "grade" && (
-                  <TipsSlider view={diarioView} onClose={() => setTipsEnabled(false)} />
-                )}
-
                 {diarioView === "grade" && (
                   <>
-                    {/* Toolbar: pills (semana anterior • intervalo • próxima semana • hoje) | mês • mês/semana */}
-                    <div className="flex items-center justify-between gap-3 flex-wrap">
-                      <div className="flex items-center gap-2 flex-wrap">
+                    {/* Toolbar: centered navigation (semana anterior • intervalo • próxima semana • hoje) with month / view-mode on the right */}
+                    <div className="relative flex items-center justify-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap justify-center">
                         <Button
                           variant="outline"
                           size="sm"
@@ -671,6 +666,16 @@ const Disciplinas = () => {
                         >
                           <ChevronLeft className="w-3.5 h-3.5" /> Semana anterior
                         </Button>
+                        <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
+                          <SelectTrigger className="h-9 w-36 text-xs rounded-xl">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {months.map((m, i) => (
+                              <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <div className="flex items-center gap-2 h-9 px-3 rounded-xl border bg-card text-xs font-semibold">
                           <CalendarIcon className="w-3.5 h-3.5 text-muted-foreground" />
                           {formatWeekRange(weekDates)}
@@ -693,23 +698,14 @@ const Disciplinas = () => {
                         </Button>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
-                          <SelectTrigger className="h-9 w-32 text-xs rounded-xl">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {months.map((m, i) => (
-                              <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <div className="lg:absolute lg:right-0 flex items-center gap-2">
                         <div className="flex gap-0.5 bg-muted rounded-xl p-1">
                           <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" className="h-7 rounded-lg text-xs" onClick={() => setViewMode("Mês")}>Mês</Button>
                           <Button variant={viewMode === "Semana" ? "default" : "ghost"} size="sm" className="h-7 rounded-lg text-xs" onClick={() => setViewMode("Semana")}>Semana</Button>
                         </div>
                       </div>
                     </div>
+
 
                     {/* Bimestre meta */}
                     <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -726,28 +722,8 @@ const Disciplinas = () => {
                       )}
                     </div>
 
-                    {/* Modern alert card */}
-                    {tipsEnabled && !isFutureWeek && (weekAulas.length === 0 || weekAulas.some((a) => !isAulaFilled(a))) && (() => {
-                      const pendentes = weekAulas.filter((a) => !isAulaFilled(a)).length;
-                      const empty = weekAulas.length === 0;
-                      return (
-                        <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-900/60 px-4 py-3">
-                          <div className="shrink-0 w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
-                            <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-300" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-semibold text-amber-900 dark:text-amber-100">
-                              {empty ? "Semana sem preenchimento" : "Aulas pendentes de preenchimento"}
-                            </p>
-                            <p className="text-[12px] text-amber-800/80 dark:text-amber-200/80 leading-snug">
-                              {empty
-                                ? "Clique em uma célula para criar uma aula ou use + para várias."
-                                : `${pendentes} ${pendentes === 1 ? "aula precisa" : "aulas precisam"} de objetivos, habilidades BNCC ou frequência.`}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })()}
+
+
 
                     {/* Grid + right dashboard layout */}
                     <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
@@ -852,10 +828,10 @@ const Disciplinas = () => {
                                         };
                                         const accentBar = subjectAccent[aula.disciplina] || "bg-slate-400";
                                         const titleColor = subjectText[aula.disciplina] || "text-slate-700 dark:text-slate-200";
-                                        let statusBg = "bg-card";
-                                        if (isFutureWeek) statusBg = "bg-muted/30 opacity-70";
-                                        else if (filled) statusBg = "bg-emerald-50 dark:bg-emerald-950/30";
-                                        else if (draft) statusBg = "bg-amber-50 dark:bg-amber-950/30";
+                                        let statusBg = "bg-slate-100 dark:bg-slate-800/40";
+                                        if (isFutureWeek) statusBg = "bg-slate-300/70 dark:bg-slate-700/60 opacity-90";
+                                        else if (filled) statusBg = "bg-emerald-100 dark:bg-emerald-900/40";
+                                        else if (draft) statusBg = "bg-slate-200/80 dark:bg-slate-700/50";
                                         return (
                                           <div
                                             key={aula.id}
@@ -993,18 +969,47 @@ const Disciplinas = () => {
                           })()}
                         </div>
 
+
+                        {/* Dicas importantes (slider) */}
+                        {tipsEnabled && (
+                          <TipsSlider view={diarioView} onClose={() => setTipsEnabled(false)} />
+                        )}
+
+                        {/* Avisos importantes (pendências da semana) */}
+                        {tipsEnabled && !isFutureWeek && (weekAulas.length === 0 || weekAulas.some((a) => !isAulaFilled(a))) && (() => {
+                          const pendentes = weekAulas.filter((a) => !isAulaFilled(a)).length;
+                          const empty = weekAulas.length === 0;
+                          return (
+                            <div className="flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-900/60 px-3 py-2.5">
+                              <div className="shrink-0 w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
+                                <AlertTriangle className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[12px] font-semibold text-amber-900 dark:text-amber-100 leading-tight">
+                                  {empty ? "Semana sem preenchimento" : "Aulas pendentes"}
+                                </p>
+                                <p className="text-[11px] text-amber-800/80 dark:text-amber-200/80 leading-snug mt-0.5">
+                                  {empty
+                                    ? "Clique em uma célula para criar uma aula."
+                                    : `${pendentes} ${pendentes === 1 ? "aula precisa" : "aulas precisam"} de preenchimento.`}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </aside>
                     </div>
 
                     {/* Bottom legend strip */}
                     <div className="flex flex-wrap items-center justify-start gap-x-5 gap-y-1.5 text-[11px] text-muted-foreground px-1">
                       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-slate-100 border border-slate-300 dark:bg-slate-800 dark:border-slate-700 inline-block" /> Criada</span>
-                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300 inline-block" /> Rascunho</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-slate-200 border border-slate-400 dark:bg-slate-700 dark:border-slate-600 inline-block" /> Rascunho</span>
                       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300 inline-block" /> Validada</span>
-                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-muted border border-border inline-block opacity-60" /> Semana futura</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-slate-300 border border-slate-400 dark:bg-slate-700 dark:border-slate-600 inline-block" /> Semana futura</span>
                       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Feriado</span>
                       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-50 border border-amber-200 inline-block" /> Ponto facultativo</span>
                     </div>
+
                   </>
                 )}
 

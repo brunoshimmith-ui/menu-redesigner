@@ -39,6 +39,8 @@ export interface AulaSalva {
   isAvaliacao?: boolean;
   isFalta?: boolean;
   recorrente?: boolean;
+  replicar?: { ativo: boolean; semanas: number };
+
   weekStart?: string; // ISO yyyy-mm-dd of Sunday of the week this aula belongs to
   conteudo?: {
     objetivo: string;
@@ -253,6 +255,37 @@ export function AulaActionsDialog({ open, onOpenChange, aula, aulas, onSave, onN
                 Salvar para recorrência
               </label>
             </div>
+
+            {/* Replicar */}
+            <div className="rounded-lg border border-dashed bg-muted/30 p-3 space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                <Checkbox
+                  checked={!!draft.replicar?.ativo}
+                  onCheckedChange={(v) => update("replicar", { ativo: !!v, semanas: draft.replicar?.semanas ?? 4 })}
+                />
+                Replicar esta aula para as próximas semanas
+              </label>
+              {draft.replicar?.ativo && (
+                <div className="flex items-center gap-2 pl-6">
+                  <Label className="text-xs">Quantidade de semanas:</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={52}
+                    value={draft.replicar?.semanas ?? 4}
+                    onChange={(e) =>
+                      update("replicar", {
+                        ativo: true,
+                        semanas: Math.max(1, Math.min(52, parseInt(e.target.value) || 1)),
+                      })
+                    }
+                    className="h-8 w-20"
+                  />
+                  <span className="text-[11px] text-muted-foreground">Feriados são pulados.</span>
+                </div>
+              )}
+            </div>
+
 
             <DialogFooter>
               <Button variant="outline" onClick={() => setTab("menu")}>Cancelar</Button>
