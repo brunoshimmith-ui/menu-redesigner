@@ -274,14 +274,19 @@ export function HeaderWithNotifications() {
         {/* Notifications */}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="w-5 h-5 text-muted-foreground" />
-              {unreadCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-destructive text-destructive-foreground border-0">
-                  {unreadCount}
-                </Badge>
-              )}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="w-5 h-5 text-muted-foreground" />
+                  {unreadCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-destructive text-destructive-foreground border-0">
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Notificações e pendências</TooltipContent>
+            </Tooltip>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-96 p-0">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
