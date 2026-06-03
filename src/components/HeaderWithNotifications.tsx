@@ -68,9 +68,19 @@ export function HeaderWithNotifications() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, login } = useAuth();
+  const { municipio, municipios, setMunicipio } = useMunicipio();
   const [notifications, setNotifications] = useState(initialNotifications);
-  const [selectedSchool, setSelectedSchool] = useState("SEMEI Iranduba - 01");
+  const [selectedSchool, setSelectedSchool] = useState<string>(() => municipio.escolas[0]);
   const [open, setOpen] = useState(false);
+
+  // Quando trocar o município, ajusta a escola atual para a primeira disponível
+  useEffect(() => {
+    if (!municipio.escolas.includes(selectedSchool)) {
+      setSelectedSchool(municipio.escolas[0]);
+    }
+  }, [municipio.id]);
+
+  const canSwitchMunicipio = user?.role === "suporte" || user?.role === "administracao";
 
   const currentProfileLabel =
     user?.role === "suporte" ? "Suporte" :
