@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, School, UserCircle, ChevronDown, ArrowRight, Home, Headphones, ArrowLeft } from "lucide-react";
+import { Bell, School, UserCircle, ChevronDown, ArrowRight, Home, Headphones, ArrowLeft, MapPin, Check } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Popover,
@@ -18,8 +20,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import { chamadosSuporte } from "@/lib/chamados";
+import { useMunicipio } from "@/hooks/use-municipio";
 
 interface Notification {
   id: string;
