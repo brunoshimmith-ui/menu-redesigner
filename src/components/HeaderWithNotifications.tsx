@@ -46,7 +46,7 @@ const initialNotifications: Notification[] = [
   { id: "6", title: "Manutenção programada", description: "O sistema ficará indisponível no dia 01/03 das 22h às 23h para manutenção.", type: "atualizacao", route: "/menu", read: true, time: "2 dias atrás" },
 ];
 
-const schoolOptions = ["SEMEI Iranduba - 01", "SEMEI Iranduba - 02", "SEMEI Iranduba - 03"];
+
 const baseProfileOptions = ["Suporte", "Administrador", "Gestor"];
 const switchableAccounts: { u: string; l: string }[] = [
   { u: "stepforma", l: "Suporte" },
