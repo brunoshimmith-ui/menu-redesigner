@@ -722,28 +722,8 @@ const Disciplinas = () => {
                       )}
                     </div>
 
-                    {/* Modern alert card */}
-                    {tipsEnabled && !isFutureWeek && (weekAulas.length === 0 || weekAulas.some((a) => !isAulaFilled(a))) && (() => {
-                      const pendentes = weekAulas.filter((a) => !isAulaFilled(a)).length;
-                      const empty = weekAulas.length === 0;
-                      return (
-                        <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-900/60 px-4 py-3">
-                          <div className="shrink-0 w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
-                            <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-300" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-semibold text-amber-900 dark:text-amber-100">
-                              {empty ? "Semana sem preenchimento" : "Aulas pendentes de preenchimento"}
-                            </p>
-                            <p className="text-[12px] text-amber-800/80 dark:text-amber-200/80 leading-snug">
-                              {empty
-                                ? "Clique em uma célula para criar uma aula ou use + para várias."
-                                : `${pendentes} ${pendentes === 1 ? "aula precisa" : "aulas precisam"} de objetivos, habilidades BNCC ou frequência.`}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })()}
+
+
 
                     {/* Grid + right dashboard layout */}
                     <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
