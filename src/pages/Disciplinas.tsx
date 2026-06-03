@@ -624,33 +624,39 @@ const Disciplinas = () => {
                   </Dialog>
 
                   {/* Top horizontal SaaS nav with icons */}
-                  {([
-                    ["grade", "Grade semanal", CalendarRange],
-                    ["medias", "Médias", TrendingUp],
-                    ["conteudos", "Conteúdos", BookOpen],
-                    ["frequencia", "Frequências", ClipboardList],
-                    ["complementares", "Complementares", Sparkles],
-                    ["horario", "Horário", Clock],
-                  ] as const).map(([key, label, Icon]) => {
-                    const active = diarioView === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => setDiarioView(key)}
-                        className={`relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          active
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        {label}
-                        {active && (
-                          <span className="absolute -bottom-1 left-3 right-3 h-0.5 rounded-full bg-primary" />
-                        )}
-                      </button>
-                    );
-                  })}
+                  <TooltipProvider delayDuration={150}>
+                    {([
+                      ["grade", "Grade semanal", CalendarRange, "Visualize e crie as aulas da semana."],
+                      ["medias", "Médias", TrendingUp, "Lance e acompanhe as notas e médias dos alunos."],
+                      ["conteudos", "Conteúdos", BookOpen, "Registre objetivos, habilidades BNCC e metodologia."],
+                      ["frequencia", "Frequências", ClipboardList, "Faça a chamada e acompanhe a presença."],
+                      ["complementares", "Complementares", Sparkles, "Anotações pedagógicas e observações."],
+                      ["horario", "Horário", Clock, "Veja a distribuição semanal das aulas."],
+                    ] as const).map(([key, label, Icon, tip]) => {
+                      const active = diarioView === key;
+                      return (
+                        <Tooltip key={key}>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setDiarioView(key)}
+                              className={`relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                                active
+                                  ? "bg-primary/10 text-primary"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                              }`}
+                            >
+                              <Icon className="w-4 h-4" />
+                              {label}
+                              {active && (
+                                <span className="absolute -bottom-1 left-3 right-3 h-0.5 rounded-full bg-primary" />
+                              )}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-[220px] text-xs">{tip}</TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                  </TooltipProvider>
 
                 </div>
 
