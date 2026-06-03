@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Eye, EyeOff, LogIn } from "lucide-react";
+import { GraduationCap, Eye, EyeOff, LogIn, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useMunicipio } from "@/hooks/use-municipio";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -16,6 +17,7 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { municipio, municipios, setMunicipio } = useMunicipio();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,10 +26,7 @@ const Login = () => {
     setTimeout(() => {
       const success = login(username, password);
       if (success) {
-        toast({
-          title: "Bem-vindo!",
-          description: "Login realizado com sucesso.",
-        });
+        toast({ title: "Bem-vindo!", description: `Acessando canal: ${municipio.nome}/${municipio.uf}` });
         navigate("/menu");
       } else {
         toast({
@@ -41,12 +40,35 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-pattern p-4">
-      <Card className="w-full max-w-md shadow-xl animate-fade-up">
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-[hsl(var(--edu-purple))]">
+      {/* Gradiente do sistema: ROXO → LARANJA → AZUL */}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(135deg, hsl(var(--edu-purple)) 0%, hsl(var(--edu-orange)) 55%, hsl(var(--edu-blue)) 100%)",
+        }}
+      />
+      {/* Blobs luminosos para profundidade */}
+      <div aria-hidden className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-50"
+        style={{ background: "hsl(var(--edu-purple))" }} />
+      <div aria-hidden className="absolute top-1/3 -right-32 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-50"
+        style={{ background: "hsl(var(--edu-orange))" }} />
+      <div aria-hidden className="absolute -bottom-40 left-1/3 w-[32rem] h-[32rem] rounded-full blur-3xl opacity-50"
+        style={{ background: "hsl(var(--edu-blue))" }} />
+
+      <Card className="relative w-full max-w-md shadow-2xl animate-fade-in backdrop-blur-sm bg-card/95 border-white/20">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
-            <div className="flex items-center justify-center w-16 h-16 bg-primary rounded-2xl shadow-lg">
-              <GraduationCap className="w-9 h-9 text-primary-foreground" />
+            <div
+              className="flex items-center justify-center w-16 h-16 rounded-2xl shadow-lg"
+              style={{
+                background:
+                  "linear-gradient(135deg, hsl(var(--edu-purple)), hsl(var(--edu-orange)), hsl(var(--edu-blue)))",
+              }}
+            >
+              <GraduationCap className="w-9 h-9 text-white" />
             </div>
           </div>
           <div>
@@ -58,6 +80,26 @@ const Login = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Seletor de canal/município */}
+            <div className="space-y-2">
+              <Label htmlFor="municipio" className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-edu-orange" />
+                Canal de acesso (município)
+              </Label>
+              <select
+                id="municipio"
+                value={municipio.id}
+                onChange={(e) => setMunicipio(e.target.value as typeof municipio.id)}
+                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                {municipios.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.nome} — {m.uf}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="username">Usuário</Label>
               <Input
@@ -91,9 +133,17 @@ const Login = () => {
                 </button>
               </div>
             </div>
-            <Button type="submit" className="w-full h-11 gap-2" disabled={isLoading}>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-11 gap-2 text-white border-0 hover:opacity-90"
+              style={{
+                background:
+                  "linear-gradient(135deg, hsl(var(--edu-purple)), hsl(var(--edu-orange)), hsl(var(--edu-blue)))",
+              }}
+            >
               {isLoading ? (
-                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <LogIn className="w-4 h-4" />
               )}
@@ -102,9 +152,7 @@ const Login = () => {
           </form>
           <div className="mt-5 p-3 rounded-md bg-muted/40 border border-border">
             <p className="text-[11px] text-muted-foreground text-center">
-              Use seu usuário Suporte para acessar os demais perfis pelo botão
-              <span className="font-semibold"> Acesso rápido </span>
-              no topo do sistema.
+              Suporte pode trocar de perfil e de município pelo cabeçalho, após entrar.
             </p>
           </div>
           <p className="text-xs text-muted-foreground text-center mt-4">

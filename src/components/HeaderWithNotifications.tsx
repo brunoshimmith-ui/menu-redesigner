@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, School, UserCircle, ChevronDown, ArrowRight, Home, Headphones, ArrowLeft } from "lucide-react";
+import { Bell, School, UserCircle, ChevronDown, ArrowRight, Home, Headphones, ArrowLeft, MapPin, Check } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Popover,
@@ -18,8 +20,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import { chamadosSuporte } from "@/lib/chamados";
+import { useMunicipio } from "@/hooks/use-municipio";
 
 interface Notification {
   id: string;
@@ -42,7 +46,7 @@ const initialNotifications: Notification[] = [
   { id: "6", title: "Manutenção programada", description: "O sistema ficará indisponível no dia 01/03 das 22h às 23h para manutenção.", type: "atualizacao", route: "/menu", read: true, time: "2 dias atrás" },
 ];
 
-const schoolOptions = ["SEMEI Iranduba - 01", "SEMEI Iranduba - 02", "SEMEI Iranduba - 03"];
+
 const baseProfileOptions = ["Suporte", "Administrador", "Gestor"];
 const switchableAccounts: { u: string; l: string }[] = [
   { u: "stepforma", l: "Suporte" },
@@ -64,9 +68,19 @@ export function HeaderWithNotifications() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, login } = useAuth();
+  const { municipio, municipios, setMunicipio } = useMunicipio();
   const [notifications, setNotifications] = useState(initialNotifications);
-  const [selectedSchool, setSelectedSchool] = useState("SEMEI Iranduba - 01");
+  const [selectedSchool, setSelectedSchool] = useState<string>(() => municipio.escolas[0]);
   const [open, setOpen] = useState(false);
+
+  // Quando trocar o município, ajusta a escola atual para a primeira disponível
+  useEffect(() => {
+    if (!municipio.escolas.includes(selectedSchool)) {
+      setSelectedSchool(municipio.escolas[0]);
+    }
+  }, [municipio.id]);
+
+  const canSwitchMunicipio = user?.role === "suporte" || user?.role === "administracao";
 
   const currentProfileLabel =
     user?.role === "suporte" ? "Suporte" :
@@ -121,44 +135,91 @@ export function HeaderWithNotifications() {
         <SidebarTrigger />
         {location.pathname !== "/menu" && (
           <>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1.5 h-8 text-xs"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Voltar
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1.5 h-8 text-xs"
-              onClick={() => navigate("/menu")}
-            >
-              <Home className="w-3.5 h-3.5" />
-              Menu principal
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs" onClick={() => navigate(-1)}>
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Voltar
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Voltar para a página anterior</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs" onClick={() => navigate("/menu")}>
+                  <Home className="w-3.5 h-3.5" />
+                  Menu principal
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Ir para o menu principal</TooltipContent>
+            </Tooltip>
           </>
         )}
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Município selector — visível para Suporte/Administração */}
+        {canSwitchMunicipio && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-md bg-edu-orange-light">
+                      <MapPin className="w-3.5 h-3.5 text-edu-orange" />
+                    </div>
+                    <span className="text-xs text-muted-foreground hidden md:inline">Município:</span>
+                    <span className="text-xs font-semibold text-foreground hidden md:inline">{municipio.nome}/{municipio.uf}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Trocar de município (canal)</TooltipContent>
+              </Tooltip>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                Canais disponíveis
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {municipios.map((m) => (
+                <DropdownMenuItem
+                  key={m.id}
+                  onClick={() => setMunicipio(m.id)}
+                  className={cn("cursor-pointer gap-2", m.id === municipio.id && "bg-muted")}
+                >
+                  <MapPin className="w-3.5 h-3.5 text-edu-orange" />
+                  <span className="text-xs flex-1">{m.nome} — {m.uf}</span>
+                  {m.id === municipio.id && <Check className="w-3.5 h-3.5 text-edu-green" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
         {/* School selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors">
-              <div className="flex items-center justify-center w-7 h-7 rounded-md bg-edu-green-light">
-                <School className="w-3.5 h-3.5 text-edu-green" />
-              </div>
-              <span className="text-xs text-muted-foreground hidden sm:inline">Escola:</span>
-              <span className="text-xs font-semibold text-foreground hidden sm:inline">{selectedSchool}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors">
+                  <div className="flex items-center justify-center w-7 h-7 rounded-md bg-edu-green-light">
+                    <School className="w-3.5 h-3.5 text-edu-green" />
+                  </div>
+                  <span className="text-xs text-muted-foreground hidden sm:inline">Escola:</span>
+                  <span className="text-xs font-semibold text-foreground hidden sm:inline max-w-[180px] truncate">{selectedSchool}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Selecionar escola</TooltipContent>
+            </Tooltip>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            {schoolOptions.map((opt) => (
-              <DropdownMenuItem key={opt} onClick={() => setSelectedSchool(opt)} className={cn(opt === selectedSchool && "bg-muted")}>
+          <DropdownMenuContent align="end" className="w-72 max-h-80 overflow-y-auto">
+            <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
+              Escolas — {municipio.nome}/{municipio.uf}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {municipio.escolas.map((opt) => (
+              <DropdownMenuItem key={opt} onClick={() => setSelectedSchool(opt)} className={cn("text-xs", opt === selectedSchool && "bg-muted")}>
                 {opt}
               </DropdownMenuItem>
             ))}
@@ -213,14 +274,19 @@ export function HeaderWithNotifications() {
         {/* Notifications */}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="w-5 h-5 text-muted-foreground" />
-              {unreadCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-destructive text-destructive-foreground border-0">
-                  {unreadCount}
-                </Badge>
-              )}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="w-5 h-5 text-muted-foreground" />
+                  {unreadCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-destructive text-destructive-foreground border-0">
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Notificações e pendências</TooltipContent>
+            </Tooltip>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-96 p-0">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
