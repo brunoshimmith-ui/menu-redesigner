@@ -653,16 +653,11 @@ const Disciplinas = () => {
 
                 </div>
 
-                {/* Slides — Dicas importantes */}
-                {tipsEnabled && diarioView === "grade" && (
-                  <TipsSlider view={diarioView} onClose={() => setTipsEnabled(false)} />
-                )}
-
                 {diarioView === "grade" && (
                   <>
-                    {/* Toolbar: pills (semana anterior • intervalo • próxima semana • hoje) | mês • mês/semana */}
-                    <div className="flex items-center justify-between gap-3 flex-wrap">
-                      <div className="flex items-center gap-2 flex-wrap">
+                    {/* Toolbar: centered navigation (semana anterior • intervalo • próxima semana • hoje) with month / view-mode on the right */}
+                    <div className="relative flex items-center justify-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap justify-center">
                         <Button
                           variant="outline"
                           size="sm"
@@ -671,6 +666,16 @@ const Disciplinas = () => {
                         >
                           <ChevronLeft className="w-3.5 h-3.5" /> Semana anterior
                         </Button>
+                        <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
+                          <SelectTrigger className="h-9 w-36 text-xs rounded-xl">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {months.map((m, i) => (
+                              <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <div className="flex items-center gap-2 h-9 px-3 rounded-xl border bg-card text-xs font-semibold">
                           <CalendarIcon className="w-3.5 h-3.5 text-muted-foreground" />
                           {formatWeekRange(weekDates)}
@@ -693,23 +698,14 @@ const Disciplinas = () => {
                         </Button>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
-                          <SelectTrigger className="h-9 w-32 text-xs rounded-xl">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {months.map((m, i) => (
-                              <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <div className="lg:absolute lg:right-0 flex items-center gap-2">
                         <div className="flex gap-0.5 bg-muted rounded-xl p-1">
                           <Button variant={viewMode === "Mês" ? "default" : "ghost"} size="sm" className="h-7 rounded-lg text-xs" onClick={() => setViewMode("Mês")}>Mês</Button>
                           <Button variant={viewMode === "Semana" ? "default" : "ghost"} size="sm" className="h-7 rounded-lg text-xs" onClick={() => setViewMode("Semana")}>Semana</Button>
                         </div>
                       </div>
                     </div>
+
 
                     {/* Bimestre meta */}
                     <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
