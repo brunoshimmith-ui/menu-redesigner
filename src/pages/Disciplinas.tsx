@@ -827,33 +827,55 @@ const Disciplinas = () => {
                                       {startingAulas.map((aula) => {
                                         const filled = isAulaFilled(aula);
                                         const draft = isAulaDraft(aula);
-                                        let statusClass = "bg-slate-100 border-slate-300 text-slate-800 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700";
-                                        if (isFutureWeek) {
-                                          statusClass = "bg-slate-100/60 border-slate-300 text-slate-500 dark:bg-slate-800/60 dark:text-slate-400 dark:border-slate-700 opacity-70";
-                                        } else if (filled) {
-                                          statusClass = "bg-emerald-50 border-emerald-300 text-emerald-950 dark:bg-emerald-950/40 dark:border-emerald-700 dark:text-emerald-50";
-                                        } else if (draft) {
-                                          statusClass = "bg-amber-50 border-amber-300 text-amber-950 dark:bg-amber-950/40 dark:text-amber-50 dark:border-amber-700";
-                                        }
+                                        // Subject color used as left accent bar
+                                        const subjectAccent: Record<string, string> = {
+                                          "Língua Portuguesa": "bg-amber-500",
+                                          "Matemática": "bg-emerald-500",
+                                          "Inglês": "bg-sky-500",
+                                          "Ciências": "bg-violet-500",
+                                          "Ensino Religioso": "bg-pink-500",
+                                          "História": "bg-orange-500",
+                                          "Geografia": "bg-red-500",
+                                          "Artes": "bg-teal-500",
+                                          "Educação Física": "bg-indigo-500",
+                                        };
+                                        const subjectText: Record<string, string> = {
+                                          "Língua Portuguesa": "text-amber-700 dark:text-amber-300",
+                                          "Matemática": "text-emerald-700 dark:text-emerald-300",
+                                          "Inglês": "text-sky-700 dark:text-sky-300",
+                                          "Ciências": "text-violet-700 dark:text-violet-300",
+                                          "Ensino Religioso": "text-pink-700 dark:text-pink-300",
+                                          "História": "text-orange-700 dark:text-orange-300",
+                                          "Geografia": "text-red-700 dark:text-red-300",
+                                          "Artes": "text-teal-700 dark:text-teal-300",
+                                          "Educação Física": "text-indigo-700 dark:text-indigo-300",
+                                        };
+                                        const accentBar = subjectAccent[aula.disciplina] || "bg-slate-400";
+                                        const titleColor = subjectText[aula.disciplina] || "text-slate-700 dark:text-slate-200";
+                                        let statusBg = "bg-card";
+                                        if (isFutureWeek) statusBg = "bg-muted/30 opacity-70";
+                                        else if (filled) statusBg = "bg-emerald-50 dark:bg-emerald-950/30";
+                                        else if (draft) statusBg = "bg-amber-50 dark:bg-amber-950/30";
                                         return (
                                           <div
                                             key={aula.id}
-                                            className={`group relative w-full rounded-xl p-2 border text-[11px] h-full hover:shadow-md hover:-translate-y-px transition-all shadow-sm ${statusClass}`}
+                                            className={`group relative w-full rounded-lg pl-2 pr-2 py-1.5 border border-border text-[11px] h-full hover:shadow-md transition-all shadow-sm overflow-hidden ${statusBg}`}
                                           >
+                                            <span className={`absolute left-0 top-0 bottom-0 w-1 ${accentBar}`} />
                                             <button
                                               onClick={(e) => { e.stopPropagation(); openAula(aula); }}
-                                              className="w-full text-left"
+                                              className="w-full text-left pl-1.5"
                                             >
-                                              <div className="font-bold leading-tight text-[12.5px] flex items-center gap-1.5 pr-5">
-                                                <BookOpen className="w-3 h-3 shrink-0 opacity-70" />
-                                                <span className="truncate">{aula.disciplina}</span>
-                                                {filled && !isFutureWeek && <span className="ml-auto text-emerald-600 dark:text-emerald-400 text-[11px]">✓</span>}
-                                              </div>
-                                              <div className="text-[10.5px] mt-1 opacity-80 flex items-center gap-1">
+                                              <div className="text-[10px] text-muted-foreground leading-tight flex items-center gap-1">
                                                 <Clock className="w-2.5 h-2.5" />
                                                 {aula.horaInicio} – {aula.horaTermino}
                                               </div>
-                                              <div className="text-[10.5px] opacity-80 flex items-center gap-1 truncate">
+                                              <div className={`font-bold leading-tight text-[12.5px] mt-0.5 flex items-center gap-1.5 pr-5 ${titleColor}`}>
+                                                <BookOpen className="w-3 h-3 shrink-0 opacity-80" />
+                                                <span className="truncate">{aula.disciplina}</span>
+                                                {filled && !isFutureWeek && <span className="ml-auto text-emerald-600 dark:text-emerald-400 text-[11px]">✓</span>}
+                                              </div>
+                                              <div className="text-[10.5px] text-muted-foreground mt-0.5 flex items-center gap-1 truncate">
                                                 <UserIcon className="w-2.5 h-2.5 shrink-0" />
                                                 <span className="truncate">{aula.professor}</span>
                                               </div>
