@@ -39,6 +39,8 @@ export interface AulaSalva {
   isAvaliacao?: boolean;
   isFalta?: boolean;
   recorrente?: boolean;
+  replicar?: { ativo: boolean; semanas: number };
+
   weekStart?: string; // ISO yyyy-mm-dd of Sunday of the week this aula belongs to
   conteudo?: {
     objetivo: string;
