@@ -135,44 +135,91 @@ export function HeaderWithNotifications() {
         <SidebarTrigger />
         {location.pathname !== "/menu" && (
           <>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1.5 h-8 text-xs"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Voltar
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1.5 h-8 text-xs"
-              onClick={() => navigate("/menu")}
-            >
-              <Home className="w-3.5 h-3.5" />
-              Menu principal
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs" onClick={() => navigate(-1)}>
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Voltar
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Voltar para a página anterior</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs" onClick={() => navigate("/menu")}>
+                  <Home className="w-3.5 h-3.5" />
+                  Menu principal
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Ir para o menu principal</TooltipContent>
+            </Tooltip>
           </>
         )}
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Município selector — visível para Suporte/Administração */}
+        {canSwitchMunicipio && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-md bg-edu-orange-light">
+                      <MapPin className="w-3.5 h-3.5 text-edu-orange" />
+                    </div>
+                    <span className="text-xs text-muted-foreground hidden md:inline">Município:</span>
+                    <span className="text-xs font-semibold text-foreground hidden md:inline">{municipio.nome}/{municipio.uf}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Trocar de município (canal)</TooltipContent>
+              </Tooltip>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                Canais disponíveis
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {municipios.map((m) => (
+                <DropdownMenuItem
+                  key={m.id}
+                  onClick={() => setMunicipio(m.id)}
+                  className={cn("cursor-pointer gap-2", m.id === municipio.id && "bg-muted")}
+                >
+                  <MapPin className="w-3.5 h-3.5 text-edu-orange" />
+                  <span className="text-xs flex-1">{m.nome} — {m.uf}</span>
+                  {m.id === municipio.id && <Check className="w-3.5 h-3.5 text-edu-green" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
         {/* School selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors">
-              <div className="flex items-center justify-center w-7 h-7 rounded-md bg-edu-green-light">
-                <School className="w-3.5 h-3.5 text-edu-green" />
-              </div>
-              <span className="text-xs text-muted-foreground hidden sm:inline">Escola:</span>
-              <span className="text-xs font-semibold text-foreground hidden sm:inline">{selectedSchool}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted transition-colors">
+                  <div className="flex items-center justify-center w-7 h-7 rounded-md bg-edu-green-light">
+                    <School className="w-3.5 h-3.5 text-edu-green" />
+                  </div>
+                  <span className="text-xs text-muted-foreground hidden sm:inline">Escola:</span>
+                  <span className="text-xs font-semibold text-foreground hidden sm:inline max-w-[180px] truncate">{selectedSchool}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Selecionar escola</TooltipContent>
+            </Tooltip>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            {schoolOptions.map((opt) => (
-              <DropdownMenuItem key={opt} onClick={() => setSelectedSchool(opt)} className={cn(opt === selectedSchool && "bg-muted")}>
+          <DropdownMenuContent align="end" className="w-72 max-h-80 overflow-y-auto">
+            <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
+              Escolas — {municipio.nome}/{municipio.uf}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {municipio.escolas.map((opt) => (
+              <DropdownMenuItem key={opt} onClick={() => setSelectedSchool(opt)} className={cn("text-xs", opt === selectedSchool && "bg-muted")}>
                 {opt}
               </DropdownMenuItem>
             ))}
