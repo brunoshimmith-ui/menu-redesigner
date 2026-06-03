@@ -752,7 +752,8 @@ const Disciplinas = () => {
 
                     {/* Grid + right dashboard layout */}
                     <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
-                      {/* Weekly grid (≈80% via grid template) */}
+                      {/* Weekly OR Monthly grid */}
+                      {viewMode === "Semana" ? (
                       <div className="border border-border rounded-2xl overflow-hidden bg-card shadow-sm">
                         <table className="w-full border-collapse text-xs table-fixed">
                           <thead>
@@ -788,7 +789,7 @@ const Disciplinas = () => {
                           </thead>
                           <tbody>
                             {HORAS.map((hora) => (
-                              <tr key={hora} className="h-16">
+                              <tr key={hora} className="h-11">
                                 <td className="border-b border-r border-border px-2 text-[11px] text-muted-foreground text-right align-top pt-1.5 font-medium">
                                   {hora}
                                 </td>
@@ -832,10 +833,12 @@ const Disciplinas = () => {
                                         let statusBg = "bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700";
                                         let accentBar = "bg-slate-400 dark:bg-slate-500";
                                         let titleColor = "text-slate-700 dark:text-slate-200";
+                                        let extraOpacity = "";
                                         if (isFutureWeek) {
-                                          statusBg = "bg-slate-200/40 dark:bg-slate-700/30 border-slate-200/60 dark:border-slate-700/60";
-                                          accentBar = "bg-slate-300 dark:bg-slate-600";
+                                          statusBg = "bg-slate-200/30 dark:bg-slate-700/20 border-slate-200/40 dark:border-slate-700/40";
+                                          accentBar = "bg-slate-300/60 dark:bg-slate-600/60";
                                           titleColor = "text-slate-500 dark:text-slate-400";
+                                          extraOpacity = "opacity-60";
                                         } else if (filled) {
                                           statusBg = "bg-emerald-100 dark:bg-emerald-900/40 border-emerald-200 dark:border-emerald-800";
                                           accentBar = "bg-emerald-500";
@@ -846,31 +849,22 @@ const Disciplinas = () => {
                                         return (
                                           <div
                                             key={aula.id}
-                                            className={`group relative w-full rounded-lg pl-2 pr-2 py-1.5 border text-[11px] h-full hover:shadow-md transition-all shadow-sm overflow-hidden ${statusBg}`}
+                                            className={`group relative w-full rounded-md pl-2 pr-2 py-1 border text-[11px] h-full hover:shadow-md transition-all shadow-sm overflow-hidden ${statusBg} ${extraOpacity}`}
                                           >
                                             <span className={`absolute left-0 top-0 bottom-0 w-1 ${accentBar}`} />
                                             <button
                                               onClick={(e) => { e.stopPropagation(); openAula(aula); }}
                                               className="w-full text-left pl-1.5"
                                             >
-                                              <div className="text-[10px] text-muted-foreground leading-tight flex items-center gap-1">
-                                                <Clock className="w-2.5 h-2.5" />
-                                                {aula.horaInicio} – {aula.horaTermino}
-                                              </div>
-                                              <div className={`font-bold leading-tight text-[12.5px] mt-0.5 flex items-center gap-1.5 pr-1 ${titleColor}`}>
-                                                <BookOpen className="w-3 h-3 shrink-0 opacity-80" />
+                                              <div className={`font-bold leading-tight text-[11.5px] flex items-center gap-1.5 pr-1 ${titleColor}`}>
                                                 <span className="truncate">{aula.disciplina}</span>
                                                 {filled && !isFutureWeek && <span className="ml-auto text-emerald-600 dark:text-emerald-400 text-[11px]">✓</span>}
                                               </div>
-                                              <div className="text-[10.5px] text-muted-foreground mt-0.5 flex items-center gap-1 truncate">
-                                                <UserIcon className="w-2.5 h-2.5 shrink-0" />
-                                                <span className="truncate">{aula.professor}</span>
+                                              <div className="text-[10px] text-muted-foreground leading-tight flex items-center gap-1 mt-0.5">
+                                                <Clock className="w-2.5 h-2.5" />
+                                                {aula.horaInicio}–{aula.horaTermino}
+                                                <span className="truncate ml-1">• {aula.professor}</span>
                                               </div>
-                                              {draft && !filled && !isFutureWeek && (
-                                                <div className="mt-1 inline-block text-[9px] px-1.5 py-0.5 rounded-md bg-slate-300/70 dark:bg-slate-600/40 text-slate-700 dark:text-slate-100 font-semibold">
-                                                  rascunho
-                                                </div>
-                                              )}
                                             </button>
                                           </div>
                                         );
@@ -883,15 +877,68 @@ const Disciplinas = () => {
                           </tbody>
                         </table>
                       </div>
+                      ) : (
+                        <MonthGrid
+                          currentDate={currentWeek}
+                          aulas={aulas}
+                          holidayMap={holidayMap}
+                          optionalMap={optionalMap}
+                          isAulaFilled={isAulaFilled}
+                          onSelectDay={(d) => { setCurrentWeek(d); setViewMode("Semana"); }}
+                        />
+                      )}
 
                       {/* Right dashboard panel */}
                       <aside className="space-y-4">
 
+                        {/* Resumo da Semana (pendências e atenção) */}
+                        {(() => {
+                          const total = weekAulas.length;
+                          const validadas = weekAulas.filter(isAulaFilled).length;
+                          const pendentes = weekAulas.filter((a) => !isAulaFilled(a)).length;
+                          const feriadosNaSemana = weekDates.filter((d) => holidayMap.has(dateKey(d)) || optionalMap.has(dateKey(d))).length;
+                          return (
+                            <div className="rounded-2xl border border-border bg-card shadow-sm p-4">
+                              <div className="flex items-center gap-2 mb-3">
+                                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                  <BarChart3 className="w-4 h-4 text-primary" />
+                                </div>
+                                <h3 className="text-sm font-semibold text-foreground">Resumo da Semana</h3>
+                              </div>
+                              <ul className="space-y-2 text-[12.5px]">
+                                <li className="flex items-center justify-between">
+                                  <span className="text-muted-foreground flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-slate-400" /> Aulas criadas</span>
+                                  <span className="font-semibold text-foreground">{total}</span>
+                                </li>
+                                <li className="flex items-center justify-between">
+                                  <span className="text-muted-foreground flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-500" /> Validadas</span>
+                                  <span className="font-semibold text-emerald-700 dark:text-emerald-400">{validadas}</span>
+                                </li>
+                                <li className="flex items-center justify-between">
+                                  <span className="text-muted-foreground flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-amber-500" /> Pendentes</span>
+                                  <span className="font-semibold text-amber-700 dark:text-amber-400">{pendentes}</span>
+                                </li>
+                                <li className="flex items-center justify-between">
+                                  <span className="text-muted-foreground flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-rose-500" /> Feriados/facultativos</span>
+                                  <span className="font-semibold text-foreground">{feriadosNaSemana}</span>
+                                </li>
+                              </ul>
+                              {pendentes > 0 && !isFutureWeek && (
+                                <p className="mt-3 text-[11.5px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-2.5 py-1.5 flex items-start gap-1.5">
+                                  <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                                  <span>{pendentes} {pendentes === 1 ? "aula precisa" : "aulas precisam"} de atenção (conteúdo/frequência).</span>
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })()}
 
                         {/* Dicas importantes (slider) */}
                         {tipsEnabled && (
                           <TipsSlider view={diarioView} onClose={() => setTipsEnabled(false)} />
                         )}
+
+
 
                         {/* Avisos importantes (pendências da semana) */}
                         {tipsEnabled && !isFutureWeek && (weekAulas.length === 0 || weekAulas.some((a) => !isAulaFilled(a))) && (() => {
