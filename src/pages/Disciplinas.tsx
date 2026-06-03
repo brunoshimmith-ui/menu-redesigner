@@ -1101,5 +1101,114 @@ function TipsSlider({ view, onClose }: { view: string; onClose?: () => void }) {
   );
 }
 
+function MonthGrid({
+  currentDate,
+  aulas,
+  holidayMap,
+  optionalMap,
+  isAulaFilled,
+  onSelectDay,
+}: {
+  currentDate: Date;
+  aulas: AulaSalva[];
+  holidayMap: Map<string, string>;
+  optionalMap: Map<string, string>;
+  isAulaFilled: (a: AulaSalva) => boolean;
+  onSelectDay: (d: Date) => void;
+}) {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const startOffset = firstDay.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells: (Date | null)[] = [];
+  for (let i = 0; i < startOffset; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  // Build a map: weekStart key -> aulas for fast lookup, but also include legacy (no weekStart)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const getAulasForDate = (date: Date) => {
+    const wkStart = new Date(date);
+    wkStart.setDate(date.getDate() - date.getDay());
+    const wkKey = dateKey(wkStart);
+    return aulas.filter((a) => {
+      if (a.weekStart && a.weekStart !== wkKey) return false;
+      return a.diaSemana === date.getDay();
+    });
+  };
+
+  const labels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+  return (
+    <div className="border border-border rounded-2xl overflow-hidden bg-card shadow-sm">
+      <div className="grid grid-cols-7 bg-muted/40 text-[11px] font-medium text-muted-foreground">
+        {labels.map((l) => (
+          <div key={l} className="px-2 py-2 text-center border-r border-b border-border last:border-r-0">{l}</div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7">
+        {cells.map((date, idx) => {
+          if (!date) {
+            return <div key={idx} className="min-h-[92px] border-r border-b border-border bg-muted/10" />;
+          }
+          const k = dateKey(date);
+          const holiday = holidayMap.get(k);
+          const optional = optionalMap.get(k);
+          const dayAulas = getAulasForDate(date);
+          const dayCopy = new Date(date); dayCopy.setHours(0, 0, 0, 0);
+          const isFuture = dayCopy.getTime() > today.getTime();
+          const isCurrent = dayCopy.getTime() === today.getTime();
+          return (
+            <button
+              key={idx}
+              onClick={() => onSelectDay(date)}
+              className={`text-left min-h-[92px] p-1.5 border-r border-b border-border last:border-r-0 transition-colors hover:bg-accent/10 ${
+                isCurrent ? "bg-primary/5" : ""
+              } ${holiday ? "bg-red-50/60 dark:bg-red-950/20" : optional ? "bg-amber-50/50 dark:bg-amber-950/20" : ""}`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className={`text-[11.5px] font-semibold ${isCurrent ? "text-primary" : "text-foreground"}`}>
+                  {date.getDate()}
+                </span>
+                {holiday && <span className="text-[9px] text-red-700 dark:text-red-400 truncate ml-1" title={holiday}>●</span>}
+                {!holiday && optional && <span className="text-[9px] text-amber-700 dark:text-amber-400 ml-1">●</span>}
+              </div>
+              <div className="space-y-0.5">
+                {dayAulas.slice(0, 3).map((a) => {
+                  const filled = isAulaFilled(a);
+                  let bg = "bg-slate-100 border-slate-200 text-slate-700 dark:bg-slate-800/50 dark:text-slate-200";
+                  let bar = "bg-slate-400";
+                  let opacity = "";
+                  if (isFuture) {
+                    bg = "bg-slate-100/60 border-slate-200/60 text-slate-500 dark:bg-slate-800/30 dark:text-slate-400";
+                    bar = "bg-slate-300";
+                    opacity = "opacity-70";
+                  } else if (filled) {
+                    bg = "bg-emerald-100 border-emerald-200 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200";
+                    bar = "bg-emerald-500";
+                  }
+                  return (
+                    <div key={a.id} className={`relative pl-2 pr-1 py-0.5 rounded border text-[10px] truncate ${bg} ${opacity}`}>
+                      <span className={`absolute left-0 top-0 bottom-0 w-0.5 ${bar}`} />
+                      <span className="font-semibold">{a.horaInicio}</span> {a.disciplina}
+                    </div>
+                  );
+                })}
+                {dayAulas.length > 3 && (
+                  <div className="text-[10px] text-muted-foreground pl-1">+{dayAulas.length - 3} mais</div>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default Disciplinas;
+
 
