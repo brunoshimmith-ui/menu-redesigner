@@ -993,18 +993,17 @@ const Disciplinas = () => {
                           })()}
                         </div>
 
-                        {/* Legend */}
-                        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                          <h3 className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Legenda</h3>
-                          <ul className="space-y-1.5 text-[11.5px]">
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-slate-100 border border-slate-300 dark:bg-slate-800 dark:border-slate-700 inline-block" /> Criada</li>
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300 inline-block" /> Rascunho</li>
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300 inline-block" /> Validada</li>
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Feriado</li>
-                            <li className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-amber-50 border border-amber-200 inline-block" /> Facultativo</li>
-                          </ul>
-                        </div>
                       </aside>
+                    </div>
+
+                    {/* Bottom legend strip */}
+                    <div className="flex flex-wrap items-center justify-start gap-x-5 gap-y-1.5 text-[11px] text-muted-foreground px-1">
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-slate-100 border border-slate-300 dark:bg-slate-800 dark:border-slate-700 inline-block" /> Criada</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-100 border border-amber-300 inline-block" /> Rascunho</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-300 inline-block" /> Validada</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-muted border border-border inline-block opacity-60" /> Semana futura</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-red-100 border border-red-300 inline-block" /> Feriado</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-50 border border-amber-200 inline-block" /> Ponto facultativo</span>
                     </div>
                   </>
                 )}
