@@ -766,16 +766,18 @@ const Disciplinas = () => {
                                     key={i}
                                     className={`border-b border-r border-border p-2 text-center font-medium ${isToday(date) ? "bg-primary/10 text-primary" : ""} ${holiday ? "bg-red-50 dark:bg-red-950/30" : optional ? "bg-amber-50 dark:bg-amber-950/30" : ""}`}
                                   >
-                                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{DIAS_SEMANA[i]}</div>
-                                    <div className="text-[15px] font-bold leading-tight mt-0.5">{String(date.getDate()).padStart(2, "0")}</div>
+                                    <div className="text-[13px] font-semibold leading-tight">
+                                      <span className="text-foreground">{String(date.getDate()).padStart(2, "0")}</span>{" "}
+                                      <span className="text-muted-foreground font-medium">{DIAS_SEMANA[i].charAt(0) + DIAS_SEMANA[i].slice(1).toLowerCase()}</span>
+                                    </div>
                                     {holiday && (
-                                      <div className="text-[9.5px] font-medium text-red-700 dark:text-red-400 truncate mt-0.5" title={holiday}>
-                                        Feriado
+                                      <div className="text-[10px] font-medium text-red-700 dark:text-red-400 truncate mt-1 flex items-center justify-center gap-1" title={holiday}>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> {holiday}
                                       </div>
                                     )}
                                     {!holiday && optional && (
-                                      <div className="text-[9.5px] font-medium text-amber-700 dark:text-amber-400 truncate mt-0.5" title={optional}>
-                                        Facultativo
+                                      <div className="text-[10px] font-medium text-amber-700 dark:text-amber-400 truncate mt-1 flex items-center justify-center gap-1" title={optional}>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Facultativo
                                       </div>
                                     )}
                                   </th>
