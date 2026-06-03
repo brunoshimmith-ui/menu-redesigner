@@ -931,17 +931,33 @@ const Disciplinas = () => {
                             }
                             return (
                               <ul className="space-y-2">
-                                {todays.map((a) => (
-                                  <li key={a.id} className="flex items-start gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => openAula(a)}>
-                                    <div className="text-[11px] font-bold text-primary leading-tight min-w-[40px]">
-                                      {a.horaInicio}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="text-[12.5px] font-semibold truncate">{a.disciplina}</div>
+                                {todays.map((a) => {
+                                  const subjectAccent: Record<string, string> = {
+                                    "Língua Portuguesa": "border-l-amber-500",
+                                    "Matemática": "border-l-emerald-500",
+                                    "Inglês": "border-l-sky-500",
+                                    "Ciências": "border-l-violet-500",
+                                    "Ensino Religioso": "border-l-pink-500",
+                                    "História": "border-l-orange-500",
+                                    "Geografia": "border-l-red-500",
+                                    "Artes": "border-l-teal-500",
+                                    "Educação Física": "border-l-indigo-500",
+                                  };
+                                  const accent = subjectAccent[a.disciplina] || "border-l-slate-400";
+                                  return (
+                                    <li
+                                      key={a.id}
+                                      className={`flex flex-col gap-0.5 p-2.5 rounded-xl border border-border border-l-4 ${accent} bg-card hover:bg-muted/40 transition-colors cursor-pointer`}
+                                      onClick={() => openAula(a)}
+                                    >
+                                      <div className="text-[11px] font-semibold text-muted-foreground">
+                                        {a.horaInicio} – {a.horaTermino}
+                                      </div>
+                                      <div className="text-[13px] font-bold text-foreground truncate">{a.disciplina}</div>
                                       <div className="text-[11px] text-muted-foreground truncate">{a.professor}</div>
-                                    </div>
-                                  </li>
-                                ))}
+                                    </li>
+                                  );
+                                })}
                               </ul>
                             );
                           })()}
