@@ -46,6 +46,7 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialog";
 import {
