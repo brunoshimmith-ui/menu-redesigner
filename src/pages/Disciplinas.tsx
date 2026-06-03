@@ -46,6 +46,7 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { AulaActionsDialog, type AulaSalva } from "@/components/AulaActionsDialog";
 import {
@@ -623,33 +624,39 @@ const Disciplinas = () => {
                   </Dialog>
 
                   {/* Top horizontal SaaS nav with icons */}
-                  {([
-                    ["grade", "Grade semanal", CalendarRange],
-                    ["medias", "Médias", TrendingUp],
-                    ["conteudos", "Conteúdos", BookOpen],
-                    ["frequencia", "Frequências", ClipboardList],
-                    ["complementares", "Complementares", Sparkles],
-                    ["horario", "Horário", Clock],
-                  ] as const).map(([key, label, Icon]) => {
-                    const active = diarioView === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => setDiarioView(key)}
-                        className={`relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
-                          active
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        {label}
-                        {active && (
-                          <span className="absolute -bottom-1 left-3 right-3 h-0.5 rounded-full bg-primary" />
-                        )}
-                      </button>
-                    );
-                  })}
+                  <TooltipProvider delayDuration={150}>
+                    {([
+                      ["grade", "Grade semanal", CalendarRange, "Visualize e crie as aulas da semana."],
+                      ["medias", "Médias", TrendingUp, "Lance e acompanhe as notas e médias dos alunos."],
+                      ["conteudos", "Conteúdos", BookOpen, "Registre objetivos, habilidades BNCC e metodologia."],
+                      ["frequencia", "Frequências", ClipboardList, "Faça a chamada e acompanhe a presença."],
+                      ["complementares", "Complementares", Sparkles, "Anotações pedagógicas e observações."],
+                      ["horario", "Horário", Clock, "Veja a distribuição semanal das aulas."],
+                    ] as const).map(([key, label, Icon, tip]) => {
+                      const active = diarioView === key;
+                      return (
+                        <Tooltip key={key}>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setDiarioView(key)}
+                              className={`relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                                active
+                                  ? "bg-primary/10 text-primary"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                              }`}
+                            >
+                              <Icon className="w-4 h-4" />
+                              {label}
+                              {active && (
+                                <span className="absolute -bottom-1 left-3 right-3 h-0.5 rounded-full bg-primary" />
+                              )}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-[220px] text-xs">{tip}</TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                  </TooltipProvider>
 
                 </div>
 
@@ -803,39 +810,25 @@ const Disciplinas = () => {
                                       {startingAulas.map((aula) => {
                                         const filled = isAulaFilled(aula);
                                         const draft = isAulaDraft(aula);
-                                        // Subject color used as left accent bar
-                                        const subjectAccent: Record<string, string> = {
-                                          "Língua Portuguesa": "bg-amber-500",
-                                          "Matemática": "bg-emerald-500",
-                                          "Inglês": "bg-sky-500",
-                                          "Ciências": "bg-violet-500",
-                                          "Ensino Religioso": "bg-pink-500",
-                                          "História": "bg-orange-500",
-                                          "Geografia": "bg-red-500",
-                                          "Artes": "bg-teal-500",
-                                          "Educação Física": "bg-indigo-500",
-                                        };
-                                        const subjectText: Record<string, string> = {
-                                          "Língua Portuguesa": "text-amber-700 dark:text-amber-300",
-                                          "Matemática": "text-emerald-700 dark:text-emerald-300",
-                                          "Inglês": "text-sky-700 dark:text-sky-300",
-                                          "Ciências": "text-violet-700 dark:text-violet-300",
-                                          "Ensino Religioso": "text-pink-700 dark:text-pink-300",
-                                          "História": "text-orange-700 dark:text-orange-300",
-                                          "Geografia": "text-red-700 dark:text-red-300",
-                                          "Artes": "text-teal-700 dark:text-teal-300",
-                                          "Educação Física": "text-indigo-700 dark:text-indigo-300",
-                                        };
-                                        const accentBar = subjectAccent[aula.disciplina] || "bg-slate-400";
-                                        const titleColor = subjectText[aula.disciplina] || "text-slate-700 dark:text-slate-200";
-                                        let statusBg = "bg-slate-100 dark:bg-slate-800/40";
-                                        if (isFutureWeek) statusBg = "bg-slate-300/70 dark:bg-slate-700/60 opacity-90";
-                                        else if (filled) statusBg = "bg-emerald-100 dark:bg-emerald-900/40";
-                                        else if (draft) statusBg = "bg-slate-200/80 dark:bg-slate-700/50";
+                                        // Padronizado: cinza (criada), verde (validada), cinza translúcido (futura)
+                                        let statusBg = "bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700";
+                                        let accentBar = "bg-slate-400 dark:bg-slate-500";
+                                        let titleColor = "text-slate-700 dark:text-slate-200";
+                                        if (isFutureWeek) {
+                                          statusBg = "bg-slate-200/40 dark:bg-slate-700/30 border-slate-200/60 dark:border-slate-700/60";
+                                          accentBar = "bg-slate-300 dark:bg-slate-600";
+                                          titleColor = "text-slate-500 dark:text-slate-400";
+                                        } else if (filled) {
+                                          statusBg = "bg-emerald-100 dark:bg-emerald-900/40 border-emerald-200 dark:border-emerald-800";
+                                          accentBar = "bg-emerald-500";
+                                          titleColor = "text-emerald-800 dark:text-emerald-200";
+                                        } else if (draft) {
+                                          statusBg = "bg-slate-200/80 dark:bg-slate-700/50 border-slate-300 dark:border-slate-600";
+                                        }
                                         return (
                                           <div
                                             key={aula.id}
-                                            className={`group relative w-full rounded-lg pl-2 pr-2 py-1.5 border border-border text-[11px] h-full hover:shadow-md transition-all shadow-sm overflow-hidden ${statusBg}`}
+                                            className={`group relative w-full rounded-lg pl-2 pr-2 py-1.5 border text-[11px] h-full hover:shadow-md transition-all shadow-sm overflow-hidden ${statusBg}`}
                                           >
                                             <span className={`absolute left-0 top-0 bottom-0 w-1 ${accentBar}`} />
                                             <button
@@ -846,7 +839,7 @@ const Disciplinas = () => {
                                                 <Clock className="w-2.5 h-2.5" />
                                                 {aula.horaInicio} – {aula.horaTermino}
                                               </div>
-                                              <div className={`font-bold leading-tight text-[12.5px] mt-0.5 flex items-center gap-1.5 pr-5 ${titleColor}`}>
+                                              <div className={`font-bold leading-tight text-[12.5px] mt-0.5 flex items-center gap-1.5 pr-1 ${titleColor}`}>
                                                 <BookOpen className="w-3 h-3 shrink-0 opacity-80" />
                                                 <span className="truncate">{aula.disciplina}</span>
                                                 {filled && !isFutureWeek && <span className="ml-auto text-emerald-600 dark:text-emerald-400 text-[11px]">✓</span>}
@@ -856,17 +849,10 @@ const Disciplinas = () => {
                                                 <span className="truncate">{aula.professor}</span>
                                               </div>
                                               {draft && !filled && !isFutureWeek && (
-                                                <div className="mt-1 inline-block text-[9px] px-1.5 py-0.5 rounded-md bg-amber-200/70 dark:bg-amber-700/40 text-amber-900 dark:text-amber-100 font-semibold">
+                                                <div className="mt-1 inline-block text-[9px] px-1.5 py-0.5 rounded-md bg-slate-300/70 dark:bg-slate-600/40 text-slate-700 dark:text-slate-100 font-semibold">
                                                   rascunho
                                                 </div>
                                               )}
-                                            </button>
-                                            <button
-                                              onClick={(e) => { e.stopPropagation(); deleteAula(aula.id); }}
-                                              title="Excluir aula"
-                                              className="absolute top-1 right-1 p-0.5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                              <X className="w-3 h-3" />
                                             </button>
                                           </div>
                                         );
@@ -882,92 +868,6 @@ const Disciplinas = () => {
 
                       {/* Right dashboard panel */}
                       <aside className="space-y-4">
-                        {/* Próximas aulas */}
-                        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                          <div className="flex items-center gap-2 mb-3">
-                            <CalendarIcon className="w-4 h-4 text-primary" />
-                            <h3 className="text-sm font-semibold text-foreground">Próximas aulas de hoje</h3>
-                          </div>
-                          {(() => {
-                            const today = new Date();
-                            const todayIdx = today.getDay();
-                            const isCurrentWeek = weekKind === "current";
-                            const todays = isCurrentWeek
-                              ? weekAulas
-                                  .filter((a) => a.diaSemana === todayIdx)
-                                  .sort((a, b) => a.horaInicio.localeCompare(b.horaInicio))
-                                  .slice(0, 4)
-                              : [];
-                            if (todays.length === 0) {
-                              return (
-                                <p className="text-xs text-muted-foreground py-3 text-center">
-                                  Nenhuma aula programada para hoje.
-                                </p>
-                              );
-                            }
-                            return (
-                              <ul className="space-y-2">
-                                {todays.map((a) => {
-                                  const subjectAccent: Record<string, string> = {
-                                    "Língua Portuguesa": "border-l-amber-500",
-                                    "Matemática": "border-l-emerald-500",
-                                    "Inglês": "border-l-sky-500",
-                                    "Ciências": "border-l-violet-500",
-                                    "Ensino Religioso": "border-l-pink-500",
-                                    "História": "border-l-orange-500",
-                                    "Geografia": "border-l-red-500",
-                                    "Artes": "border-l-teal-500",
-                                    "Educação Física": "border-l-indigo-500",
-                                  };
-                                  const accent = subjectAccent[a.disciplina] || "border-l-slate-400";
-                                  return (
-                                    <li
-                                      key={a.id}
-                                      className={`flex flex-col gap-0.5 p-2.5 rounded-xl border border-border border-l-4 ${accent} bg-card hover:bg-muted/40 transition-colors cursor-pointer`}
-                                      onClick={() => openAula(a)}
-                                    >
-                                      <div className="text-[11px] font-semibold text-muted-foreground">
-                                        {a.horaInicio} – {a.horaTermino}
-                                      </div>
-                                      <div className="text-[13px] font-bold text-foreground truncate">{a.disciplina}</div>
-                                      <div className="text-[11px] text-muted-foreground truncate">{a.professor}</div>
-                                    </li>
-                                  );
-                                })}
-                              </ul>
-                            );
-                          })()}
-                        </div>
-
-                        {/* Resumo da Semana */}
-                        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                          <div className="flex items-center gap-2 mb-3">
-                            <BarChart3 className="w-4 h-4 text-primary" />
-                            <h3 className="text-sm font-semibold text-foreground">Resumo da Semana</h3>
-                          </div>
-                          {(() => {
-                            const total = weekAulas.length;
-                            const pendentes = weekAulas.filter((a) => !isAulaFilled(a)).length;
-                            const validadas = weekAulas.filter(isAulaFilled).length;
-                            const feriados = weekDates.filter((d) => holidayMap.has(dateKey(d)) || optionalMap.has(dateKey(d))).length;
-                            const items = [
-                              { label: "aulas criadas", value: total, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200" },
-                              { label: "pendentes", value: pendentes, color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200" },
-                              { label: "validadas", value: validadas, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200" },
-                              { label: "feriados/facultativos", value: feriados, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200" },
-                            ];
-                            return (
-                              <ul className="space-y-2">
-                                {items.map((it) => (
-                                  <li key={it.label} className="flex items-center justify-between">
-                                    <span className="text-[12.5px] text-muted-foreground capitalize">{it.label}</span>
-                                    <span className={`text-[12px] font-bold px-2 py-0.5 rounded-lg ${it.color}`}>{it.value}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            );
-                          })()}
-                        </div>
 
 
                         {/* Dicas importantes (slider) */}
@@ -980,18 +880,18 @@ const Disciplinas = () => {
                           const pendentes = weekAulas.filter((a) => !isAulaFilled(a)).length;
                           const empty = weekAulas.length === 0;
                           return (
-                            <div className="flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-900/60 px-3 py-2.5">
-                              <div className="shrink-0 w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
-                                <AlertTriangle className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
+                            <div className="flex items-start gap-2.5 rounded-2xl border border-rose-200 bg-rose-50/70 dark:bg-rose-950/20 dark:border-rose-900/60 px-3 py-2.5">
+                              <div className="shrink-0 w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-900/40 flex items-center justify-center">
+                                <AlertTriangle className="w-3.5 h-3.5 text-rose-700 dark:text-rose-300" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-[12px] font-semibold text-amber-900 dark:text-amber-100 leading-tight">
-                                  {empty ? "Semana sem preenchimento" : "Aulas pendentes"}
+                                <p className="text-[12px] font-semibold text-rose-900 dark:text-rose-100 leading-tight">
+                                  {empty ? "Semana sem preenchimento" : "Avisos importantes"}
                                 </p>
-                                <p className="text-[11px] text-amber-800/80 dark:text-amber-200/80 leading-snug mt-0.5">
+                                <p className="text-[11px] text-rose-800/80 dark:text-rose-200/80 leading-snug mt-0.5">
                                   {empty
                                     ? "Clique em uma célula para criar uma aula."
-                                    : `${pendentes} ${pendentes === 1 ? "aula precisa" : "aulas precisam"} de preenchimento.`}
+                                    : `${pendentes} ${pendentes === 1 ? "aula pendente precisa" : "aulas pendentes precisam"} de preenchimento.`}
                                 </p>
                               </div>
                             </div>
@@ -1094,41 +994,29 @@ function TipsSlider({ view, onClose }: { view: string; onClose?: () => void }) {
     return () => clearInterval(t);
   }, [slides.length, open]);
   if (slides.length === 0) return null;
-  const prev = () => setIdx((i) => (i - 1 + slides.length) % slides.length);
-  const next = () => setIdx((i) => (i + 1) % slides.length);
   return (
     <div className="w-full">
-      <div className="relative rounded-2xl border border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-900/60 overflow-hidden">
+      <div className="relative rounded-2xl border border-sky-200 bg-sky-50/70 dark:bg-sky-950/20 dark:border-sky-900/60 overflow-hidden">
         <div className="flex items-start gap-3 px-4 py-3">
-          <div className="shrink-0 w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center mt-0.5">
-            <Lightbulb className="w-4 h-4 text-amber-700 dark:text-amber-300" />
+          <div className="shrink-0 w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center mt-0.5">
+            <Lightbulb className="w-4 h-4 text-sky-700 dark:text-sky-300" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-amber-900 dark:text-amber-100 leading-none mb-1.5">
+            <p className="text-[13px] font-semibold text-sky-900 dark:text-sky-100 leading-none mb-1.5">
               Dicas importantes
             </p>
             {open && (
-              <p key={idx} className="text-[12.5px] text-amber-900/90 dark:text-amber-100/90 leading-snug animate-in fade-in slide-in-from-right-2 duration-300">
+              <p key={idx} className="text-[12.5px] text-sky-900/90 dark:text-sky-100/90 leading-snug animate-in fade-in slide-in-from-right-2 duration-300">
                 {slides[idx]}
               </p>
             )}
           </div>
-          {open && slides.length > 1 && (
-            <div className="flex items-center gap-1 shrink-0">
-              <button onClick={prev} className="p-1 rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/40" aria-label="Anterior">
-                <ChevronLeft className="w-4 h-4 text-amber-700 dark:text-amber-300" />
-              </button>
-              <button onClick={next} className="p-1 rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/40" aria-label="Próximo">
-                <ChevronRight className="w-4 h-4 text-amber-700 dark:text-amber-300" />
-              </button>
-            </div>
-          )}
           <button
             onClick={() => setOpen((o) => !o)}
-            className="shrink-0 p-1 rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/40"
+            className="shrink-0 p-1 rounded-md hover:bg-sky-100 dark:hover:bg-sky-900/40"
             aria-label={open ? "Minimizar" : "Expandir"}
           >
-            <ChevronDown className={`w-4 h-4 text-amber-700 dark:text-amber-300 transition-transform ${open ? "" : "-rotate-90"}`} />
+            <ChevronDown className={`w-4 h-4 text-sky-700 dark:text-sky-300 transition-transform ${open ? "" : "-rotate-90"}`} />
           </button>
         </div>
         {open && slides.length > 1 && (
@@ -1137,7 +1025,7 @@ function TipsSlider({ view, onClose }: { view: string; onClose?: () => void }) {
               <button
                 key={i}
                 onClick={() => setIdx(i)}
-                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-amber-600 dark:bg-amber-300" : "w-1.5 bg-amber-300 dark:bg-amber-700"}`}
+                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-sky-600 dark:bg-sky-300" : "w-1.5 bg-sky-300 dark:bg-sky-700"}`}
                 aria-label={`Ir para slide ${i + 1}`}
               />
             ))}
