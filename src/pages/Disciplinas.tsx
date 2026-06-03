@@ -1078,51 +1078,61 @@ const TIPS_BY_VIEW: Record<string, string[]> = {
   ],
 };
 
-function TipsSlider({ view }: { view: string }) {
+function TipsSlider({ view, onClose }: { view: string; onClose?: () => void }) {
   const slides = TIPS_BY_VIEW[view] || [];
   const [idx, setIdx] = useState(0);
+  const [open, setOpen] = useState(true);
   useEffect(() => { setIdx(0); }, [view]);
   useEffect(() => {
-    if (slides.length <= 1) return;
+    if (!open || slides.length <= 1) return;
     const t = setInterval(() => setIdx((i) => (i + 1) % slides.length), 5000);
     return () => clearInterval(t);
-  }, [slides.length]);
+  }, [slides.length, open]);
   if (slides.length === 0) return null;
   const prev = () => setIdx((i) => (i - 1 + slides.length) % slides.length);
   const next = () => setIdx((i) => (i + 1) % slides.length);
   return (
-    <div className="w-full max-w-[820px] mx-auto">
-      <div className="relative rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 dark:border-blue-900/60 overflow-hidden">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <div className="shrink-0 w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
-            <Lightbulb className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+    <div className="w-full">
+      <div className="relative rounded-2xl border border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-900/60 overflow-hidden">
+        <div className="flex items-start gap-3 px-4 py-3">
+          <div className="shrink-0 w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center mt-0.5">
+            <Lightbulb className="w-4 h-4 text-amber-700 dark:text-amber-300" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-semibold text-blue-900 dark:text-blue-100 leading-none mb-1">
+            <p className="text-[13px] font-semibold text-amber-900 dark:text-amber-100 leading-none mb-1.5">
               Dicas importantes
             </p>
-            <p key={idx} className="text-[12.5px] text-blue-900/90 dark:text-blue-100/90 leading-snug animate-in fade-in slide-in-from-right-2 duration-300">
-              {slides[idx]}
-            </p>
+            {open && (
+              <p key={idx} className="text-[12.5px] text-amber-900/90 dark:text-amber-100/90 leading-snug animate-in fade-in slide-in-from-right-2 duration-300">
+                {slides[idx]}
+              </p>
+            )}
           </div>
-          {slides.length > 1 && (
+          {open && slides.length > 1 && (
             <div className="flex items-center gap-1 shrink-0">
-              <button onClick={prev} className="p-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40" aria-label="Anterior">
-                <ChevronLeft className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+              <button onClick={prev} className="p-1 rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/40" aria-label="Anterior">
+                <ChevronLeft className="w-4 h-4 text-amber-700 dark:text-amber-300" />
               </button>
-              <button onClick={next} className="p-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40" aria-label="Próximo">
-                <ChevronRight className="w-4 h-4 text-blue-700 dark:text-blue-200" />
+              <button onClick={next} className="p-1 rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/40" aria-label="Próximo">
+                <ChevronRight className="w-4 h-4 text-amber-700 dark:text-amber-300" />
               </button>
             </div>
           )}
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="shrink-0 p-1 rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/40"
+            aria-label={open ? "Minimizar" : "Expandir"}
+          >
+            <ChevronDown className={`w-4 h-4 text-amber-700 dark:text-amber-300 transition-transform ${open ? "" : "-rotate-90"}`} />
+          </button>
         </div>
-        {slides.length > 1 && (
+        {open && slides.length > 1 && (
           <div className="flex items-center justify-center gap-1.5 pb-2">
             {slides.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setIdx(i)}
-                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-blue-600 dark:bg-blue-300" : "w-1.5 bg-blue-300 dark:bg-blue-700"}`}
+                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-amber-600 dark:bg-amber-300" : "w-1.5 bg-amber-300 dark:bg-amber-700"}`}
                 aria-label={`Ir para slide ${i + 1}`}
               />
             ))}
