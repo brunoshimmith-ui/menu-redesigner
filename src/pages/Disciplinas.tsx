@@ -651,45 +651,51 @@ const Disciplinas = () => {
                     );
                   })}
 
-                  <div className="ml-auto">
-                    <TipsToggle enabled={tipsEnabled} onChange={setTipsEnabled} />
-                  </div>
                 </div>
 
                 {/* Slides — Dicas importantes */}
-                {tipsEnabled && (
-                  <TipsSlider view={diarioView} />
+                {tipsEnabled && diarioView === "grade" && (
+                  <TipsSlider view={diarioView} onClose={() => setTipsEnabled(false)} />
                 )}
 
                 {diarioView === "grade" && (
                   <>
-                    {/* Centered week navigation toolbar */}
+                    {/* Toolbar: pills (semana anterior • intervalo • próxima semana • hoje) | mês • mês/semana */}
                     <div className="flex items-center justify-between gap-3 flex-wrap">
-                      <div className="flex-1" />
-                      <div className="flex items-center gap-2 bg-card border border-border rounded-2xl px-2 py-1.5 shadow-sm">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => navigateWeek(-1)}>
-                          <ChevronLeft className="w-4 h-4" />
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9 rounded-xl gap-2 text-xs font-medium"
+                          onClick={() => navigateWeek(-1)}
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" /> Semana anterior
                         </Button>
-                        <div className="px-2 text-sm font-semibold text-foreground min-w-[180px] text-center">
+                        <div className="flex items-center gap-2 h-9 px-3 rounded-xl border bg-card text-xs font-semibold">
+                          <CalendarIcon className="w-3.5 h-3.5 text-muted-foreground" />
                           {formatWeekRange(weekDates)}
                         </div>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => navigateWeek(1)}>
-                          <ChevronRight className="w-4 h-4" />
-                        </Button>
-                        <div className="w-px h-6 bg-border mx-1" />
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
-                          className="h-8 rounded-xl gap-1.5 text-xs font-semibold"
+                          className="h-9 rounded-xl gap-2 text-xs font-medium"
+                          onClick={() => navigateWeek(1)}
+                        >
+                          Próxima semana <ChevronRight className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9 rounded-xl gap-1.5 text-xs font-semibold"
                           onClick={() => setCurrentWeek(new Date())}
                         >
                           <CalendarIcon className="w-3.5 h-3.5" /> Hoje
                         </Button>
                       </div>
 
-                      <div className="flex-1 flex items-center justify-end gap-2">
+                      <div className="flex items-center gap-2">
                         <Select value={String(currentWeek.getMonth())} onValueChange={(v) => goToMonth(parseInt(v))}>
-                          <SelectTrigger className="h-9 w-36 text-xs rounded-xl">
+                          <SelectTrigger className="h-9 w-32 text-xs rounded-xl">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
