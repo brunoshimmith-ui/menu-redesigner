@@ -137,7 +137,7 @@ const Login = () => {
               className="w-full h-11 gap-2 text-white border-0 hover:opacity-90"
               style={{
                 background:
-                  "linear-gradient(135deg, hsl(var(--edu-purple)), hsl(var(--edu-orange)), hsl(var(--edu-blue)))",
+                  "linear-gradient(135deg, #0a1f4d, #07152c)",
               }}
             >
               {isLoading ? (
