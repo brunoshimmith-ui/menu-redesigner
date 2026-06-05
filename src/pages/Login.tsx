@@ -41,22 +41,20 @@ const Login = () => {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-[hsl(var(--edu-purple))]">
-      {/* Gradiente do sistema: ROXO → LARANJA → AZUL */}
+      {/* Gradiente do menu lateral: azul escuro monocromático */}
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(135deg, hsl(var(--edu-purple)) 0%, hsl(var(--edu-orange)) 55%, hsl(var(--edu-blue)) 100%)",
+            "linear-gradient(135deg, #0a1f4d 0%, #0a1838 55%, #07152c 100%)",
         }}
       />
-      {/* Blobs luminosos para profundidade */}
-      <div aria-hidden className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-50"
-        style={{ background: "hsl(var(--edu-purple))" }} />
-      <div aria-hidden className="absolute top-1/3 -right-32 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-50"
-        style={{ background: "hsl(var(--edu-orange))" }} />
-      <div aria-hidden className="absolute -bottom-40 left-1/3 w-[32rem] h-[32rem] rounded-full blur-3xl opacity-50"
-        style={{ background: "hsl(var(--edu-blue))" }} />
+      {/* Blob de profundidade na mesma paleta */}
+      <div aria-hidden className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-40"
+        style={{ background: "#0a1f4d" }} />
+      <div aria-hidden className="absolute top-1/3 -right-32 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-40"
+        style={{ background: "#07152c" }} />
 
       <Card className="relative w-full max-w-md shadow-2xl animate-fade-in backdrop-blur-sm bg-card/95 border-white/20">
         <CardHeader className="text-center space-y-4">
@@ -65,7 +63,7 @@ const Login = () => {
               className="flex items-center justify-center w-16 h-16 rounded-2xl shadow-lg"
               style={{
                 background:
-                  "linear-gradient(135deg, hsl(var(--edu-purple)), hsl(var(--edu-orange)), hsl(var(--edu-blue)))",
+                  "linear-gradient(135deg, #0a1f4d, #07152c)",
               }}
             >
               <GraduationCap className="w-9 h-9 text-white" />
@@ -139,7 +137,7 @@ const Login = () => {
               className="w-full h-11 gap-2 text-white border-0 hover:opacity-90"
               style={{
                 background:
-                  "linear-gradient(135deg, hsl(var(--edu-purple)), hsl(var(--edu-orange)), hsl(var(--edu-blue)))",
+                  "linear-gradient(135deg, #0a1f4d, #07152c)",
               }}
             >
               {isLoading ? (
