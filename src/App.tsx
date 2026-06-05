@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Login from "./pages/Login";
+import CanalPublico from "./pages/CanalPublico";
 import Menu from "./pages/Menu";
 import Turmas from "./pages/Turmas";
 import Alunos from "./pages/Alunos";
@@ -44,7 +45,8 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<PublicRoute><Login /></PublicRoute>} />
+    <Route path="/" element={<CanalPublico />} />
+    <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
     <Route path="/menu" element={<ProtectedRoute><Menu /></ProtectedRoute>} />
     <Route path="/turmas" element={<ProtectedRoute><Turmas /></ProtectedRoute>} />
     <Route path="/turmas/:turmaId/alunos" element={<ProtectedRoute><Alunos /></ProtectedRoute>} />
