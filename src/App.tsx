@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Login from "./pages/Login";
+import CanalPublico from "./pages/CanalPublico";
 import Menu from "./pages/Menu";
 import Turmas from "./pages/Turmas";
 import Alunos from "./pages/Alunos";
