@@ -5,6 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
   Heart,
   Eye,
   MessageCircle,
@@ -16,6 +28,9 @@ import {
   School,
   Users,
   Sparkles,
+  ChevronDown,
+  Clock,
+  GraduationCap,
 } from "lucide-react";
 import { useMunicipio } from "@/hooks/use-municipio";
 import { toast } from "sonner";
