@@ -109,6 +109,7 @@ const CanalPublico = () => {
     { id: "2", autor: "João Pereira", texto: "Trabalho incrível com nossos professores." },
   ]);
   const [novoComentario, setNovoComentario] = useState("");
+  const [escolaSelecionada, setEscolaSelecionada] = useState<string | null>(null);
 
   const toggleCurtir = (id: string) => {
     setAcoes((prev) =>
