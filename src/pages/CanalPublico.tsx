@@ -281,25 +281,83 @@ const CanalPublico = () => {
           </div>
         </section>
 
-        {/* Escolas */}
+        {/* Escolas (lista expansível) */}
         <section>
-          <div className="mb-4">
-            <h2 className="text-2xl font-bold">Escolas da rede</h2>
-            <p className="text-sm text-muted-foreground">
-              {municipio.escolas.length} unidades em {municipio.nome}/{municipio.uf}.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {municipio.escolas.map((e) => (
-              <div key={e} className="rounded-xl border bg-card p-4 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-edu-blue/10 text-edu-blue flex items-center justify-center">
-                  <School className="w-4 h-4" />
+          <Collapsible defaultOpen={false}>
+            <CollapsibleTrigger className="w-full group">
+              <div className="rounded-2xl border bg-card p-5 flex items-center justify-between hover:bg-muted/40 transition-colors">
+                <div className="flex items-center gap-3 text-left">
+                  <div className="w-10 h-10 rounded-xl bg-edu-blue/10 text-edu-blue flex items-center justify-center">
+                    <School className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold">Escolas da rede</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {municipio.escolas.length} unidades em {municipio.nome}/{municipio.uf} — clique para expandir
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm font-medium">{e}</p>
+                <ChevronDown className="w-5 h-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
               </div>
-            ))}
-          </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {municipio.escolas.map((e) => (
+                  <button
+                    key={e}
+                    onClick={() => setEscolaSelecionada(e)}
+                    className="text-left rounded-xl border bg-card p-4 flex items-center gap-3 hover:border-edu-blue hover:shadow-md transition-all"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-edu-blue/10 text-edu-blue flex items-center justify-center shrink-0">
+                      <School className="w-4 h-4" />
+                    </div>
+                    <p className="text-sm font-medium">{e}</p>
+                  </button>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </section>
+
+        {/* Dialog com detalhes da escola */}
+        <Dialog open={!!escolaSelecionada} onOpenChange={(o) => !o && setEscolaSelecionada(null)}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <School className="w-5 h-5 text-edu-blue" />
+                {escolaSelecionada}
+              </DialogTitle>
+              <DialogDescription>
+                Unidade da rede municipal de {municipio.nome}/{municipio.uf}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-edu-blue mt-0.5" />
+                <span>{municipio.nome}/{municipio.uf} — endereço disponível na secretaria</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Phone className="w-4 h-4 text-edu-orange mt-0.5" />
+                <span>Contato via SEMED — {municipio.nome}</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Mail className="w-4 h-4 text-edu-purple mt-0.5" />
+                <span>contato@semed.{municipio.id}.gov.br</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Clock className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <span>Funcionamento: Segunda a Sexta, 7h às 17h</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <GraduationCap className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <span>Ensino oferecido conforme calendário municipal de {municipio.nome}.</span>
+              </div>
+              <div className="pt-2 border-t text-muted-foreground">
+                Informações detalhadas da unidade são gerenciadas pela SEMED de {municipio.nome}.
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Mural */}
         <section>
