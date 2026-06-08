@@ -136,7 +136,7 @@ const CanalPublico = () => {
         className="relative overflow-hidden text-white"
         style={{
           background:
-            "linear-gradient(135deg, #0a1f4d 0%, #0a1838 45%, #07152c 100%)",
+            "linear-gradient(135deg, #0a0d2b 0%, #141a4a 45%, #1f2670 100%)",
         }}
       >
         <div className="absolute inset-0 opacity-30 pointer-events-none">
