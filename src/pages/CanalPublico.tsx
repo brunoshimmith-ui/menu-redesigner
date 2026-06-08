@@ -136,7 +136,7 @@ const CanalPublico = () => {
         className="relative overflow-hidden text-white"
         style={{
           background:
-            "linear-gradient(135deg, #0a1f4d 0%, #0a1838 45%, #07152c 100%)",
+            "linear-gradient(135deg, #0a0d2b 0%, #141a4a 45%, #1f2670 100%)",
         }}
       >
         <div className="absolute inset-0 opacity-30 pointer-events-none">
@@ -165,6 +165,21 @@ const CanalPublico = () => {
               {municipios.map((m) => (
                 <option key={m.id} value={m.id} className="text-slate-800">
                   {m.nome} — {m.uf}
+                </option>
+              ))}
+            </select>
+            <select
+              value=""
+              onChange={(e) => {
+                if (e.target.value) setEscolaSelecionada(e.target.value);
+              }}
+              className="h-10 rounded-full px-4 text-sm text-white bg-white/10 backdrop-blur border border-white/20 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors max-w-[220px]"
+              aria-label="Selecionar escola"
+            >
+              <option value="" className="text-slate-800">Selecionar escola</option>
+              {municipio.escolas.map((e) => (
+                <option key={e} value={e} className="text-slate-800">
+                  {e}
                 </option>
               ))}
             </select>
