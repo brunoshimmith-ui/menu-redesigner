@@ -168,6 +168,21 @@ const CanalPublico = () => {
                 </option>
               ))}
             </select>
+            <select
+              value=""
+              onChange={(e) => {
+                if (e.target.value) setEscolaSelecionada(e.target.value);
+              }}
+              className="h-10 rounded-full px-4 text-sm text-white bg-white/10 backdrop-blur border border-white/20 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors max-w-[220px]"
+              aria-label="Selecionar escola"
+            >
+              <option value="" className="text-slate-800">Selecionar escola</option>
+              {municipio.escolas.map((e) => (
+                <option key={e} value={e} className="text-slate-800">
+                  {e}
+                </option>
+              ))}
+            </select>
             <Button
               onClick={() => navigate("/login")}
               className="h-10 rounded-full px-5 bg-white/10 backdrop-blur border border-white/20 text-white hover:bg-white/20 font-semibold"
