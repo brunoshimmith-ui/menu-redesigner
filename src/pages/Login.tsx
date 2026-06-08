@@ -12,7 +12,6 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -40,40 +39,29 @@ const Login = () => {
 
   return (
     <div
-      className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden"
+      className="min-h-screen flex items-center justify-center p-4"
       style={{
         background:
-          "linear-gradient(135deg, #0a1f4d 0%, #0a1838 45%, #07152c 100%)",
+          "linear-gradient(135deg, #1F245A 0%, #2D3478 40%, #4A54C9 100%)",
       }}
     >
-      {/* Glass card */}
       <div
-        className="relative w-full max-w-md rounded-2xl overflow-hidden border border-white/10 shadow-2xl animate-fade-in backdrop-blur-xl"
+        className="w-[380px] max-w-full rounded-[20px] p-10 text-white shadow-2xl animate-fade-in"
         style={{
-          background:
-            "linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 60%, rgba(255,255,255,0.06) 100%)",
+          background: "rgba(255,255,255,0.08)",
+          backdropFilter: "blur(15px)",
+          WebkitBackdropFilter: "blur(15px)",
+          boxShadow: "0 15px 35px rgba(0,0,0,0.25)",
         }}
       >
-        {/* Header com gradiente */}
-        <div
-          className="px-6 py-5 text-center border-b border-white/10"
-          style={{
-            background:
-              "linear-gradient(135deg, #0a1f4d 0%, #122a66 50%, #07152c 100%)",
-          }}
-        >
-          <h1 className="text-white text-xl font-semibold tracking-wide">
-            Iniciar sessão
-          </h1>
-          <p className="text-white/70 text-xs mt-1">
-            Sistema Educacional Municipal — SEMED
-          </p>
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold tracking-wide">LOGIN</h1>
+          <p className="text-white/70 text-xs mt-2">Sistema Educacional Municipal — SEMED</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-7 space-y-5">
-          {/* Município */}
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="municipio" className="text-white/80 flex items-center gap-1.5 text-xs uppercase tracking-wider">
+            <Label htmlFor="municipio" className="text-white flex items-center gap-1.5 text-sm">
               <MapPin className="w-3.5 h-3.5" />
               Canal (município)
             </Label>
@@ -81,10 +69,11 @@ const Login = () => {
               id="municipio"
               value={municipio.id}
               onChange={(e) => setMunicipio(e.target.value as typeof municipio.id)}
-              className="flex h-11 w-full rounded-full border border-white/20 bg-white/95 text-slate-800 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-white/40"
+              className="w-full h-[46px] rounded-[10px] border-0 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/40"
+              style={{ background: "rgba(255,255,255,0.15)" }}
             >
               {municipios.map((m) => (
-                <option key={m.id} value={m.id}>
+                <option key={m.id} value={m.id} className="text-slate-800">
                   {m.nome} — {m.uf}
                 </option>
               ))}
@@ -92,67 +81,63 @@ const Login = () => {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="username" className="text-white text-sm">Usuário</Label>
             <Input
               id="username"
               type="text"
-              placeholder="USUÁRIO"
+              placeholder="Digite seu usuário"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="h-11 rounded-full bg-white/95 text-slate-800 placeholder:text-slate-500 placeholder:tracking-wider text-center border-0 focus-visible:ring-2 focus-visible:ring-white/40"
+              className="h-[46px] rounded-[10px] border-0 text-white placeholder:text-white/70 focus-visible:ring-2 focus-visible:ring-white/40"
+              style={{ background: "rgba(255,255,255,0.15)" }}
             />
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="password" className="text-white text-sm">Senha</Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="SENHA"
+                placeholder="Digite sua senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="h-11 rounded-full bg-white/95 text-slate-800 placeholder:text-slate-500 placeholder:tracking-wider text-center border-0 pr-10 pl-10 focus-visible:ring-2 focus-visible:ring-white/40"
+                className="h-[46px] rounded-[10px] border-0 text-white placeholder:text-white/70 pr-10 focus-visible:ring-2 focus-visible:ring-white/40"
+                style={{ background: "rgba(255,255,255,0.15)" }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors"
                 aria-label="Mostrar senha"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <label className="flex items-center justify-end gap-2 text-[11px] text-white/70 pr-2">
-              lembrar senha
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-                className="w-3.5 h-3.5 rounded accent-white"
-              />
-            </label>
           </div>
 
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full h-11 rounded-full text-white border-0 hover:opacity-95 transition-opacity font-semibold tracking-wide"
+            className="w-full h-[46px] rounded-[10px] text-white border-0 font-bold text-base hover:-translate-y-0.5 transition-transform"
             style={{
-              background:
-                "linear-gradient(135deg, #122a66 0%, #0a1f4d 50%, #07152c 100%)",
+              background: "linear-gradient(90deg, #6C63FF, #8B5CF6)",
             }}
           >
             {isLoading ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              "Iniciar"
+              "Entrar"
             )}
           </Button>
 
-          <p className="text-[11px] text-white/60 text-center">
-            © 2026 Sistema Educacional. Todos os direitos reservados.
-          </p>
+          <div className="text-center mt-5">
+            <a href="#" className="text-[#D8D5FF] text-sm hover:underline">
+              Esqueci minha senha
+            </a>
+          </div>
         </form>
       </div>
     </div>
