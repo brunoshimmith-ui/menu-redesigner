@@ -158,18 +158,18 @@ const CanalPublico = () => {
             <select
               value={municipio.id}
               onChange={(e) => setMunicipio(e.target.value as typeof municipio.id)}
-              className="h-10 rounded-full bg-white/95 text-slate-800 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-white/40"
+              className="h-10 rounded-full px-4 text-sm text-white bg-white/10 backdrop-blur border border-white/20 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors"
               aria-label="Selecionar município"
             >
               {municipios.map((m) => (
-                <option key={m.id} value={m.id}>
+                <option key={m.id} value={m.id} className="text-slate-800">
                   {m.nome} — {m.uf}
                 </option>
               ))}
             </select>
             <Button
               onClick={() => navigate("/login")}
-              className="h-10 rounded-full px-5 bg-white text-slate-900 hover:bg-white/90 font-semibold"
+              className="h-10 rounded-full px-5 bg-white/10 backdrop-blur border border-white/20 text-white hover:bg-white/20 font-semibold"
             >
               <LogIn className="w-4 h-4 mr-1" />
               Iniciar sessão
