@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, MapPin } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMunicipio } from "@/hooks/use-municipio";
 
@@ -16,7 +16,7 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { municipio, municipios, setMunicipio } = useMunicipio();
+  const { municipio } = useMunicipio();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,44 +42,25 @@ const Login = () => {
       className="min-h-screen flex items-center justify-center p-4"
       style={{
         background:
-          "linear-gradient(135deg, #1F245A 0%, #2D3478 40%, #4A54C9 100%)",
+          "linear-gradient(135deg, #0a0d2b 0%, #141a4a 45%, #1f2670 100%)",
       }}
     >
       <div
         className="w-[380px] max-w-full rounded-[20px] p-10 text-white shadow-2xl animate-fade-in"
         style={{
-          background: "rgba(255,255,255,0.08)",
+          background: "rgba(255,255,255,0.06)",
           backdropFilter: "blur(15px)",
           WebkitBackdropFilter: "blur(15px)",
-          boxShadow: "0 15px 35px rgba(0,0,0,0.25)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 15px 35px rgba(0,0,0,0.45)",
         }}
       >
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-wide">LOGIN</h1>
-          <p className="text-white/70 text-xs mt-2">Sistema Educacional Municipal — SEMED</p>
+          <p className="text-white/60 text-xs mt-2">Sistema Educacional Municipal — SEMED</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="municipio" className="text-white flex items-center gap-1.5 text-sm">
-              <MapPin className="w-3.5 h-3.5" />
-              Canal (município)
-            </Label>
-            <select
-              id="municipio"
-              value={municipio.id}
-              onChange={(e) => setMunicipio(e.target.value as typeof municipio.id)}
-              className="w-full h-[46px] rounded-[10px] border-0 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/40"
-              style={{ background: "rgba(255,255,255,0.15)" }}
-            >
-              {municipios.map((m) => (
-                <option key={m.id} value={m.id} className="text-slate-800">
-                  {m.nome} — {m.uf}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="username" className="text-white text-sm">Usuário</Label>
             <Input
@@ -89,8 +70,8 @@ const Login = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="h-[46px] rounded-[10px] border-0 text-white placeholder:text-white/70 focus-visible:ring-2 focus-visible:ring-white/40"
-              style={{ background: "rgba(255,255,255,0.15)" }}
+              className="h-[46px] rounded-[10px] border-0 text-white placeholder:text-white/60 focus-visible:ring-2 focus-visible:ring-white/40"
+              style={{ background: "rgba(255,255,255,0.10)" }}
             />
           </div>
 
@@ -104,8 +85,8 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="h-[46px] rounded-[10px] border-0 text-white placeholder:text-white/70 pr-10 focus-visible:ring-2 focus-visible:ring-white/40"
-                style={{ background: "rgba(255,255,255,0.15)" }}
+                className="h-[46px] rounded-[10px] border-0 text-white placeholder:text-white/60 pr-10 focus-visible:ring-2 focus-visible:ring-white/40"
+                style={{ background: "rgba(255,255,255,0.10)" }}
               />
               <button
                 type="button"
@@ -123,7 +104,7 @@ const Login = () => {
             disabled={isLoading}
             className="w-full h-[46px] rounded-[10px] text-white border-0 font-bold text-base hover:-translate-y-0.5 transition-transform"
             style={{
-              background: "linear-gradient(90deg, #6C63FF, #8B5CF6)",
+              background: "linear-gradient(90deg, #4338ca, #6d28d9)",
             }}
           >
             {isLoading ? (
@@ -134,7 +115,7 @@ const Login = () => {
           </Button>
 
           <div className="text-center mt-5">
-            <a href="#" className="text-[#D8D5FF] text-sm hover:underline">
+            <a href="#" className="text-[#B8B5FF] text-sm hover:underline">
               Esqueci minha senha
             </a>
           </div>

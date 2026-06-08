@@ -5,6 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
   Heart,
   Eye,
   MessageCircle,
@@ -16,6 +28,9 @@ import {
   School,
   Users,
   Sparkles,
+  ChevronDown,
+  Clock,
+  GraduationCap,
 } from "lucide-react";
 import { useMunicipio } from "@/hooks/use-municipio";
 import { toast } from "sonner";
@@ -94,6 +109,7 @@ const CanalPublico = () => {
     { id: "2", autor: "João Pereira", texto: "Trabalho incrível com nossos professores." },
   ]);
   const [novoComentario, setNovoComentario] = useState("");
+  const [escolaSelecionada, setEscolaSelecionada] = useState<string | null>(null);
 
   const toggleCurtir = (id: string) => {
     setAcoes((prev) =>
@@ -143,18 +159,18 @@ const CanalPublico = () => {
             <select
               value={municipio.id}
               onChange={(e) => setMunicipio(e.target.value as typeof municipio.id)}
-              className="h-10 rounded-full bg-white/95 text-slate-800 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-white/40"
+              className="h-10 rounded-full px-4 text-sm text-white bg-white/10 backdrop-blur border border-white/20 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors"
               aria-label="Selecionar município"
             >
               {municipios.map((m) => (
-                <option key={m.id} value={m.id}>
+                <option key={m.id} value={m.id} className="text-slate-800">
                   {m.nome} — {m.uf}
                 </option>
               ))}
             </select>
             <Button
               onClick={() => navigate("/login")}
-              className="h-10 rounded-full px-5 bg-white text-slate-900 hover:bg-white/90 font-semibold"
+              className="h-10 rounded-full px-5 bg-white/10 backdrop-blur border border-white/20 text-white hover:bg-white/20 font-semibold"
             >
               <LogIn className="w-4 h-4 mr-1" />
               Iniciar sessão
@@ -266,25 +282,83 @@ const CanalPublico = () => {
           </div>
         </section>
 
-        {/* Escolas */}
+        {/* Escolas (lista expansível) */}
         <section>
-          <div className="mb-4">
-            <h2 className="text-2xl font-bold">Escolas da rede</h2>
-            <p className="text-sm text-muted-foreground">
-              {municipio.escolas.length} unidades em {municipio.nome}/{municipio.uf}.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {municipio.escolas.map((e) => (
-              <div key={e} className="rounded-xl border bg-card p-4 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-edu-blue/10 text-edu-blue flex items-center justify-center">
-                  <School className="w-4 h-4" />
+          <Collapsible defaultOpen={false}>
+            <CollapsibleTrigger className="w-full group">
+              <div className="rounded-2xl border bg-card p-5 flex items-center justify-between hover:bg-muted/40 transition-colors">
+                <div className="flex items-center gap-3 text-left">
+                  <div className="w-10 h-10 rounded-xl bg-edu-blue/10 text-edu-blue flex items-center justify-center">
+                    <School className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold">Escolas da rede</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {municipio.escolas.length} unidades em {municipio.nome}/{municipio.uf} — clique para expandir
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm font-medium">{e}</p>
+                <ChevronDown className="w-5 h-5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
               </div>
-            ))}
-          </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {municipio.escolas.map((e) => (
+                  <button
+                    key={e}
+                    onClick={() => setEscolaSelecionada(e)}
+                    className="text-left rounded-xl border bg-card p-4 flex items-center gap-3 hover:border-edu-blue hover:shadow-md transition-all"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-edu-blue/10 text-edu-blue flex items-center justify-center shrink-0">
+                      <School className="w-4 h-4" />
+                    </div>
+                    <p className="text-sm font-medium">{e}</p>
+                  </button>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </section>
+
+        {/* Dialog com detalhes da escola */}
+        <Dialog open={!!escolaSelecionada} onOpenChange={(o) => !o && setEscolaSelecionada(null)}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <School className="w-5 h-5 text-edu-blue" />
+                {escolaSelecionada}
+              </DialogTitle>
+              <DialogDescription>
+                Unidade da rede municipal de {municipio.nome}/{municipio.uf}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-edu-blue mt-0.5" />
+                <span>{municipio.nome}/{municipio.uf} — endereço disponível na secretaria</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Phone className="w-4 h-4 text-edu-orange mt-0.5" />
+                <span>Contato via SEMED — {municipio.nome}</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Mail className="w-4 h-4 text-edu-purple mt-0.5" />
+                <span>contato@semed.{municipio.id}.gov.br</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Clock className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <span>Funcionamento: Segunda a Sexta, 7h às 17h</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <GraduationCap className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <span>Ensino oferecido conforme calendário municipal de {municipio.nome}.</span>
+              </div>
+              <div className="pt-2 border-t text-muted-foreground">
+                Informações detalhadas da unidade são gerenciadas pela SEMED de {municipio.nome}.
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Mural */}
         <section>
