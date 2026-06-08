@@ -83,7 +83,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="offcanvas"
-      className="[&_[data-sidebar=sidebar]]:bg-gradient-to-b [&_[data-sidebar=sidebar]]:from-[#0a1f4d] [&_[data-sidebar=sidebar]]:via-[#0a1838] [&_[data-sidebar=sidebar]]:to-[#07152c] dark:[&_[data-sidebar=sidebar]]:from-[#0a1226] dark:[&_[data-sidebar=sidebar]]:via-[#070e1f] dark:[&_[data-sidebar=sidebar]]:to-[#050b1a] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0 dark:[&_[data-sidebar=sidebar]]:border-r dark:[&_[data-sidebar=sidebar]]:border-white/5"
+      className="[&_[data-sidebar=sidebar]]:bg-gradient-to-b [&_[data-sidebar=sidebar]]:from-[#0a0d2b] [&_[data-sidebar=sidebar]]:via-[#141a4a] [&_[data-sidebar=sidebar]]:to-[#1f2670] dark:[&_[data-sidebar=sidebar]]:from-[#070a1f] dark:[&_[data-sidebar=sidebar]]:via-[#0e1338] dark:[&_[data-sidebar=sidebar]]:to-[#171c54] [&_[data-sidebar=sidebar]]:text-white [&_[data-sidebar=sidebar]]:border-r-0 dark:[&_[data-sidebar=sidebar]]:border-r dark:[&_[data-sidebar=sidebar]]:border-white/5"
     >
       <SidebarHeader className="border-b border-white/10 p-6">
         {!isCollapsed ? (
