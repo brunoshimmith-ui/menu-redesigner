@@ -211,7 +211,7 @@ const CanalPublico = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap justify-end">
             <select
               value={municipio.id}
               onChange={(e) => setMunicipio(e.target.value as typeof municipio.id)}
@@ -221,6 +221,19 @@ const CanalPublico = () => {
               {municipios.map((m) => (
                 <option key={m.id} value={m.id} className="text-slate-800">
                   {m.nome} — {m.uf}
+                </option>
+              ))}
+            </select>
+            <select
+              value={escolaSelecionada ?? ""}
+              onChange={(e) => setEscolaSelecionada(e.target.value || null)}
+              className="h-10 rounded-full px-4 text-sm text-white bg-white/10 backdrop-blur border border-white/20 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors max-w-[220px]"
+              aria-label="Selecionar escola"
+            >
+              <option value="" className="text-slate-800">Todas as escolas</option>
+              {municipio.escolas.map((e) => (
+                <option key={e} value={e} className="text-slate-800">
+                  {e}
                 </option>
               ))}
             </select>
