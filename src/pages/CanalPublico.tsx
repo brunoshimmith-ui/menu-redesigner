@@ -83,7 +83,7 @@ function SlideShow({
   const next = () => setIndex((i) => (i + 1) % total);
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl ${heightClass} border border-white/10`}>
+    <div className={`relative overflow-hidden rounded-3xl ${heightClass} border border-white/10 bg-slate-900`}>
       {slides.map((s, i) => (
         <div
           key={s.id}
@@ -92,11 +92,24 @@ function SlideShow({
           }`}
         >
           {s.imagem ? (
-            <img src={s.imagem} alt={s.titulo} className="w-full h-full object-cover" />
+            <>
+              {/* fundo borrado para preencher sobras sem cortar a imagem */}
+              <img
+                src={s.imagem}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-60"
+              />
+              <img
+                src={s.imagem}
+                alt={s.titulo}
+                className="relative w-full h-full object-contain"
+              />
+            </>
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${s.gradient ?? "from-edu-blue to-edu-purple"}`} />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           <div className={`absolute inset-x-0 bottom-0 p-6 md:p-8 text-white ${variant === "hero" ? "max-w-2xl" : ""}`}>
             <h3 className={`font-bold ${variant === "hero" ? "text-2xl md:text-3xl" : "text-xl md:text-2xl"}`}>
               {s.titulo}
