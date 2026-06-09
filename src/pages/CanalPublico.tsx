@@ -83,7 +83,7 @@ function SlideShow({
   const next = () => setIndex((i) => (i + 1) % total);
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl ${heightClass} border border-white/10`}>
+    <div className={`relative overflow-hidden rounded-3xl ${heightClass} border border-white/10 bg-slate-900`}>
       {slides.map((s, i) => (
         <div
           key={s.id}
@@ -92,11 +92,24 @@ function SlideShow({
           }`}
         >
           {s.imagem ? (
-            <img src={s.imagem} alt={s.titulo} className="w-full h-full object-cover" />
+            <>
+              {/* fundo borrado para preencher sobras sem cortar a imagem */}
+              <img
+                src={s.imagem}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-60"
+              />
+              <img
+                src={s.imagem}
+                alt={s.titulo}
+                className="relative w-full h-full object-contain"
+              />
+            </>
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${s.gradient ?? "from-edu-blue to-edu-purple"}`} />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           <div className={`absolute inset-x-0 bottom-0 p-6 md:p-8 text-white ${variant === "hero" ? "max-w-2xl" : ""}`}>
             <h3 className={`font-bold ${variant === "hero" ? "text-2xl md:text-3xl" : "text-xl md:text-2xl"}`}>
               {s.titulo}
@@ -198,7 +211,7 @@ const CanalPublico = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap justify-end">
             <select
               value={municipio.id}
               onChange={(e) => setMunicipio(e.target.value as typeof municipio.id)}
@@ -208,6 +221,19 @@ const CanalPublico = () => {
               {municipios.map((m) => (
                 <option key={m.id} value={m.id} className="text-slate-800">
                   {m.nome} — {m.uf}
+                </option>
+              ))}
+            </select>
+            <select
+              value={escolaSelecionada ?? ""}
+              onChange={(e) => setEscolaSelecionada(e.target.value || null)}
+              className="h-10 rounded-full px-4 text-sm text-white bg-white/10 backdrop-blur border border-white/20 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors max-w-[220px]"
+              aria-label="Selecionar escola"
+            >
+              <option value="" className="text-slate-800">Todas as escolas</option>
+              {municipio.escolas.map((e) => (
+                <option key={e} value={e} className="text-slate-800">
+                  {e}
                 </option>
               ))}
             </select>
@@ -319,51 +345,7 @@ const CanalPublico = () => {
           </div>
         </section>
 
-        {/* Escolas (lista expansível) — container temático escuro/azul */}
-        <section>
-          <Collapsible defaultOpen={false}>
-            <div
-              className="rounded-3xl p-5 md:p-6 border border-white/10 text-white shadow-xl"
-              style={{
-                background:
-                  "linear-gradient(135deg, #0a0d2b 0%, #141a4a 50%, #1f2670 100%)",
-              }}
-            >
-              <CollapsibleTrigger className="w-full group">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="w-11 h-11 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center">
-                      <School className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-bold">Escolas da rede</h2>
-                      <p className="text-sm text-white/70">
-                        {municipio.escolas.length} unidades em {municipio.nome}/{municipio.uf} — clique para expandir
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronDown className="w-5 h-5 text-white/80 transition-transform group-data-[state=open]:rotate-180" />
-                </div>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {municipio.escolas.map((e) => (
-                    <button
-                      key={e}
-                      onClick={() => setEscolaSelecionada(e)}
-                      className="text-left rounded-xl border border-white/15 bg-white/5 backdrop-blur p-4 flex items-center gap-3 hover:bg-white/15 hover:border-white/30 transition-all"
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                        <School className="w-4 h-4" />
-                      </div>
-                      <p className="text-sm font-medium">{e}</p>
-                    </button>
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </div>
-          </Collapsible>
-        </section>
+        {/* Escolas da rede — seletor disponível no cabeçalho */}
 
         {/* Dialog com detalhes da escola */}
         <Dialog open={!!escolaSelecionada} onOpenChange={(o) => !o && setEscolaSelecionada(null)}>
