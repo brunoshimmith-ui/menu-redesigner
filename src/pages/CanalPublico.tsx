@@ -345,51 +345,7 @@ const CanalPublico = () => {
           </div>
         </section>
 
-        {/* Escolas (lista expansível) — container temático escuro/azul */}
-        <section>
-          <Collapsible defaultOpen={false}>
-            <div
-              className="rounded-3xl p-5 md:p-6 border border-white/10 text-white shadow-xl"
-              style={{
-                background:
-                  "linear-gradient(135deg, #0a0d2b 0%, #141a4a 50%, #1f2670 100%)",
-              }}
-            >
-              <CollapsibleTrigger className="w-full group">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="w-11 h-11 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center">
-                      <School className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-bold">Escolas da rede</h2>
-                      <p className="text-sm text-white/70">
-                        {municipio.escolas.length} unidades em {municipio.nome}/{municipio.uf} — clique para expandir
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronDown className="w-5 h-5 text-white/80 transition-transform group-data-[state=open]:rotate-180" />
-                </div>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {municipio.escolas.map((e) => (
-                    <button
-                      key={e}
-                      onClick={() => setEscolaSelecionada(e)}
-                      className="text-left rounded-xl border border-white/15 bg-white/5 backdrop-blur p-4 flex items-center gap-3 hover:bg-white/15 hover:border-white/30 transition-all"
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                        <School className="w-4 h-4" />
-                      </div>
-                      <p className="text-sm font-medium">{e}</p>
-                    </button>
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </div>
-          </Collapsible>
-        </section>
+        {/* Escolas da rede — seletor disponível no cabeçalho */}
 
         {/* Dialog com detalhes da escola */}
         <Dialog open={!!escolaSelecionada} onOpenChange={(o) => !o && setEscolaSelecionada(null)}>
